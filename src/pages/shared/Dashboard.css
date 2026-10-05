@@ -1,0 +1,303 @@
+.dashboard {
+  padding-top: 38px;
+}
+
+.dashboard-heading {
+  margin-bottom: 25px;
+}
+
+.dashboard-heading h1 {
+  margin: 7px 0 5px;
+  color: #243244;
+  font: 700 28px Manrope, sans-serif;
+  letter-spacing: -.7px;
+}
+
+.dashboard-heading p {
+  margin: 0;
+  color: #8a96a3;
+  font-size: 12px;
+}
+
+.dashboard-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dashboard-shortcuts.coach-shortcuts {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dashboard-card {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 23px;
+  border: 1px solid #e3e9ed;
+  border-radius: 10px;
+  background: #fff;
+  color: #29394b;
+  text-align: left;
+  box-shadow: 0 3px 12px #28394b08;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd9e2;
+  box-shadow: 0 8px 20px #28394b12;
+}
+
+.dashboard-card-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #edf4f8;
+  color: #527d99;
+  font-size: 23px;
+}
+
+.dashboard-card.green .dashboard-card-icon {
+  background: #edf5f0;
+  color: #5b8d70;
+}
+
+.dashboard-card.amber .dashboard-card-icon {
+  background: #faf3e6;
+  color: #9a7b43;
+}
+
+.dashboard-card-copy {
+  display: grid;
+  gap: 5px;
+}
+
+.dashboard-card-copy strong {
+  font: 700 19px Manrope, sans-serif;
+}
+
+.dashboard-card-copy > span {
+  max-width: 320px;
+  color: #8995a2;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.dashboard-card-action {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: auto;
+  color: #4c7c9d;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dashboard-card-action b {
+  font-size: 15px;
+}
+
+.dashboard-week {
+  padding: 20px 22px 12px;
+}
+
+.dashboard-week-heading {
+  display: block;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.dashboard-week-heading h2 {
+  margin: 5px 0 3px;
+  color: #2d3c4f;
+  font: 700 17px Manrope, sans-serif;
+}
+
+.dashboard-week-heading h2 span {
+  color: #7b8997;
+  font: 500 12px 'DM Sans', sans-serif;
+}
+
+.dashboard-week-heading p {
+  margin: 0;
+  color: #8a96a3;
+  font-size: 10px;
+}
+
+.dashboard-week-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 18px;
+  align-items: start;
+  padding-top: 16px;
+}
+
+.dashboard-week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  overflow-x: auto;
+  border: 1px solid #e5e9ed;
+  border-radius: 7px;
+  background: #fff;
+}
+
+.dashboard-day {
+  min-width: 0;
+  min-height: 290px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid #e5e9ed;
+  background: #fff;
+  color: #354456;
+  text-align: left;
+}
+
+.dashboard-day:last-child { border-right: 0; }
+.dashboard-day:hover { filter: brightness(.985); }
+
+.dashboard-day-date {
+  min-height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px;
+  border-bottom: 1px solid #e5e9ed;
+  background: #fbfcfd;
+  text-align: center;
+}
+
+.dashboard-day-date b { font-size: 10px; }
+.dashboard-day-date small { color: #7f8c99; font-size: 10px; }
+
+.dashboard-day-type {
+  min-height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 8px;
+  border-bottom: 1px solid #ffffff70;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dashboard-day-type span { opacity: .65; }
+.dashboard-day.amber .dashboard-day-type { background: #fff1cf; }
+.dashboard-day.blue .dashboard-day-type { background: #e3eff8; }
+.dashboard-day.yellow .dashboard-day-type { background: #fff8d7; }
+.dashboard-day.rest .dashboard-day-type { background: #edf0f2; }
+.dashboard-day.pink .dashboard-day-type { background: #f7e3ee; }
+.dashboard-day.navy .dashboard-day-type { background: #e0eaf3; }
+
+.dashboard-day-session {
+  min-height: 77px;
+  padding: 12px 8px;
+  color: #566578;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.dashboard-day-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: auto;
+  border-top: 1px solid #e5e9ed;
+  border-bottom: 1px solid #e5e9ed;
+  background: #f1f8f3;
+  text-align: center;
+}
+
+.dashboard-day-metrics span {
+  padding: 8px 2px;
+  color: #476b56;
+  font-size: 9px;
+}
+
+.dashboard-day-metrics span + span { border-left: 1px solid #dfe9e1; }
+
+.dashboard-day-state {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 7px;
+  color: #758291;
+  font-size: 8px;
+}
+
+.dashboard-day-state i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #91a3b1;
+}
+
+.dashboard-summary {
+  overflow: hidden;
+  border: 1px solid #e3e8ed;
+  border-radius: 7px;
+  background: #fff;
+}
+
+.dashboard-summary-title {
+  padding: 12px 8px;
+  border-bottom: 1px solid #dce8de;
+  background: #eaf7ed;
+  color: #334c3b;
+  font: 700 15px Manrope, sans-serif;
+  text-align: center;
+}
+
+.dashboard-summary table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+  text-align: center;
+}
+
+.dashboard-summary thead { background: #f2faf3; }
+.dashboard-summary th,
+.dashboard-summary td { padding: 9px 5px; }
+.dashboard-summary thead th { color: #65796a; font-weight: 700; }
+.dashboard-summary tbody th { color: #526071; text-align: left; }
+.dashboard-summary tbody td { color: #536273; }
+.dashboard-summary td.total { background: #f3f8f3; color: #26394d; font-weight: 700; }
+.dashboard-summary tr + tr { border-top: 1px solid #edf0f2; }
+
+@media (max-width: 1050px) {
+  .dashboard-shortcuts.coach-shortcuts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-week-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-summary {
+    width: min(100%, 360px);
+    justify-self: end;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard-shortcuts,
+  .dashboard-shortcuts.coach-shortcuts {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card {
+    min-height: 165px;
+  }
+
+  .dashboard-week-days {
+    grid-template-columns: repeat(7, 138px);
+  }
+}

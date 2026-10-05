@@ -1,0 +1,217 @@
+.diary-stats {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.3fr) repeat(4, minmax(110px, 1fr));
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 14px 17px;
+  border: 1px solid #e3e8ed;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.diary-stats-heading small {
+  display: block;
+  margin-top: 5px;
+  color: #98a2ac;
+  font-size: 9px;
+}
+
+.diary-stat {
+  display: grid;
+  gap: 5px;
+  padding-left: 13px;
+  border-left: 1px solid #edf0f2;
+}
+
+.diary-stat > span {
+  color: #8793a0;
+  font-size: 9px;
+}
+
+.diary-stat strong {
+  color: #2d4155;
+  font: 700 19px Manrope, sans-serif;
+}
+
+.diary-stat strong small {
+  color: #84909c;
+  font: 500 9px 'DM Sans', sans-serif;
+}
+
+.journal-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 7px 6px;
+  padding: 6px 4px;
+  border: 1px solid #e1e7eb;
+  border-radius: 5px;
+  background: #fff;
+  color: #627487;
+  font-size: 9px;
+}
+
+.journal-button:hover,
+.journal-button.has-entry {
+  border-color: #c7d9e4;
+  background: #f1f7fa;
+  color: #477594;
+}
+
+.journal-button > span:first-child { font-size: 13px; }
+
+.session-shoes-note {
+  color: #477594;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.journal-modal {
+  width: min(680px, calc(100vw - 40px));
+}
+
+.journal-modal > .muted { margin: 0 0 17px; }
+
+.journal-fieldset {
+  min-width: 0;
+  margin: 0 0 15px;
+  padding: 13px 13px 3px;
+  border: 1px solid #e8edf0;
+  border-radius: 7px;
+}
+
+.journal-fieldset legend {
+  padding: 0 6px;
+  color: #536578;
+  font: 700 11px Manrope, sans-serif;
+}
+
+.journal-input-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 12px;
+}
+
+.journal-unit,
+.journal-scale-label {
+  margin-left: 4px;
+  color: #99a3ac;
+  font-size: 9px;
+  font-weight: 400;
+}
+
+.journal-modal > .field-label { margin-bottom: 0; }
+
+.wellbeing-fieldset { padding-bottom: 14px; }
+
+.wellbeing-help {
+  margin: 0 0 14px;
+  color: #8a96a3;
+  font-size: 10px;
+}
+
+.wellbeing-ranges {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 22px;
+}
+
+.wellbeing-range-field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  color: #657383;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.wellbeing-range-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wellbeing-range-heading strong {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.wellbeing-range-heading small {
+  color: #99a3ac;
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.wellbeing-range {
+  width: 100%;
+  height: 9px;
+  margin: 3px 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 999px;
+  outline: none;
+  background: linear-gradient(to right, #39a96b 0%, #8bcf67 25%, #d8d85b 50%, #f0a04c 75%, #db5148 100%);
+  cursor: pointer;
+}
+
+.wellbeing-range::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #44596b;
+  box-shadow: 0 1px 5px #1b2c3a55;
+}
+
+.wellbeing-range::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #44596b;
+  box-shadow: 0 1px 5px #1b2c3a55;
+}
+
+.wellbeing-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid #446f8b;
+  outline-offset: 2px;
+}
+
+.wellbeing-range-ends {
+  display: flex;
+  justify-content: space-between;
+  color: #8a96a3;
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.wellbeing-range-ends span:first-child { color: #398957; }
+.wellbeing-range-ends span:last-child { color: #c94b43; }
+
+@media (max-width: 900px) {
+  .diary-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .diary-stats-heading { grid-column: 1 / -1; }
+
+  .diary-stat {
+    padding: 8px 0 0;
+    border: 0;
+    border-top: 1px solid #edf0f2;
+  }
+}
+
+@media (max-width: 620px) {
+  .journal-input-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wellbeing-ranges { grid-template-columns: 1fr; }
+}
