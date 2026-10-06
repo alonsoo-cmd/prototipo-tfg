@@ -29,7 +29,7 @@ export default function App(){
     
     <main className="main-area">
    <Topbar role={role} page={page} onMenuClick={()=>setMobileNavOpen(open=>!open)} menuOpen={mobileNavOpen}/>
-   {page==='Dashboard'&&<Dashboard role={role} weekNumber={week} weeks={coachWeeks} onNavigate={go} onSession={openSession}/>}
+   {page==='Dashboard'&&<Dashboard role={role} weekNumber={week} weeks={coachWeeks} onNavigate={go} onSession={openSession} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>}
     
    {page==='Diary'&&role==='atleta'&&<Diary week={week} setWeek={setWeek} activePlan={activePlan} setActivePlan={setActivePlan} preparation={athletePreparation} onSession={openSession} onPlan={()=>go('Find coach')} onPhases={()=>setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>
     }

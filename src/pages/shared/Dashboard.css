@@ -19,6 +19,62 @@
   font-size: 12px;
 }
 
+.today-training {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  margin: 0 0 24px;
+  padding: 22px 28px;
+  border: 1px solid #d9e8db;
+  border-radius: 14px;
+  background: linear-gradient(120deg, #f5fbf3, #fff 68%);
+}
+
+.today-training-circle {
+  display: flex;
+  flex: 0 0 260px;
+  width: 260px;
+  height: 260px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 26px;
+  border: 2px solid #7fb389;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, #fff 0, #eff8ee 75%);
+  color: #2d5134;
+  text-align: center;
+  box-shadow: 0 8px 24px #41784b16, inset 0 0 0 7px #ffffffa8;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.today-training-circle:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 12px 28px #41784b24, inset 0 0 0 7px #ffffffa8;
+}
+
+.today-training-kicker { color: #66836a; font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+.today-training-circle strong { max-width: 190px; font: 700 20px/1.2 Manrope, sans-serif; }
+.today-training-description { color: #738476; font-size: 10px; line-height: 1.45; }
+.today-training-duration { color: #45694b; font-size: 10px; font-weight: 700; }
+.today-training-cta { display: flex; align-items: center; gap: 7px; margin-top: 2px; color: #258044; font-size: 10px; font-weight: 700; }
+.today-training-cta b { font-size: 14px; }
+
+.today-wellbeing-preview { display: grid; flex: 1; gap: 13px; max-width: 510px; }
+.today-wellbeing-preview > .eyebrow { margin-bottom: 2px; color: #618167; }
+.today-wellbeing-row { display: grid; grid-template-columns: 82px minmax(0, 1fr) 22px; align-items: center; gap: 12px; color: #66766a; font-size: 10px; }
+.today-wellbeing-row label { cursor: pointer; }
+.today-wellbeing-row b { color: #405a44; text-align: right; font-size: 10px; }
+.today-wellbeing-slider { width: 100%; height: 10px; margin: 0; padding: 0; appearance: none; -webkit-appearance: none; border: 0; border-radius: 99px; outline: 0; background: linear-gradient(to right, #72b87b 0%, #d3c55e 55%, #d98658 100%); cursor: pointer; }
+.today-wellbeing-slider::-webkit-slider-thumb { width: 17px; height: 17px; appearance: none; -webkit-appearance: none; border: 3px solid #fff; border-radius: 50%; background: #405a44; box-shadow: 0 1px 5px #1b2c3a55; }
+.today-wellbeing-slider::-moz-range-thumb { width: 12px; height: 12px; border: 3px solid #fff; border-radius: 50%; background: #405a44; box-shadow: 0 1px 5px #1b2c3a55; }
+.today-wellbeing-slider:focus-visible { outline: 2px solid #4f8b5c; outline-offset: 4px; }
+.today-wellbeing-hint { display: flex; justify-content: space-between; margin: -4px 34px 0 94px; color: #438255; font-size: 8px; }
+.today-wellbeing-hint span { color: #bd584f; }
+.today-open-link { justify-self: start; margin-top: 2px; padding: 4px 0; border: 0; background: transparent; color: #31804a; font-size: 10px; font-weight: 700; }
+.today-open-link span { margin-left: 5px; font-size: 14px; }
+
 .dashboard-shortcuts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -300,4 +356,8 @@
   .dashboard-week-days {
     grid-template-columns: repeat(7, 138px);
   }
+
+  .today-training { flex-direction: column; gap: 20px; padding: 20px 15px; }
+  .today-training-circle { flex-basis: 240px; width: 240px; height: 240px; }
+  .today-wellbeing-preview { width: 100%; }
 }

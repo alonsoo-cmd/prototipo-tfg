@@ -1,4 +1,6 @@
 import { sessions as exampleSessions } from '../../data/sessions.js';
+import { useState } from 'react';
+import { JournalModal } from '../athlete/Diary.jsx';
 import './Dashboard.css';
 
 const athleteShortcuts = [
@@ -32,10 +34,19 @@ const coachShortcuts = [
   },
 ];
 
-export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSession }) {
+export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSession, trainingLogs = {}, setTrainingLogs }) {
+  const [journalOpen, setJournalOpen] = useState(false);
   const shortcuts = role === 'atleta' ? athleteShortcuts : coachShortcuts;
   const currentWeek = weeks.find((week) => week.number === weekNumber) || weeks[weeks.length - 1];
   const weekSessions = currentWeek?.days || exampleSessions;
+  const today = new Date();
+  const todayName = new Intl.DateTimeFormat('es-ES', { weekday: 'long' }).format(today);
+  const scheduledToday = weekSessions.find((session) => session.day.toLocaleLowerCase('es-ES') === todayName);
+  const todaySession = scheduledToday ? { ...scheduledToday, dateLabel: new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' }).format(today).toLocaleUpperCase('es-ES') } : weekSessions[0];
+  const todayLogKey = `${currentWeek?.number || weekNumber}-${todaySession?.day}`;
+  const todayLog = trainingLogs[todayLogKey];
+  const wellbeingLogged = ['mood', 'fatigue', 'soreness', 'sleep', 'stress'].some((key) => todayLog?.[key] !== '' && todayLog?.[key] !== undefined);
+  const activityLogged = ['distance', 'minutes', 'pace', 'averageHr'].some((key) => todayLog?.[key] !== '' && todayLog?.[key] !== undefined);
 
   return (
     <div className="content dashboard">
@@ -44,6 +55,43 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
         <h1>Hola, Alex</h1>
         <p>Este es el resumen de tu preparación para esta semana.</p>
       </section>
+
+      {role === 'atleta' && todaySession && <section className="today-training" aria-label="Entrenamiento de hoy">
+        <button className={`today-training-circle ${todaySession.tone || ''}`} onClick={() => setJournalOpen(true)} aria-label={`Registrar diario de hoy: ${todaySession.type}`}>
+          <span className="today-training-kicker">{activityLogged ? 'ACTIVIDAD REGISTRADA' : wellbeingLogged ? 'BIENESTAR REGISTRADO' : 'ENTRENO DE HOY'}</span>
+          <strong>{todaySession.type}</strong>
+          <span className="today-training-description">{todaySession.desc.replaceAll('\n', ' · ')}</span>
+          <span className="today-training-duration">{todaySession.mins ? `${todaySession.mins} min` : 'Descanso'}{todaySession.km ? ` · ${todaySession.km} km` : ''}</span>
+          <span className="today-training-cta">{activityLogged ? 'Editar diario' : wellbeingLogged ? 'Completar diario' : 'Rellenar diario'} <b>↗</b></span>
+        </button>
+        <div className="today-wellbeing-preview">
+          <div className="eyebrow">BIENESTAR DE HOY</div>
+          {[['mood', 'Humor'], ['fatigue', 'Fatiga'], ['soreness', 'Agujetas'], ['sleep', 'Sueño'], ['stress', 'Estrés']].map(([key, label]) => {
+            const value = todayLog?.[key];
+            return <div className="today-wellbeing-row" key={key}>
+              <label htmlFor={`today-${key}`}>{label}</label>
+              <input
+                id={`today-${key}`}
+                className="today-wellbeing-slider"
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                value={value || 1}
+                aria-label={`${label} de hoy, de 1 a 10`}
+                aria-valuetext={value ? `${value} de 10` : 'Sin registrar'}
+                onChange={(event) => setTrainingLogs((current) => ({
+                  ...current,
+                  [todayLogKey]: { ...(current[todayLogKey] || {}), [key]: event.target.value },
+                }))}
+              />
+              <b>{value || '—'}</b>
+            </div>;
+          })}
+          <div className="today-wellbeing-hint">1 · Verde <span>10 · Rojo</span></div>
+          <button className="today-open-link" onClick={() => setJournalOpen(true)}>{todayLog ? 'Completar o editar el diario' : 'Registrar actividad y bienestar'} <span>→</span></button>
+        </div>
+      </section>}
 
       <section className={`dashboard-shortcuts ${role === 'entrenador' ? 'coach-shortcuts' : ''}`} aria-label="Accesos rápidos">
         {shortcuts.map((shortcut) => (
@@ -61,6 +109,16 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
           </button>
         ))}
       </section>
+
+      {journalOpen && <JournalModal
+        session={todaySession}
+        initialValues={todayLog}
+        onClose={() => setJournalOpen(false)}
+        onSave={(values) => {
+          setTrainingLogs((current) => ({ ...current, [todayLogKey]: values }));
+          setJournalOpen(false);
+        }}
+      />}
 
       <section className="dashboard-week panel">
         <div className="dashboard-week-heading">

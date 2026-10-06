@@ -71,3 +71,16 @@
 @media (min-width: 761px) {
   .mobile-menu-button, .mobile-nav-backdrop { display: none; }
 }
+
+.strava-brand-button,
+.strava-brand-button:hover { border-color: #fc4c02; background: #fc4c02; color: #fff; }
+.button.strava-brand-button,
+.button.strava-brand-button:hover { color: #fff !important; }
+.strava-brand-button:hover { filter: brightness(.93); }
+.garmin-brand-button,
+.garmin-brand-button:hover { border-color: #007cc3; background: #007cc3; color: #fff; }
+.garmin-brand-button:hover { filter: brightness(.93); }
+.provider-profile-button { display: inline-flex; width: max-content; align-items: center; margin-top: 7px; text-decoration: none; }
+.strava-brand-button:focus-visible,
+.garmin-brand-button:focus-visible { outline: 3px solid #8ea4b4; outline-offset: 2px; }
+.workout-status-indicator{display:inline-block;width:14px;height:14px;flex:0 0 14px;border:1px solid #cbd3d9;border-radius:3px;background:#eef1f3}.workout-status-indicator.completed{border-color:#419552;background:#4caf60}.workout-status-indicator.partial{border-color:#d1a329;background:#efc54b}.workout-status-indicator.missed{border-color:#ce5353;background:#df6262}.coach-workout-status{justify-self:start;margin-top:2px}

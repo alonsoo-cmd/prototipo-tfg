@@ -10,7 +10,7 @@ export default function ActivityForm({connected,setConnected,uploaded,setUploade
     <b>Strava</b>
     <small>{connected?'Conectado · conexión de demostración':'Sin conectar · demostración'}</small>
     </div>
-    <button className="button secondary" onClick={()=>setConnected(!connected)}>{connected?'Desconectar':'Conectar con Strava'}</button>
+    <button className="button strava-brand-button" onClick={()=>setConnected(!connected)}>{connected?'Desconectar':'Conectar con Strava'}</button>
     </div>
     <div className="imported-data">
     <div className="panel-title">

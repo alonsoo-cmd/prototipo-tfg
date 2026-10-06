@@ -134,8 +134,8 @@ export default function Profile({ preparation = null, setPreparations = () => {}
 
       <section className="panel profile-links-panel">
         <div className="panel-title"><div><h2>Perfiles deportivos</h2><p>Opcional · añade enlaces públicos a tus perfiles</p></div></div>
-        <label className="field-label">Perfil de Strava<input type="url" value={stravaUrl} onChange={(event) => setStravaUrl(event.target.value)} placeholder="https://www.strava.com/athletes/…" />{stravaUrl && <a className="profile-external-link" href={stravaUrl} target="_blank" rel="noreferrer">Abrir perfil de Strava ↗</a>}</label>
-        <label className="field-label">Perfil de Garmin<input type="url" value={garminUrl} onChange={(event) => setGarminUrl(event.target.value)} placeholder="https://connect.garmin.com/…" />{garminUrl && <a className="profile-external-link" href={garminUrl} target="_blank" rel="noreferrer">Abrir perfil de Garmin ↗</a>}</label>
+        <label className="field-label">Perfil de Strava<input type="url" value={stravaUrl} onChange={(event) => setStravaUrl(event.target.value)} placeholder="https://www.strava.com/athletes/…" />{stravaUrl && <a className="button provider-profile-button strava-brand-button" href={stravaUrl} target="_blank" rel="noreferrer">Abrir perfil de Strava ↗</a>}</label>
+        <label className="field-label">Perfil de Garmin<input type="url" value={garminUrl} onChange={(event) => setGarminUrl(event.target.value)} placeholder="https://connect.garmin.com/…" />{garminUrl && <a className="button provider-profile-button garmin-brand-button" href={garminUrl} target="_blank" rel="noreferrer">Abrir perfil de Garmin ↗</a>}</label>
       </section>
     </div>
   </form>;

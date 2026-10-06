@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { coachAthletes, gymExercises, workoutTypes } from '../../data/coachAthletes.js';
 import { athleteDirectory } from '../../data/athleteDirectory.js';
 import DatePicker from '../../components/ui/DatePicker.jsx';
+import WorkoutStatus from '../../components/ui/WorkoutStatus.jsx';
 
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const phaseOptions = ['BI · Base', 'BII · Acumulación', 'BII · Transformación', 'BIII · Realización', 'Competición', 'Descarga'];
@@ -149,7 +150,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       <div className="week-tabs">{planWeeks.map((week) => <button key={week.number} className={selectedWeek === week.number ? 'selected' : ''} onClick={() => setSelectedWeek(week.number)}><small>SEM</small>{String(week.number).padStart(2, '0')}</button>)}</div>
       <div className="selected-week-heading"><div><div className="eyebrow">SEMANA {current.number} · {current.phase.toUpperCase()}</div><h3>Semana {current.number} · planificación</h3></div><div className="phase-select"><label>Tipo de semana<select value={current.phase} onChange={(event) => setPlanWeeks((all) => all.map((week) => week.number === current.number ? { ...week, phase: event.target.value } : week))}>{phaseOptions.map((phase) => <option key={phase}>{phase}</option>)}</select></label></div></div>
       <div className="coach-week-grid">{current.days.map((day) => <button key={day.day} className={`coach-workout-card ${day.type ? '' : 'empty'}`} onClick={() => setEditingDay({ day, mode: 'edit' })}>
-        <span className="coach-workout-day">{day.day}<small>{dayDate(day)}</small></span><b>{day.type || '+ Añadir entrenamiento'}</b><span className="coach-workout-description">{day.desc || day.blocks || (day.type ? 'Sin descripción' : 'Día en blanco')}</span>{day.shoes && <span className="coach-workout-description">👟 {day.shoes}</span>}<span className="coach-workout-metrics">{day.mins || 0} min · {format(day.km)} km · {day.tr || 0} TR</span>
+        <span className="coach-workout-day">{day.day}<small>{dayDate(day)}</small></span><b>{day.type || '+ Añadir entrenamiento'}</b><span className="coach-workout-description">{day.desc || day.blocks || (day.type ? 'Sin descripción' : 'Día en blanco')}</span>{day.shoes && <span className="coach-workout-description">👟 {day.shoes}</span>}<span className="coach-workout-metrics">{day.mins || 0} min · {format(day.km)} km · {day.tr || 0} TR</span><WorkoutStatus status={trainingLogs[`${current.number}-${day.day}`]?.completionStatus || (trainingLogs[`${current.number}-${day.day}`] ? 'completed' : null)} className="coach-workout-status" />
       </button>)}</div>
       <div className="coach-total-strip weekly-totals"><Stat label={`Km · semana ${current.number}`} value={`${format(totals.km)} km`} /><Stat label="Minutos" value={`${totals.mins} min`} /><Stat label="TRIMPS" value={totals.tr} /><button className="text-button" onClick={() => setShowAllWeeks(true)}>Ver desglose BX · BI · BII →</button></div>
     </section>
