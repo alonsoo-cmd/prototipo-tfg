@@ -26,12 +26,18 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+      
+      - name: Debug OIDC claims
+        run: |
+          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | python3 -c "import sys,json; print(json.load(sys.stdin)['value'])")
+          echo "$TOKEN" | cut -d. -f2 | python3 -c "import sys,base64,json; s=sys.stdin.read().strip(); s+='='*(-len(s)%4); d=json.loads(base64.urlsafe_b64decode(s)); print(json.dumps({k:d.get(k) for k in ['sub','aud','iss','repository','ref']},indent=1))"
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
+          retry-max-attempts: 2
 
       - name: Upload assets (cache larga)
         run: |
