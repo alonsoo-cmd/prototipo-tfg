@@ -17,17 +17,18 @@ export default function App(){
  const [trainingLogs, setTrainingLogs] = useState({});
  const [requestDate, setRequestDate] = useState('2026-12-06');
  const [preparations, setPreparations] = useState([{ id: 1, athleteId: 'alex', athleteName: 'Alex Martín', name: 'Preparación de otoño', duration: '12 semanas', coach: 'Lucía Fernández', objectives: [{ id: 11, name: 'Media Maratón Madrid', distance: 'Media maratón', eventDate: '2026-12-06' }] }]);
- const [role,setRole]=useState('atleta'), [page,setPage]=useState('Dashboard'), [week,setWeek]=useState(8), [modal,setModal]=useState(null), [activeSession,setActiveSession]=useState(sessions[0]), [activePlan,setActivePlan]=useState(true), [comment,setComment]=useState(''), [comments,setComments]=useState([]), [connected,setConnected]=useState(false), [requestSent,setRequestSent]=useState(false), [requestStatus,setRequestStatus]=useState('Pendiente'), [coachWeeks,setCoachWeeks]=useState(()=>Array.from({length:8},(_,i)=>({number:i+1,phase:i<3?'BI · Base':'BII · Acumulación',days:sessions.map(s=>({...s}))}))), [uploaded,setUploaded]=useState(false);
+ const [role,setRole]=useState('atleta'), [page,setPage]=useState('Dashboard'), [week,setWeek]=useState(8), [modal,setModal]=useState(null), [activeSession,setActiveSession]=useState(sessions[0]), [activePlan,setActivePlan]=useState(true), [comment,setComment]=useState(''), [comments,setComments]=useState([]), [connected,setConnected]=useState(false), [requestSent,setRequestSent]=useState(false), [requestStatus,setRequestStatus]=useState('Pendiente'), [coachWeeks,setCoachWeeks]=useState(()=>Array.from({length:8},(_,i)=>({number:i+1,phase:i<3?'BI · Base':'BII · Acumulación',days:sessions.map(s=>({...s}))}))), [uploaded,setUploaded]=useState(false), [mobileNavOpen,setMobileNavOpen]=useState(false);
  const go=p=>{setPage(p);setModal(null)};
  const openSession=s=>{setActiveSession(s);setModal('session')};
  const addComment=()=>{if(comment.trim()){setComments([...comments,comment.trim()]);setComment('')}};
  const nav=role==='atleta'?[['Diary','▦'],['Data','◌'],['Profile','○']]:[['Athletes','♧'],['Preparations','▤'],['Profile','○']];
  const athletePreparation=preparations.find((item) => item.athleteId === 'alex') || null;
  return <div className="app-shell">
-  <Sidebar role={role} page={page} onRoleChange={(nextRole,nextPage)=>{setRole(nextRole);setPage(nextPage)}} onNavigate={go}/>
+  <Sidebar role={role} page={page} mobileOpen={mobileNavOpen} onRoleChange={(nextRole,nextPage)=>{setRole(nextRole);setPage(nextPage);setMobileNavOpen(false)}} onNavigate={page=>{go(page);setMobileNavOpen(false)}}/>
+    {mobileNavOpen&&<button className="mobile-nav-backdrop" aria-label="Cerrar menú" onClick={()=>setMobileNavOpen(false)}/>}
     
     <main className="main-area">
-   <Topbar role={role} page={page}/>
+   <Topbar role={role} page={page} onMenuClick={()=>setMobileNavOpen(open=>!open)} menuOpen={mobileNavOpen}/>
    {page==='Dashboard'&&<Dashboard role={role} weekNumber={week} weeks={coachWeeks} onNavigate={go} onSession={openSession}/>}
     
    {page==='Diary'&&role==='atleta'&&<Diary week={week} setWeek={setWeek} activePlan={activePlan} setActivePlan={setActivePlan} preparation={athletePreparation} onSession={openSession} onPlan={()=>go('Find coach')} onPhases={()=>setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>

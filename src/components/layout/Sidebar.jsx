@@ -9,7 +9,7 @@ const coachNavigation = [
   ['Preparations', '▤', 'Preparaciones'],
 ];
 
-export default function Sidebar({ role, page, onRoleChange, onNavigate }) {
+export default function Sidebar({ role, page, onRoleChange, onNavigate, mobileOpen = false }) {
   const navigate = (nextRole, nextPage) => onRoleChange(nextRole, nextPage);
   const renderItems = (items, itemRole) => items.map(([name, icon, label]) => (
     <button
@@ -24,7 +24,7 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate }) {
     </button>
   ));
 
-  return <aside className="sidebar">
+  return <aside className={`sidebar ${mobileOpen ? 'mobile-open' : ''}`}>
     <div className="brand"><span className="brand-mark">s</span><span>stride<span className="brand-dot">.</span></span></div>
     <div className="workspace-label">WORKSPACE</div>
     <div className="role-switch" aria-label="Cambiar de rol">

@@ -29,3 +29,45 @@
 .available-athletes-panel{min-width:0}.available-athlete-list{display:grid;gap:7px;margin-top:12px}.available-athlete-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid #e2e9e1;border-radius:7px;background:#fff}.available-athlete-info{display:grid;gap:4px;flex:1;min-width:0}.available-athlete-info>b{color:#3d5340;font-size:10px}.available-athlete-info>small{color:#829083;font-size:9px}.available-athlete-row>.button{white-space:nowrap}.new-preparation-modal{max-width:680px}
 @media(max-width:620px){.available-athlete-row{align-items:flex-start;flex-wrap:wrap}.available-athlete-row>.button{margin-left:43px}}
 .no-specific-goal-toggle{display:flex;align-items:flex-start;gap:9px;margin:13px 0 4px;padding:11px 12px;border:1px solid #dce8dc;border-radius:7px;background:#f5f9f4;cursor:pointer}.no-specific-goal-toggle input{margin:2px 0 0;accent-color:#39854b}.no-specific-goal-toggle span{display:grid;gap:4px}.no-specific-goal-toggle b{color:#3b5940;font-size:10px}.no-specific-goal-toggle small{color:#7c8c7e;font-size:9px}.preparation-goal-fields{min-width:0;margin:8px 0 0;padding:0;border:0}.preparation-goal-fields:disabled{opacity:.48}.no-specific-goal-note{margin:9px 0 0;padding:9px 11px;border-radius:6px;background:#eef5ed;color:#526e55;font-size:9px}
+
+@media (max-width: 760px) {
+  body { min-width: 0; }
+  .main-area { margin-left: 0; width: 100%; min-width: 0; }
+  .sidebar {
+    width: min(290px, calc(100vw - 48px));
+    transform: translateX(-105%);
+    transition: transform .22s ease;
+    box-shadow: 8px 0 28px #172b401a;
+    z-index: 7;
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .mobile-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    border: 0;
+    background: #172b4055;
+  }
+  .mobile-menu-button {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    margin-right: 10px;
+    border: 1px solid #e5e9ed;
+    border-radius: 7px;
+    background: #fff;
+    color: #536477;
+    font-size: 17px;
+  }
+  .topbar { padding: 0 16px; }
+  .breadcrumb { min-width: 0; font-size: 10px; white-space: nowrap; }
+  .breadcrumb span { margin: 0 5px; }
+  .top-actions { gap: 10px; }
+  .demo-pill { display: none; }
+  .content { padding: 24px 16px 30px; }
+}
+@media (min-width: 761px) {
+  .mobile-menu-button, .mobile-nav-backdrop { display: none; }
+}
