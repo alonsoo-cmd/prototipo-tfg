@@ -34,6 +34,17 @@ const coachShortcuts = [
   },
 ];
 
+const injuryRegions = [
+  ['rodilla-derecha', 'Rodilla derecha'], ['rodilla-izquierda', 'Rodilla izquierda'],
+  ['cuadriceps-derecho', 'Cuádriceps derecho'], ['cuadriceps-izquierdo', 'Cuádriceps izquierdo'],
+  ['tibial-anterior-derecho', 'Tibial anterior derecho'], ['tibial-anterior-izquierdo', 'Tibial anterior izquierdo'],
+  ['tibial-posterior-derecho', 'Tibial posterior derecho'], ['tibial-posterior-izquierdo', 'Tibial posterior izquierdo'],
+  ['isquiotibial-izquierdo', 'Isquiotibial izquierdo'], ['isquiotibial-derecho', 'Isquiotibial derecho'],
+  ['gluteo', 'Glúteo'], ['tobillo-izquierdo', 'Tobillo izquierdo'], ['tobillo-derecho', 'Tobillo derecho'],
+  ['aductores-izquierdo', 'Aductores izquierdo'], ['aductores-derecho', 'Aductores derecho'],
+  ['gemelo-izquierdo', 'Gemelo izquierdo'], ['gemelo-derecho', 'Gemelo derecho'], ['otro', 'Otro'],
+];
+
 export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSession, trainingLogs = {}, setTrainingLogs }) {
   const [journalOpen, setJournalOpen] = useState(false);
   const shortcuts = role === 'atleta' ? athleteShortcuts : coachShortcuts;
@@ -45,6 +56,11 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
   const todaySession = scheduledToday ? { ...scheduledToday, dateLabel: new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' }).format(today).toLocaleUpperCase('es-ES') } : weekSessions[0];
   const todayLogKey = `${currentWeek?.number || weekNumber}-${todaySession?.day}`;
   const todayLog = trainingLogs[todayLogKey];
+  const [wellbeingDraft, setWellbeingDraft] = useState(() => ({ injuries: todayLog?.injuries || [] }));
+  const [injuryRegion, setInjuryRegion] = useState('');
+  const [injuryLevel, setInjuryLevel] = useState(1);
+  const [injuryDescription, setInjuryDescription] = useState('');
+  const [otherRegion, setOtherRegion] = useState('');
   const wellbeingLogged = ['mood', 'fatigue', 'soreness', 'sleep', 'stress'].some((key) => todayLog?.[key] !== '' && todayLog?.[key] !== undefined);
   const activityLogged = ['distance', 'minutes', 'pace', 'averageHr'].some((key) => todayLog?.[key] !== '' && todayLog?.[key] !== undefined);
 
@@ -66,8 +82,8 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
         </button>
         <div className="today-wellbeing-preview">
           <div className="eyebrow">BIENESTAR DE HOY</div>
-          {[['mood', 'Humor'], ['fatigue', 'Fatiga'], ['soreness', 'Agujetas'], ['sleep', 'Sueño'], ['stress', 'Estrés']].map(([key, label]) => {
-            const value = todayLog?.[key];
+          <div className="today-wellbeing-ranges">{[['mood', 'Humor'], ['fatigue', 'Fatiga'], ['soreness', 'Agujetas'], ['sleep', 'Sueño'], ['stress', 'Estrés']].map(([key, label]) => {
+            const value = wellbeingDraft[key] ?? todayLog?.[key];
             return <div className="today-wellbeing-row" key={key}>
               <label htmlFor={`today-${key}`}>{label}</label>
               <input
@@ -77,19 +93,48 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
                 min="1"
                 max="10"
                 step="1"
-                value={value || 1}
+                value={value ?? 1}
                 aria-label={`${label} de hoy, de 1 a 10`}
                 aria-valuetext={value ? `${value} de 10` : 'Sin registrar'}
-                onChange={(event) => setTrainingLogs((current) => ({
-                  ...current,
-                  [todayLogKey]: { ...(current[todayLogKey] || {}), [key]: event.target.value },
-                }))}
+                onChange={(event) => setWellbeingDraft((current) => ({ ...current, [key]: event.target.value }))}
               />
-              <b>{value || '—'}</b>
+              {value !== '' && value !== undefined && <b>{value}</b>}
             </div>;
-          })}
-          <div className="today-wellbeing-hint">1 · Verde <span>10 · Rojo</span></div>
-          <button className="today-open-link" onClick={() => setJournalOpen(true)}>{todayLog ? 'Completar o editar el diario' : 'Registrar actividad y bienestar'} <span>→</span></button>
+          })}</div>
+          <div className="today-health-injuries">
+            <section className="today-health-section"><div className="eyebrow today-health-heading">SALUD</div>
+              <div className="today-health-fields">
+                <label>FC en reposo <span>ppm</span><input type="number" min="25" max="240" value={wellbeingDraft.restingHr ?? todayLog?.restingHr ?? ''} onChange={(event) => setWellbeingDraft((current) => ({ ...current, restingHr: event.target.value }))} /></label>
+                <label>HRV <span>ms</span><input type="number" min="0" value={wellbeingDraft.hrv ?? todayLog?.hrv ?? ''} onChange={(event) => setWellbeingDraft((current) => ({ ...current, hrv: event.target.value }))} /></label>
+              </div>
+            </section>
+            <section className="today-injury-section"><div className="eyebrow today-health-heading">MOLESTIAS</div>
+              <div className="today-injury-editor">
+                <label>Parte del cuerpo<select value={injuryRegion} onChange={(event) => { setInjuryRegion(event.target.value); setOtherRegion(''); setInjuryDescription(''); setInjuryLevel(1); }}><option value="">Selecciona una zona…</option>{injuryRegions.map(([id, label]) => <option value={id} key={id}>{label}</option>)}</select></label>
+                {injuryRegion && <>
+                  {injuryRegion === 'otro' && <label>Indica la zona<input value={otherRegion} onChange={(event) => setOtherRegion(event.target.value)} placeholder="Ej. zona lumbar" /></label>}
+                  <label>Dolor · {injuryLevel}/10<input className="today-injury-slider" type="range" min="1" max="10" value={injuryLevel} onChange={(event) => setInjuryLevel(Number(event.target.value))} /></label>
+                  <label>Descripción<textarea rows="2" value={injuryDescription} onChange={(event) => setInjuryDescription(event.target.value)} placeholder="Opcional" /></label>
+                  <button className="button secondary dashboard-injury-add" type="button" disabled={injuryRegion === 'otro' && !otherRegion.trim()} onClick={() => {
+                    const label = injuryRegion === 'otro' ? otherRegion.trim() : injuryRegions.find(([id]) => id === injuryRegion)?.[1];
+                    const region = injuryRegion === 'otro' ? `otro:${otherRegion.trim().toLocaleLowerCase('es-ES')}` : injuryRegion;
+                    const injury = { region, regionId: injuryRegion, regionLabel: label, otherRegion: injuryRegion === 'otro' ? otherRegion.trim() : '', level: injuryLevel, description: injuryDescription.trim() };
+                    setWellbeingDraft((current) => ({ ...current, injuries: [...(current.injuries || todayLog?.injuries || []).filter((item) => item.region !== region && item.regionId !== injuryRegion), injury] }));
+                    setInjuryRegion(''); setOtherRegion(''); setInjuryDescription(''); setInjuryLevel(1);
+                  }}>Añadir molestia</button>
+                </>}
+              </div>
+              {(wellbeingDraft.injuries || todayLog?.injuries || []).length > 0 && <ul className="today-injury-list">{(wellbeingDraft.injuries || todayLog?.injuries || []).map((injury) => <li key={injury.region}><span><b>{injury.regionLabel || injury.otherRegion || injury.region}</b><small>{injury.level}/10{injury.description ? ` · ${injury.description}` : ''}</small></span><button className="today-injury-remove" type="button" aria-label={`Quitar molestia en ${injury.regionLabel || injury.otherRegion || injury.region}`} onClick={() => setWellbeingDraft((current) => ({ ...current, injuries: (current.injuries || todayLog?.injuries || []).filter((item) => item.region !== injury.region) }))}><span aria-hidden="true">×</span> Quitar</button></li>)}</ul>}
+            </section>
+          </div>
+          <button className="button primary today-save-button" type="button" onClick={() => {
+            setTrainingLogs((current) => ({
+              ...current,
+              [todayLogKey]: { ...(current[todayLogKey] || {}), ...wellbeingDraft, injuries: wellbeingDraft.injuries || current[todayLogKey]?.injuries || [] },
+            }));
+            setWellbeingDraft((current) => ({ injuries: current.injuries || todayLog?.injuries || [] }));
+          }}>Guardar</button>
+          <button className="today-open-link" onClick={() => setJournalOpen(true)}>Registrar entrenamiento <span>→</span></button>
         </div>
       </section>}
 
@@ -113,6 +158,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
       {journalOpen && <JournalModal
         session={todaySession}
         initialValues={todayLog}
+        hidePersonalFields
         onClose={() => setJournalOpen(false)}
         onSave={(values) => {
           setTrainingLogs((current) => ({ ...current, [todayLogKey]: values }));

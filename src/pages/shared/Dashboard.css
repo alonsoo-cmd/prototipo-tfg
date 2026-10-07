@@ -61,18 +61,41 @@
 .today-training-cta { display: flex; align-items: center; gap: 7px; margin-top: 2px; color: #258044; font-size: 10px; font-weight: 700; }
 .today-training-cta b { font-size: 14px; }
 
-.today-wellbeing-preview { display: grid; flex: 1; gap: 13px; max-width: 510px; }
+.today-wellbeing-preview { display: grid; flex: 1; min-width: 0; gap: 10px; max-width: none; grid-template-columns: minmax(0, 1fr) minmax(280px, 33%); align-items: stretch; }
+.today-wellbeing-preview > .eyebrow { grid-column: 1 / -1; }
 .today-wellbeing-preview > .eyebrow { margin-bottom: 2px; color: #618167; }
-.today-wellbeing-row { display: grid; grid-template-columns: 82px minmax(0, 1fr) 22px; align-items: center; gap: 12px; color: #66766a; font-size: 10px; }
+.today-wellbeing-ranges { display: grid; grid-row: 2 / span 3; width: 100%; min-width: 0; grid-template-rows: repeat(5, 1fr); gap: 8px; }
+.today-wellbeing-row { position: relative; display: grid; width: 100%; grid-template-columns: 58px minmax(0, 1fr); align-items: center; gap: 7px; color: #66766a; font-size: 9px; }
 .today-wellbeing-row label { cursor: pointer; }
-.today-wellbeing-row b { color: #405a44; text-align: right; font-size: 10px; }
-.today-wellbeing-slider { width: 100%; height: 10px; margin: 0; padding: 0; appearance: none; -webkit-appearance: none; border: 0; border-radius: 99px; outline: 0; background: linear-gradient(to right, #72b87b 0%, #d3c55e 55%, #d98658 100%); cursor: pointer; }
-.today-wellbeing-slider::-webkit-slider-thumb { width: 17px; height: 17px; appearance: none; -webkit-appearance: none; border: 3px solid #fff; border-radius: 50%; background: #405a44; box-shadow: 0 1px 5px #1b2c3a55; }
-.today-wellbeing-slider::-moz-range-thumb { width: 12px; height: 12px; border: 3px solid #fff; border-radius: 50%; background: #405a44; box-shadow: 0 1px 5px #1b2c3a55; }
+.today-wellbeing-row b { position: absolute; right: 0; display: grid; place-items: center; min-width: 16px; height: 16px; padding: 0 3px; border: 2px solid #fff; border-radius: 999px; background: #405a44; color: #fff; font-size: 8px; line-height: 1; box-shadow: 0 1px 4px #1b2c3a44; }
+.today-wellbeing-slider { width: 100%; height: 12px; margin: 0; padding: 0; appearance: none; -webkit-appearance: none; border: 0; border-radius: 99px; outline: 0; background: linear-gradient(to right, #39a96b 0%, #8bcf67 25%, #d8d85b 50%, #f0a04c 75%, #db5148 100%); cursor: pointer; }
+.today-wellbeing-slider::-webkit-slider-thumb { width: 18px; height: 18px; appearance: none; -webkit-appearance: none; border: 3px solid #fff; border-radius: 50%; background: #405a44; box-shadow: 0 1px 5px #1b2c3a55; }
+.today-wellbeing-slider::-moz-range-thumb { width: 13px; height: 13px; border: 3px solid #fff; border-radius: 50%; background: #405a44; box-shadow: 0 1px 5px #1b2c3a55; }
 .today-wellbeing-slider:focus-visible { outline: 2px solid #4f8b5c; outline-offset: 4px; }
-.today-wellbeing-hint { display: flex; justify-content: space-between; margin: -4px 34px 0 94px; color: #438255; font-size: 8px; }
-.today-wellbeing-hint span { color: #bd584f; }
-.today-open-link { justify-self: start; margin-top: 2px; padding: 4px 0; border: 0; background: transparent; color: #31804a; font-size: 10px; font-weight: 700; }
+.today-health-injuries { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; }
+.today-health-section,.today-injury-section { display: grid; align-content: start; gap: 7px; min-width: 0; }
+.today-health-heading { margin: 0; color: #618167; }
+.today-health-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.today-health-fields label, .today-injury-editor > label { display: grid; gap: 5px; color: #66766a; font-size: 9px; }
+.today-health-fields label span { display: inline; color: #879487; }
+.today-health-fields input, .today-injury-editor input:not([type="range"]), .today-injury-editor select, .today-injury-editor textarea { width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid #dce5dc; border-radius: 6px; background: #fff; color: #405a44; font: inherit; }
+.today-injury-editor { display: grid; gap: 9px; }
+.today-injury-editor .today-injury-slider { width: 100%; height: 7px; margin: 3px 0; padding: 0; appearance: none; -webkit-appearance: none; border: 0; border-radius: 999px; outline: 0; background: linear-gradient(to right, #39a96b 0%, #8bcf67 25%, #d8d85b 50%, #f0a04c 75%, #db5148 100%); cursor: pointer; }
+.today-injury-slider::-webkit-slider-thumb { width: 14px; height: 14px; appearance: none; -webkit-appearance: none; border: 3px solid #fff; border-radius: 50%; background: #405a44; box-shadow: 0 1px 5px #1b2c3a55; }
+.today-injury-slider::-moz-range-thumb { width: 9px; height: 9px; border: 3px solid #fff; border-radius: 50%; background: #405a44; box-shadow: 0 1px 5px #1b2c3a55; }
+.today-injury-editor textarea { resize: vertical; }
+.today-injury-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.today-injury-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 48px; padding: 9px 11px; border: 1px solid #d9e6d8; border-radius: 8px; background: #f1f7ef; color: #596c59; font-size: 10px; box-shadow: 0 2px 5px #456b3d0b; }
+.today-injury-list li > span { display: grid; gap: 3px; }
+.today-injury-list li b { color: #405d45; font-size: 10px; }
+.today-injury-list li small { color: #718071; font-size: 9px; line-height: 1.35; }
+.today-injury-remove { display: inline-flex; align-items: center; gap: 3px; padding: 5px 8px; border: 1px solid #ecc7c1; border-radius: 999px; background: #fffafa; color: #ae4d45; font: 700 9px/1 Manrope, sans-serif; cursor: pointer; transition: background .15s ease, border-color .15s ease, transform .15s ease; }
+.today-injury-remove span { display: grid; place-items: center; width: 11px; height: 11px; border-radius: 50%; background: #d6655d; color: #fff; font: 700 11px/9px Arial, sans-serif; }
+.today-injury-remove:hover { border-color: #d6655d; background: #fff0ee; transform: translateY(-1px); }
+.today-injury-remove:focus-visible { outline: 2px solid #d6655d; outline-offset: 2px; }
+.dashboard-injury-add { justify-self: start; padding: 5px 9px; font-size: 9px; }
+.today-save-button { justify-self: start; grid-column: 2; padding: 6px 11px; font-size: 10px; }
+.today-open-link { justify-self: start; grid-column: 2; margin-top: 2px; padding: 4px 0; border: 0; background: transparent; color: #31804a; font-size: 10px; font-weight: 700; }
 .today-open-link span { margin-left: 5px; font-size: 14px; }
 
 .dashboard-shortcuts {
@@ -359,5 +382,12 @@
 
   .today-training { flex-direction: column; gap: 20px; padding: 20px 15px; }
   .today-training-circle { flex-basis: 240px; width: 240px; height: 240px; }
-  .today-wellbeing-preview { width: 100%; }
+  .today-wellbeing-preview { width: 100%; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .today-health-injuries { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .today-wellbeing-preview { grid-template-columns: 1fr; }
+  .today-wellbeing-ranges { grid-row: auto; }
+  .today-save-button, .today-open-link { grid-column: 1; }
 }

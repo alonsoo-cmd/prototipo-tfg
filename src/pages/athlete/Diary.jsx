@@ -194,7 +194,7 @@ function WeeklyLoad({ week }) {
   );
 }
 
-export function JournalModal({ session, initialValues, onClose, onSave }) {
+export function JournalModal({ session, initialValues, onClose, onSave, hidePersonalFields = false }) {
   const [stravaConnected, setStravaConnected] = useState(false);
   const [intervalImage, setIntervalImage] = useState(null);
   const [intervalDraft, setIntervalDraft] = useState('');
@@ -349,15 +349,15 @@ export function JournalModal({ session, initialValues, onClose, onSave }) {
           </div>
         </fieldset>}
 
-        <fieldset className="journal-fieldset">
+        {!hidePersonalFields && <fieldset className="journal-fieldset">
           <legend>Salud</legend>
           <div className="journal-input-grid">
             <NumberField label="FC en reposo" unit="ppm" value={values.restingHr} onChange={(value) => update('restingHr', value)} />
             <NumberField label="HRV" unit="ms" value={values.hrv} onChange={(value) => update('hrv', value)} />
           </div>
-        </fieldset>
+        </fieldset>}
 
-        <fieldset className="journal-fieldset wellbeing-fieldset">
+        {!hidePersonalFields && <fieldset className="journal-fieldset wellbeing-fieldset">
           <legend>Bienestar personal</legend>
           <p className="wellbeing-help">Selecciona un valor para cada indicador. 1 es verde y 10 es rojo.</p>
           <div className="wellbeing-ranges">
@@ -365,9 +365,9 @@ export function JournalModal({ session, initialValues, onClose, onSave }) {
               <RangeField key={key} label={label} value={values[key]} onChange={(value) => update(key, value)} />
             ))}
           </div>
-        </fieldset>
+        </fieldset>}
 
-        <fieldset className="journal-fieldset injury-fieldset">
+        {!hidePersonalFields && <fieldset className="journal-fieldset injury-fieldset">
           <legend>Molestias</legend>
           <p className="wellbeing-help">Añade cada molestia de hoy, indica cuánto duele y describe qué ha pasado si lo necesitas.</p>
           <label className="field-label">Parte del cuerpo<select value={selectedRegion} onChange={(event) => {
@@ -391,7 +391,7 @@ export function JournalModal({ session, initialValues, onClose, onSave }) {
             }}>Añadir molestia</button>
           </div>}
           {injuries.length > 0 && <ul className="injury-marked-list">{injuries.map((injury) => <li key={injury.region}><span><b>{injury.regionLabel || injuryRegions.find((region) => region.id === injury.region)?.label || injury.otherRegion || 'Otra zona'} · {injury.level}/10</b>{injury.description && <small>{injury.description}</small>}</span><button type="button" aria-label={`Quitar ${injury.regionLabel || injury.otherRegion || injury.region}`} onClick={() => setInjuries((current) => current.filter((item) => item.region !== injury.region))}>Quitar</button></li>)}</ul>}
-        </fieldset>
+        </fieldset>}
 
         <label className="field-label">Notas del día<textarea rows="2" value={values.notes} onChange={(event) => update('notes', event.target.value)} placeholder="Sensaciones, contexto o comentarios" /></label>
         <div className="inline-actions">
