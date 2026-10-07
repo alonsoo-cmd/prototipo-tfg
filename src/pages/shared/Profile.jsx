@@ -13,7 +13,7 @@ const minutesSecondsPattern = '(0?[0-9]|[1-5][0-9]|60):[0-5][0-9]';
 const hundredthsPattern = `${minutesSecondsPattern}([.,][0-9]{2})?`;
 const hoursPattern = '([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]';
 
-export default function Profile({ preparation = null, setPreparations = () => {} }) {
+export default function Profile({ role = 'atleta', preparation = null, setPreparations = () => {} }) {
   const [name, setName] = useState('Alex Martín');
   const [email, setEmail] = useState('alex.martin@example.com');
   const [birthDate, setBirthDate] = useState('1998-04-12');
@@ -21,6 +21,7 @@ export default function Profile({ preparation = null, setPreparations = () => {}
   const [club, setClub] = useState('');
   const [specialty, setSpecialty] = useState('Carrera de fondo');
   const [about, setAbout] = useState('Corredor amateur. Entrenamiento de fondo y pista.');
+  const [coachBio, setCoachBio] = useState('');
   const [photo, setPhoto] = useState('');
   const [marks, setMarks] = useState({});
   const [selectedRaces, setSelectedRaces] = useState([]);
@@ -42,8 +43,8 @@ export default function Profile({ preparation = null, setPreparations = () => {}
     <div className="page-heading">
       <div>
         <div className="eyebrow">CUENTA</div>
-        <h1>Perfil del atleta</h1>
-        <p>Información personal, preparación y referencias de rendimiento</p>
+        <h1>{role === 'entrenador' ? 'Perfil del entrenador' : 'Perfil del atleta'}</h1>
+        <p>{role === 'entrenador' ? 'Información personal y trayectoria como entrenador' : 'Información personal, preparación y referencias de rendimiento'}</p>
       </div>
       <button className="button primary" type="submit">{saved ? 'Cambios guardados ✓' : 'Guardar cambios'}</button>
     </div>
@@ -59,7 +60,7 @@ export default function Profile({ preparation = null, setPreparations = () => {}
                 if (file) setPhoto(URL.createObjectURL(file));
               }} />
             </label>
-            <div><h2>{name || 'Nombre del atleta'}</h2><p>Atleta · Madrid, España</p></div>
+            <div><h2>{name || (role === 'entrenador' ? 'Nombre del entrenador' : 'Nombre del atleta')}{role === 'entrenador' && ' - Entrenador'}</h2><p>{role === 'entrenador' ? 'Madrid, España' : 'Atleta · Madrid, España'}</p></div>
           </div>
           <span className="example-tag">EJEMPLO</span>
         </div>
@@ -72,7 +73,8 @@ export default function Profile({ preparation = null, setPreparations = () => {}
           <label className="field-label">Club<input value={club} onChange={(event) => setClub(event.target.value)} placeholder="Añadir club" /></label>
           <label className="field-label">Especialidad<input value={specialty} onChange={(event) => setSpecialty(event.target.value)} /></label>
         </div>
-        <label className="field-label">Sobre mí<textarea rows="3" value={about} onChange={(event) => setAbout(event.target.value)} placeholder="Escribe una breve descripción" /></label>
+        <label className="field-label">Sobre mí como atleta<textarea rows="3" value={about} onChange={(event) => setAbout(event.target.value)} placeholder="Detalles sobre lesiones previas, disponibilidad material, volumen semanal máximo o experiencia deportiva" /></label>
+        {role === 'entrenador' && <label className="field-label">Mi trayectoria como entrenador<textarea rows="5" value={coachBio} onChange={(event) => setCoachBio(event.target.value)} placeholder="Cuéntales a tus atletas sobre tu formación y títulos, años de experiencia, especialidades y resultados destacados con atletas…" /></label>}
       </section>
 
       <section className="panel profile-preparation-panel">

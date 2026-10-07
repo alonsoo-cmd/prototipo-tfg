@@ -19,3 +19,17 @@ export const gymExercises = [
   'Salto al cajón', 'Plancha normal', 'Plancha lateral izquierda', 'Plancha lateral derecha',
   'Bird dog', 'Bicho muerto', 'Personalizado',
 ];
+
+export function workoutColor(type) {
+  if (type === 'Descanso') return 'rest';
+  if (type === 'Rodaje') return 'easy';
+  if (type === 'Long run / tirada larga') return 'long';
+  if (type === 'Cambios') return 'changes';
+  if (type === 'Cuestas') return 'hills';
+  if (type === 'Series largas' || type === 'Series cortas') return 'series';
+  if (type === 'Competición') return 'race';
+  if (type === 'Gimnasio') return 'gym';
+  if (['Acondicionamiento físico', 'Core', 'Movilidad', 'Pliometría'].includes(type)) return 'conditioning';
+  if (type === 'Test') return 'test';
+  return 'default';
+}

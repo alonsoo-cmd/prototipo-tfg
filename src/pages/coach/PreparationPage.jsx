@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { coachAthletes, gymExercises, workoutTypes } from '../../data/coachAthletes.js';
+import { useMemo, useRef, useState } from 'react';
+import { coachAthletes, gymExercises, workoutColor, workoutTypes } from '../../data/coachAthletes.js';
 import { athleteDirectory } from '../../data/athleteDirectory.js';
 import DatePicker from '../../components/ui/DatePicker.jsx';
 import WorkoutStatus from '../../components/ui/WorkoutStatus.jsx';
@@ -31,7 +31,7 @@ function copyWeeks(weeks = []) {
   return weeks.map((week) => ({ ...week, days: week.days.map((day) => ({ ...day })) }));
 }
 
-export default function PreparationPage({ weeks, setWeeks, preparations = [], setPreparations = () => {}, trainingLogs = {}, onProfile }) {
+export default function PreparationPage({ weeks, setWeeks, preparations = [], setPreparations = () => {}, trainingLogs = {}, workoutTemplates = [], onProfile }) {
   const [athlete, setAthlete] = useState(coachAthletes[0]);
   const [athleteList, setAthleteList] = useState(coachAthletes);
   const [otherPlans, setOtherPlans] = useState(() => Object.fromEntries(coachAthletes.filter((item) => item.id !== 'lucia').map((item) => [item.id, copyWeeks(weeks)])));
@@ -41,6 +41,9 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
   const [showAllWeeks, setShowAllWeeks] = useState(false);
   const [notice, setNotice] = useState('');
   const [startingAthlete, setStartingAthlete] = useState(null);
+  const [dropTarget, setDropTarget] = useState('');
+  const [templateTypeFilter, setTemplateTypeFilter] = useState('all');
+  const skipDayClick = useRef(false);
 
   const planWeeks = athlete.id === 'lucia' ? weeks : otherPlans[athlete.id] || copyWeeks(weeks);
   const current = planWeeks.find((week) => week.number === selectedWeek) || planWeeks.at(-1) || blankWeek(1);
@@ -52,6 +55,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
   const practicalDays = current.days.map((day) => ({ ...day, log: trainingLogs[`${current.number}-${day.day}`] })).filter((day) => day.log);
   const athletePreparation = preparations.find((item) => item.athleteId === athlete.id) || null;
   const athleteObjectives = athletePreparation?.objectives || [];
+  const visibleWorkoutTemplates = workoutTemplates.filter((template) => templateTypeFilter === 'all' || template.type === templateTypeFilter);
   const assignedAthleteIds = new Set(athleteList.map((item) => item.id));
   const availableAthletes = athleteDirectory.filter((item) => !assignedAthleteIds.has(item.id)
     && !item.currentCoachId
@@ -73,6 +77,17 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
     }));
     setEditingDay(null);
     setNotice(`${updatedDay.day}: entrenamiento guardado.`);
+  };
+  const placeTemplate = (day, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const templateId = event.dataTransfer.getData('application/x-stride-template');
+    const template = workoutTemplates.find((item) => String(item.id) === templateId);
+    setDropTarget('');
+    if (!template) return;
+    skipDayClick.current = true;
+    window.setTimeout(() => { skipDayClick.current = false; }, 500);
+    saveDay({ ...template, day: day.day, date: day.date, month: day.month });
   };
   const chooseAthlete = (next) => {
     setAthlete(next);
@@ -149,7 +164,13 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       <div className="schedule-heading"><div><div className="eyebrow">PREPARACIÓN TEÓRICA</div><h2>Plan semanal</h2><p>{athlete.duration} · {athlete.distance} · {planWeeks.length} semanas planificadas</p></div><div className="schedule-actions"><button className="button secondary" onClick={() => setShowAllWeeks(true)}>Semana {current.number} · ver todas ↗</button><button className="button primary" onClick={createWeek} disabled={planWeeks.length >= (Number.parseInt(athlete.duration, 10) || 12)}>＋ Nueva semana</button></div></div>
       <div className="week-tabs">{planWeeks.map((week) => <button key={week.number} className={selectedWeek === week.number ? 'selected' : ''} onClick={() => setSelectedWeek(week.number)}><small>SEM</small>{String(week.number).padStart(2, '0')}</button>)}</div>
       <div className="selected-week-heading"><div><div className="eyebrow">SEMANA {current.number} · {current.phase.toUpperCase()}</div><h3>Semana {current.number} · planificación</h3></div><div className="phase-select"><label>Tipo de semana<select value={current.phase} onChange={(event) => setPlanWeeks((all) => all.map((week) => week.number === current.number ? { ...week, phase: event.target.value } : week))}>{phaseOptions.map((phase) => <option key={phase}>{phase}</option>)}</select></label></div></div>
-      <div className="coach-week-grid">{current.days.map((day) => <button key={day.day} className={`coach-workout-card ${day.type ? '' : 'empty'}`} onClick={() => setEditingDay({ day, mode: 'edit' })}>
+      {workoutTemplates.length > 0 ? <section className="workout-template-library">
+        <div className="workout-template-library-heading"><div><b>Entrenamientos predefinidos</b><span>Arrastra un bloque sobre el día que quieras planificar.</span></div><label>Tipo<select value={templateTypeFilter} onChange={(event) => setTemplateTypeFilter(event.target.value)}><option value="all">Todos</option>{workoutTypes.map((type) => <option key={type}>{type}</option>)}</select></label><span>{visibleWorkoutTemplates.length} disponibles</span></div>
+        {visibleWorkoutTemplates.length ? <div className="workout-template-blocks">{visibleWorkoutTemplates.map((template) => <button type="button" draggable key={template.id} className={`workout-template-block workout-color-${workoutColor(template.type)}`} onDragStart={(event) => { event.dataTransfer.setData('application/x-stride-template', String(template.id)); event.dataTransfer.effectAllowed = 'copy'; }} onDragEnd={() => setDropTarget('')}>
+          <b>{template.type}</b><span>{template.desc || template.blocks || 'Sin descripción'}</span><small>{template.mins || 0} min · {format(template.km)} km · {template.tr || 0} TR</small>
+        </button>)}</div> : <p className="workout-template-filter-empty">No hay entrenamientos predefinidos de este tipo.</p>}
+      </section> : <section className="workout-template-library workout-template-library-empty"><b>Entrenamientos predefinidos</b><span>No hay entrenamientos guardados. Puedes seguir planificando cada día manualmente.</span></section>}
+      <div className="coach-week-grid">{current.days.map((day) => <button key={day.day} onDragOver={(event) => { event.preventDefault(); setDropTarget(day.day); }} onDragLeave={() => setDropTarget((currentTarget) => currentTarget === day.day ? '' : currentTarget)} onDrop={(event) => placeTemplate(day, event)} className={`coach-workout-card ${day.type ? `workout-color-${workoutColor(day.type)}` : 'empty'} ${dropTarget === day.day ? 'drop-target' : ''}`} onClick={() => { if (skipDayClick.current) return; setEditingDay({ day, mode: 'edit' }); }}>
         <span className="coach-workout-day">{day.day}<small>{dayDate(day)}</small></span><b>{day.type || '+ Añadir entrenamiento'}</b><span className="coach-workout-description">{day.desc || day.blocks || (day.type ? 'Sin descripción' : 'Día en blanco')}</span>{day.shoes && <span className="coach-workout-description">👟 {day.shoes}</span>}<span className="coach-workout-metrics">{day.mins || 0} min · {format(day.km)} km · {day.tr || 0} TR</span><WorkoutStatus status={trainingLogs[`${current.number}-${day.day}`]?.completionStatus || (trainingLogs[`${current.number}-${day.day}`] ? 'completed' : null)} className="coach-workout-status" />
       </button>)}</div>
       <div className="coach-total-strip weekly-totals"><Stat label={`Km · semana ${current.number}`} value={`${format(totals.km)} km`} /><Stat label="Minutos" value={`${totals.mins} min`} /><Stat label="TRIMPS" value={totals.tr} /><button className="text-button" onClick={() => setShowAllWeeks(true)}>Ver desglose BX · BI · BII →</button></div>
@@ -205,12 +226,12 @@ function NewPreparationModal({ athlete, onClose, onCreate }) {
   </div>;
 }
 
-function WorkoutEditor({ day, mode, onClose, onSave }) {
+export function WorkoutEditor({ day, mode, onClose, onSave }) {
   const [values, setValues] = useState(() => ({ ...day, details: day.details || {}, zones: day.zones || [0, 0, 0] }));
   const [exerciseRows, setExerciseRows] = useState(values.details.exercises || []);
   const [conditioningBlocks, setConditioningBlocks] = useState(values.details.conditioningBlocks || [{ type: 'Core', exercises: '', volume: '', comment: '' }]);
   const [workoutGroups, setWorkoutGroups] = useState(() => (values.details.groups || [{ repetitions: '', interval: '', guide: 'Sin objetivo', target: '', recovery: '', comment: '', withSled: false }]).map((group) => ({ recovery: '', ...group })));
-  const [isReadOnly, setIsReadOnly] = useState(mode === 'view');
+  const [isReadOnly, setIsReadOnly] = useState(mode === 'view' || mode === 'template-view');
   const update = (key, value) => setValues((current) => ({ ...current, [key]: value }));
   const updateDetail = (key, value) => setValues((current) => ({ ...current, details: { ...current.details, [key]: value } }));
   const type = values.type || '';
@@ -225,18 +246,20 @@ function WorkoutEditor({ day, mode, onClose, onSave }) {
     if (type === 'Descanso' || type === 'Acondicionamiento físico') {
       delete details.rpeMin; delete details.rpeMax; delete details.paceFrom; delete details.paceTo; delete details.hrMin; delete details.hrMax;
     }
-    onSave({ ...values, desc: description, blocks: description, details, tone: type === 'Descanso' ? 'rest' : 'blue', tr: values.tr || '0' });
+    delete details.paceFrom; delete details.paceTo;
+    const trimps = calculateWorkoutTrimps(values.zones);
+    onSave({ ...values, desc: description, blocks: description, details, tone: type === 'Descanso' ? 'rest' : 'blue', tr: String(trimps) });
   };
 
   return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}><form className="modal wide-modal workout-editor-modal" onSubmit={submit}>
-    <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button><div className="eyebrow">{isReadOnly ? 'ENTRENAMIENTO · DETALLE' : 'PLANIFICACIÓN TEÓRICA'} · {day.day.toUpperCase()}</div><h2>{day.type || 'Añadir entrenamiento'} · {day.day}</h2>
-    {isReadOnly && <div className="workout-practical-metrics"><b>WT {values.wt ?? '—'}/50</b><b>FC media {values.averageHr ?? '—'} ppm</b><b>FC reposo {values.restingHr ?? '—'} ppm</b><b>HRV {values.hrv ?? '—'} ms</b></div>}
+    <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button><div className="eyebrow">{isReadOnly ? 'ENTRENAMIENTO · DETALLE' : mode.startsWith('template') ? 'ENTRENAMIENTOS PREFABRICADOS' : 'PLANIFICACIÓN TEÓRICA'}{!mode.startsWith('template') && ` · ${day.day.toUpperCase()}`}</div><h2>{day.type || 'Añadir entrenamiento'}{!mode.startsWith('template') && ` · ${day.day}`}</h2>
+    {isReadOnly && mode.startsWith('template') && <div className="workout-practical-metrics"><b>TRIMPS {values.tr || calculateWorkoutTrimps(values.zones)}</b><b>{values.mins || 0} min</b><b>{format(values.km)} km</b></div>}
+    {isReadOnly && !mode.startsWith('template') && <div className="workout-practical-metrics"><b>WT {values.wt ?? '—'}/50</b><b>FC media {values.averageHr ?? '—'} ppm</b><b>FC reposo {values.restingHr ?? '—'} ppm</b><b>HRV {values.hrv ?? '—'} ms</b></div>}
     <div className="workout-editor-grid">
-      <label className="field-label">Tipo de entrenamiento<select disabled={isReadOnly} value={type} onChange={(event) => update('type', event.target.value)}><option value="">Selecciona tipo…</option>{workoutTypes.map((item) => <option key={item}>{item}</option>)}</select></label>
+      <label className="field-label">Tipo de entrenamiento<select required={!isReadOnly && mode.startsWith('template')} disabled={isReadOnly} value={type} onChange={(event) => update('type', event.target.value)}><option value="">Selecciona tipo…</option>{workoutTypes.map((item) => <option key={item}>{item}</option>)}</select></label>
       <label className="field-label">Zapatillas recomendadas<select disabled={isReadOnly} value={values.shoes || ''} onChange={(event) => update('shoes', event.target.value)}><option value="">Sin indicación</option>{shoeTypes.map((item) => <option key={item}>{item}</option>)}</select></label>
       <label className="field-label">Duración · min<input disabled={isReadOnly} type="number" min="0" value={values.mins || ''} onChange={(event) => update('mins', Number(event.target.value))} /></label>
       <label className="field-label">Distancia · km<input disabled={isReadOnly} type="number" min="0" step="0.1" value={values.km || ''} onChange={(event) => update('km', Number(event.target.value))} /></label>
-      <label className="field-label">TRIMPS<input disabled={isReadOnly} type="number" min="0" value={Number.parseFloat(values.tr) || 0} onChange={(event) => update('tr', event.target.value)} /></label>
     </div>
     <label className="field-label">Descripción del entrenamiento<textarea disabled={isReadOnly} rows="3" value={values.desc || values.blocks || ''} onChange={(event) => { update('desc', event.target.value); update('blocks', event.target.value); }} placeholder="Estructura y detalles de la sesión" /></label>
     {['Cambios', 'Cuestas', 'Series largas', 'Series cortas', 'Competición', 'Test'].includes(type) && <div className="workout-editor-grid">
@@ -244,11 +267,9 @@ function WorkoutEditor({ day, mode, onClose, onSave }) {
       <label className="field-label">Enfriamiento<input disabled={isReadOnly} value={values.cooldown || ''} onChange={(event) => update('cooldown', event.target.value)} placeholder="Ej. 10 min suaves" /></label>
     </div>}
     {type && type !== 'Descanso' && type !== 'Acondicionamiento físico' && <fieldset className="workout-fieldset effort-target-fieldset"><legend>RPE estimado · obligatorio · escala 1–10</legend><div className="workout-editor-grid">
-      <label className="field-label">RPE mínimo<input name="rpeMin" required disabled={isReadOnly} type="number" min="1" max={values.details.rpeMax || 10} step="1" value={values.details.rpeMin ?? ''} onChange={(event) => updateDetail('rpeMin', event.target.value)} placeholder="Ej. 4" /></label>
-      <label className="field-label">RPE máximo<input name="rpeMax" required disabled={isReadOnly} type="number" min={values.details.rpeMin || 1} max="10" step="1" value={values.details.rpeMax ?? ''} onChange={(event) => updateDetail('rpeMax', event.target.value)} placeholder="Ej. 6" /></label>
-    </div><p className="help-text">Añade, si quieres, el rango equivalente de ritmo o de pulsaciones.</p><div className="workout-editor-grid">
-      <label className="field-label">Ritmo desde · min/km<input name="paceFrom" disabled={isReadOnly} type="text" pattern="[0-9]{1,2}:[0-5][0-9]" value={values.details.paceFrom || ''} onChange={(event) => updateDetail('paceFrom', event.target.value)} placeholder="5:00" required={Boolean(values.details.paceFrom || values.details.paceTo)} /></label>
-      <label className="field-label">Ritmo hasta · min/km<input name="paceTo" disabled={isReadOnly} type="text" pattern="[0-9]{1,2}:[0-5][0-9]" value={values.details.paceTo || ''} onChange={(event) => updateDetail('paceTo', event.target.value)} placeholder="5:30" required={Boolean(values.details.paceFrom || values.details.paceTo)} /></label>
+      <label className="field-label">RPE mínimo<input name="rpeMin" required={!isReadOnly && !mode.startsWith('template')} disabled={isReadOnly} type="number" min="1" max={values.details.rpeMax || 10} step="1" value={values.details.rpeMin ?? ''} onChange={(event) => updateDetail('rpeMin', event.target.value)} placeholder="Ej. 4" /></label>
+      <label className="field-label">RPE máximo<input name="rpeMax" required={!isReadOnly && !mode.startsWith('template')} disabled={isReadOnly} type="number" min={values.details.rpeMin || 1} max="10" step="1" value={values.details.rpeMax ?? ''} onChange={(event) => updateDetail('rpeMax', event.target.value)} placeholder="Ej. 6" /></label>
+    </div><p className="help-text">Añade, si quieres, el rango equivalente de pulsaciones.</p><div className="workout-editor-grid">
       <label className="field-label">Pulsaciones desde · ppm<input name="hrMin" disabled={isReadOnly} type="number" min="60" max={values.details.hrMax || 220} value={values.details.hrMin || ''} onChange={(event) => updateDetail('hrMin', event.target.value)} placeholder="140" required={Boolean(values.details.hrMin || values.details.hrMax)} /></label>
       <label className="field-label">Pulsaciones hasta · ppm<input name="hrMax" disabled={isReadOnly} type="number" min={values.details.hrMin || 60} max="220" value={values.details.hrMax || ''} onChange={(event) => updateDetail('hrMax', event.target.value)} placeholder="155" required={Boolean(values.details.hrMin || values.details.hrMax)} /></label>
     </div></fieldset>}
@@ -289,7 +310,7 @@ function WorkoutEditor({ day, mode, onClose, onSave }) {
       {!isReadOnly && conditioningBlocks.length < 4 && <button type="button" className="text-button" onClick={() => setConditioningBlocks((current) => [...current, { type: conditioningTypes.find((item) => !current.some((block) => block.type === item)), exercises: '', volume: '', comment: '' }])}>＋ Añadir bloque</button>}
     </fieldset>}
     <fieldset className="workout-fieldset"><legend>Distribución por zonas</legend><div className="workout-editor-grid">{effortZones.map((zone, index) => <label className="field-label" key={zone}>{zone} · min<input disabled={isReadOnly} type="number" min="0" value={values.zones[index] || 0} onChange={(event) => update('zones', values.zones.map((minutes, i) => i === index ? Number(event.target.value) : minutes))} /></label>)}</div></fieldset>
-    <div className="inline-actions">{isReadOnly && <button className="button secondary" type="button" onClick={() => setIsReadOnly(false)}>Editar</button>}<button className="button secondary" type="button" onClick={onClose}>{isReadOnly ? 'Cerrar' : 'Cancelar'}</button>{!isReadOnly && <button className="button primary" type="submit">Guardar entrenamiento</button>}</div>
+    <div className="inline-actions">{isReadOnly && <button className="button secondary" type="button" onClick={() => setIsReadOnly(false)}>Editar entrenamiento</button>}<button className="button secondary" type="button" onClick={onClose}>{isReadOnly ? 'Cerrar' : 'Cancelar'}</button>{!isReadOnly && <button className="button primary" type="submit">Guardar entrenamiento</button>}</div>
   </form></div>;
 }
 
@@ -308,6 +329,10 @@ function sumDays(days) {
     km: total.km + (Number(day.km) || 0), mins: total.mins + (Number(day.mins) || 0),
     tr: total.tr + (Number.parseFloat(day.tr) || 0), wt: total.wt + (Number(day.wt) || 0),
   }), { km: 0, mins: 0, tr: 0, wt: 0 });
+}
+
+function calculateWorkoutTrimps(zones = []) {
+  return (Number(zones[0]) || 0) + 2 * (Number(zones[1]) || 0) + 3 * (Number(zones[2]) || 0);
 }
 
 function format(value) { return new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 }).format(Number(value) || 0); }

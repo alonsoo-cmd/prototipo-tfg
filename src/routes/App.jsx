@@ -5,6 +5,8 @@ import Diary from '../pages/athlete/Diary.jsx';
 import FindCoach from '../pages/athlete/FindCoach.jsx';
 import CoachHome from '../pages/coach/CoachHome.jsx';
 import PreparationPage from '../pages/coach/PreparationPage.jsx';
+import WorkoutsPage from '../pages/coach/WorkoutsPage.jsx';
+import { createSampleWorkoutTemplates } from '../data/workoutTemplates.js';
 import DataPage from '../pages/shared/DataPage.jsx';
 import Profile from '../pages/shared/Profile.jsx';
 import Dashboard from '../pages/shared/Dashboard.jsx';
@@ -15,6 +17,7 @@ import Topbar from '../components/layout/Topbar.jsx';
 
 export default function App(){
  const [trainingLogs, setTrainingLogs] = useState({});
+ const [workoutTemplates, setWorkoutTemplates] = useState(() => createSampleWorkoutTemplates());
  const [requestDate, setRequestDate] = useState('2026-12-06');
  const [preparations, setPreparations] = useState([{ id: 1, athleteId: 'alex', athleteName: 'Alex Martín', name: 'Preparación de otoño', duration: '12 semanas', coach: 'Lucía Fernández', objectives: [{ id: 11, name: 'Media Maratón Madrid', distance: 'Media maratón', eventDate: '2026-12-06' }] }]);
  const [role,setRole]=useState('atleta'), [page,setPage]=useState('Dashboard'), [week,setWeek]=useState(8), [modal,setModal]=useState(null), [activeSession,setActiveSession]=useState(sessions[0]), [activePlan,setActivePlan]=useState(true), [comment,setComment]=useState(''), [comments,setComments]=useState([]), [connected,setConnected]=useState(false), [requestSent,setRequestSent]=useState(false), [requestStatus,setRequestStatus]=useState('Pendiente'), [coachWeeks,setCoachWeeks]=useState(()=>Array.from({length:8},(_,i)=>({number:i+1,phase:i<3?'BI · Base':'BII · Acumulación',days:sessions.map(s=>({...s}))}))), [uploaded,setUploaded]=useState(false), [mobileNavOpen,setMobileNavOpen]=useState(false);
@@ -31,18 +34,19 @@ export default function App(){
    <Topbar role={role} page={page} onMenuClick={()=>setMobileNavOpen(open=>!open)} menuOpen={mobileNavOpen}/>
    {page==='Dashboard'&&<Dashboard role={role} weekNumber={week} weeks={coachWeeks} onNavigate={go} onSession={openSession} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>}
     
-   {page==='Diary'&&role==='atleta'&&<Diary week={week} setWeek={setWeek} activePlan={activePlan} setActivePlan={setActivePlan} preparation={athletePreparation} onSession={openSession} onPlan={()=>go('Find coach')} onPhases={()=>setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>
+   {page==='Diary'&&<Diary week={week} setWeek={setWeek} activePlan={activePlan} setActivePlan={setActivePlan} preparation={athletePreparation} onSession={openSession} onPlan={()=>go('Find coach')} onPhases={()=>setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>
     }
    {page==='Data'&&<DataPage trainingLogs={trainingLogs} onSession={openSession}/>
     }
-   {page==='Profile'&&<Profile preparation={preparations.find((item) => item.athleteId === 'alex') || null} setPreparations={setPreparations} />
+   {page==='Profile'&&<Profile role={role} preparation={preparations.find((item) => item.athleteId === 'alex') || null} setPreparations={setPreparations} />
     }
    {page==='Find coach'&&<FindCoach onRequest={()=>setModal('request')} sent={requestSent} setSent={setRequestSent}/>
     }
    {page==='Athletes'&&<CoachHome go={go} openRequest={()=>setModal('request-review')} requestStatus={requestStatus} weeks={coachWeeks} trainingLogs={trainingLogs}/>
     }
-   {page==='Preparations'&&<PreparationPage weeks={coachWeeks} setWeeks={setCoachWeeks} preparations={preparations} setPreparations={setPreparations} trainingLogs={trainingLogs} onProfile={()=>go('Profile')}/>
+   {page==='Preparations'&&<PreparationPage weeks={coachWeeks} setWeeks={setCoachWeeks} preparations={preparations} setPreparations={setPreparations} trainingLogs={trainingLogs} workoutTemplates={workoutTemplates} onProfile={()=>go('Profile')}/>
     }
+   {page==='Workouts'&&role==='entrenador'&&<WorkoutsPage templates={workoutTemplates} setTemplates={setWorkoutTemplates}/>}
   </main>
   {modal&&<div className="modal-backdrop" onMouseDown={e=>e.target===e.currentTarget&&setModal(null)}>
     <div className={'modal '+(modal==='phases'?'wide-modal':'')}>

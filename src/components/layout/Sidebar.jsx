@@ -7,6 +7,7 @@ const athleteNavigation = [
 const coachNavigation = [
   ['Athletes', '♧', 'Atletas'],
   ['Preparations', '▤', 'Preparaciones'],
+  ['Workouts', '▣', 'Entrenamientos'],
 ];
 
 export default function Sidebar({ role, page, onRoleChange, onNavigate, mobileOpen = false }) {
@@ -35,7 +36,7 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, mobileOp
       {role === 'entrenador' ? <>
         <section className="sidebar-group">
           <h2 className="nav-label">ATLETA</h2>
-          {renderItems(athleteNavigation.filter(([name]) => name !== 'Dashboard'), 'atleta')}
+          {renderItems(athleteNavigation.filter(([name]) => name !== 'Dashboard'), 'entrenador')}
         </section>
         <section className="sidebar-group">
           <h2 className="nav-label">ENTRENADOR</h2>

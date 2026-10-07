@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { createTrainingHistory, preparationPhases } from '../../data/trainingHistory.js';
 import './DataPage.css';
 
@@ -88,7 +88,7 @@ function DataSection({ records, recentSevenDays, onSession }) {
         <PanelHeading title="Detalle de entrenamientos" description={`${records.length} sesiones dentro del periodo y fase seleccionados`} />
         <div className="training-calendar">
           {!monthGroups.length && <p className="empty-chart">No hay sesiones para mostrar.</p>}
-          {monthGroups.map(([month, monthRecords]) => <TrainingCalendarMonth key={month} month={month} records={monthRecords} onSession={onSession} />)}
+          {monthGroups.map(([month, monthRecords]) => <TrainingCalendarMonth key={month} month={month} records={monthRecords} allRecords={records} onSession={onSession} />)}
         </div>
       </section>
 
@@ -100,7 +100,7 @@ function DataSection({ records, recentSevenDays, onSession }) {
   );
 }
 
-function TrainingCalendarMonth({ month, records, onSession }) {
+function TrainingCalendarMonth({ month, records, allRecords, onSession }) {
   const [year, monthNumber] = month.split('-').map(Number);
   const daysInMonth = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
   const firstWeekday = (new Date(Date.UTC(year, monthNumber - 1, 1)).getUTCDay() + 6) % 7;
@@ -112,15 +112,31 @@ function TrainingCalendarMonth({ month, records, onSession }) {
       <h3>{capitalize(monthFormatter.format(new Date(`${month}-01T00:00:00Z`)))}</h3>
       <div className="training-calendar-grid">
         {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((day) => <b className="training-calendar-weekday" key={day}>{day}</b>)}
-        {cells.map((day, index) => {
-          const dayRecords = day ? recordsByDay.get(day) || [] : [];
-          return <div className={`training-calendar-day${day ? '' : ' outside'}`} key={`${month}-${index}`}>
-            {day && <><span className="training-calendar-date">{day}</span><div className="training-calendar-sessions">
-              {dayRecords.map((record) => <button className="training-calendar-session" key={record.id} onClick={() => onSession?.(sessionFromRecord(record))} aria-label={`Ver ${record.type}, ${formatDate(record.date)}`}>
-                <b>{record.type}</b><span>{formatNumber(record.distance, 1)} km · {record.minutes} min</span>
-              </button>)}
-            </div></>}
-          </div>;
+        <b className="training-calendar-weekday training-calendar-summary-heading">Semana</b>
+        {Array.from({ length: cells.length / 7 }, (_, weekIndex) => {
+          const weekCells = cells.slice(weekIndex * 7, weekIndex * 7 + 7);
+          const weekStart = new Date(Date.UTC(year, monthNumber - 1, 1 - firstWeekday + weekIndex * 7));
+          const weekEnd = new Date(Date.UTC(year, monthNumber - 1, 7 - firstWeekday + weekIndex * 7));
+          const weekStartKey = toDateKey(weekStart);
+          const weekEndKey = toDateKey(weekEnd);
+          const weekRecords = allRecords.filter((record) => record.date >= weekStartKey && record.date <= weekEndKey);
+          const kilometers = weekRecords.reduce((sum, record) => sum + record.distance, 0);
+          const minutes = weekRecords.reduce((sum, record) => sum + record.minutes, 0);
+          return <Fragment key={`${month}-${weekIndex}`}>
+            {weekCells.map((day, dayIndex) => {
+              const dayRecords = day ? recordsByDay.get(day) || [] : [];
+              return <div className={`training-calendar-day${day ? '' : ' outside'}`} key={`${month}-${weekIndex}-${dayIndex}`}>
+                {day && <><span className="training-calendar-date">{day}</span><div className="training-calendar-sessions">
+                  {dayRecords.map((record) => <button className="training-calendar-session" key={record.id} onClick={() => onSession?.(sessionFromRecord(record))} aria-label={`Ver ${record.type}, ${formatDate(record.date)}`}>
+                    <b>{record.type}</b><span>{formatNumber(record.distance, 1)} km · {record.minutes} min</span>
+                  </button>)}
+                </div></>}
+              </div>;
+            })}
+            <div className="training-calendar-week-summary" key={`${month}-${weekIndex}-summary`} aria-label={`Totales semanales: ${formatNumber(kilometers, 1)} kilómetros y ${minutes} minutos`}>
+              <span>Totales</span><b>{formatNumber(kilometers, 1)} km</b><b>{minutes} min</b>
+            </div>
+          </Fragment>;
         })}
       </div>
     </section>
@@ -322,6 +338,10 @@ function summarize(records, label, key) {
     hrv: hrvValues.length ? hrvValues.reduce((sum, value) => sum + value, 0) / hrvValues.length : null,
     restingHr: restingHrValues.length ? restingHrValues.reduce((sum, value) => sum + value, 0) / restingHrValues.length : null,
   };
+}
+
+function toDateKey(date) {
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
 }
 
 function summarizeTypes(records) {

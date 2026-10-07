@@ -52,7 +52,7 @@
 .data-panel-title p { line-height: 1.45; }
 .training-calendar { display: grid; gap: 22px; }
 .training-calendar-month h3 { margin: 0 0 10px; color: #405164; font: 700 13px Manrope, sans-serif; text-transform: capitalize; }
-.training-calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid #e8edf1; border-left: 1px solid #e8edf1; }
+.training-calendar-grid { display: grid; grid-template-columns: minmax(88px, .62fr) repeat(7, minmax(0, 1fr)); border-top: 1px solid #e8edf1; border-left: 1px solid #e8edf1; }
 .training-calendar-weekday { padding: 8px 5px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #f8fafb; color: #8793a0; font-size: 9px; font-weight: 600; text-align: center; }
 .training-calendar-day { min-height: 96px; min-width: 0; padding: 6px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #fff; }
 .training-calendar-day.outside { background: #fafbfc; }
@@ -62,6 +62,10 @@
 .training-calendar-session:hover,.training-calendar-session:focus-visible { border-color: #8fb4ca; background: #e3f0f7; outline: none; }
 .training-calendar-session b { overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .training-calendar-session span { color: #6c8392; font-size: 7px; }
+.training-calendar-week-summary { grid-column: 8; display: flex; flex-direction: column; justify-content: center; gap: 5px; min-width: 0; padding: 8px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #f3f7f9; color: #718092; font-size: 8px; }
+.training-calendar-week-summary span { font-weight: 600; }
+.training-calendar-week-summary b { color: #405f76; font-size: 9px; }
+.training-calendar-summary-heading { grid-column: 8; background: #f3f7f9; }
 .table-scroll { overflow-x: auto; }
 
 .analytics-table {
@@ -180,6 +184,9 @@
 }
 
 @media (max-width: 620px) {
+  .training-calendar-grid { grid-template-columns: minmax(65px, .58fr) repeat(7, minmax(0, 1fr)); }
+  .training-calendar-week-summary { padding: 4px; font-size: 7px; }
+  .training-calendar-week-summary b { font-size: 7px; }
   .training-calendar-day { min-height: 75px; padding: 4px; }
   .training-calendar-session { padding: 4px; }
   .training-calendar-session b { font-size: 7px; }
