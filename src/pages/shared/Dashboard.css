@@ -30,9 +30,31 @@
   background: linear-gradient(120deg, #f5fbf3, #fff 68%);
 }
 
-.today-training-circle {
+.today-training-circle-side {
   display: flex;
   flex: 0 0 260px;
+  width: 260px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.today-journal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 220px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.today-training-circle {
+  display: flex;
+  flex: 0 0 auto;
   width: 260px;
   height: 260px;
   flex-direction: column;
@@ -381,6 +403,7 @@
   }
 
   .today-training { flex-direction: column; gap: 20px; padding: 20px 15px; }
+  .today-training-circle-side { flex-basis: auto; width: 100%; max-width: 240px; }
   .today-training-circle { flex-basis: 240px; width: 240px; height: 240px; }
   .today-wellbeing-preview { width: 100%; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .today-health-injuries { grid-template-columns: 1fr; }

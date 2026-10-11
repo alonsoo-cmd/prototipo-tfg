@@ -73,13 +73,28 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
       </section>
 
       {role === 'atleta' && todaySession && <section className="today-training" aria-label="Entrenamiento de hoy">
-        <button className={`today-training-circle ${todaySession.tone || ''}`} onClick={() => setJournalOpen(true)} aria-label={`Registrar diario de hoy: ${todaySession.type}`}>
-          <span className="today-training-kicker">{activityLogged ? 'ACTIVIDAD REGISTRADA' : wellbeingLogged ? 'BIENESTAR REGISTRADO' : 'ENTRENO DE HOY'}</span>
-          <strong>{todaySession.type}</strong>
-          <span className="today-training-description">{todaySession.desc.replaceAll('\n', ' · ')}</span>
-          <span className="today-training-duration">{todaySession.mins ? `${todaySession.mins} min` : 'Descanso'}{todaySession.km ? ` · ${todaySession.km} km` : ''}</span>
-          <span className="today-training-cta">{activityLogged ? 'Editar diario' : wellbeingLogged ? 'Completar diario' : 'Rellenar diario'} <b>↗</b></span>
-        </button>
+        <div className="today-training-circle-side">
+          <button
+            type="button"
+            className={`today-training-circle ${todaySession.tone || ''}`}
+            onClick={() => onSession?.(todaySession)}
+            aria-label={`Ver detalles del entrenamiento de hoy: ${todaySession.type}`}
+          >
+            <span className="today-training-kicker">{activityLogged ? 'ACTIVIDAD REGISTRADA' : wellbeingLogged ? 'BIENESTAR REGISTRADO' : 'ENTRENO DE HOY'}</span>
+            <strong>{todaySession.type}</strong>
+            <span className="today-training-description">{todaySession.desc.replaceAll('\n', ' · ')}</span>
+            <span className="today-training-duration">{todaySession.mins ? `${todaySession.mins} min` : 'Descanso'}{todaySession.km ? ` · ${todaySession.km} km` : ''}</span>
+            <span className="today-training-cta">Detalles del entreno <b>↗</b></span>
+          </button>
+          <button
+            type="button"
+            className="button primary today-journal-button"
+            onClick={() => setJournalOpen(true)}
+            aria-label="Rellenar diario de hoy"
+          >
+            {activityLogged ? 'Editar diario' : wellbeingLogged ? 'Completar diario' : 'Rellenar diario'}
+          </button>
+        </div>
         <div className="today-wellbeing-preview">
           <div className="eyebrow">BIENESTAR DE HOY</div>
           <div className="today-wellbeing-ranges">{[['mood', 'Irritabilidad'], ['fatigue', 'Fatiga'], ['soreness', 'Agujetas'], ['sleep', 'Sueño'], ['stress', 'Estrés']].map(([key, label]) => {
