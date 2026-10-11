@@ -47,7 +47,7 @@ const injuryRegions = [
 
 export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSession, trainingLogs = {}, setTrainingLogs }) {
   const [journalOpen, setJournalOpen] = useState(false);
-  const shortcuts = role === 'atleta' ? athleteShortcuts : coachShortcuts;
+  const shortcuts = role !== 'entrenador' ? athleteShortcuts : coachShortcuts;
   const currentWeek = weeks.find((week) => week.number === weekNumber) || weeks[weeks.length - 1];
   const weekSessions = currentWeek?.days || exampleSessions;
   const today = new Date();
@@ -82,7 +82,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
         </button>
         <div className="today-wellbeing-preview">
           <div className="eyebrow">BIENESTAR DE HOY</div>
-          <div className="today-wellbeing-ranges">{[['mood', 'Humor'], ['fatigue', 'Fatiga'], ['soreness', 'Agujetas'], ['sleep', 'Sueño'], ['stress', 'Estrés']].map(([key, label]) => {
+          <div className="today-wellbeing-ranges">{[['mood', 'Irritabilidad'], ['fatigue', 'Fatiga'], ['soreness', 'Agujetas'], ['sleep', 'Sueño'], ['stress', 'Estrés']].map(([key, label]) => {
             const value = wellbeingDraft[key] ?? todayLog?.[key];
             return <div className="today-wellbeing-row" key={key}>
               <label htmlFor={`today-${key}`}>{label}</label>

@@ -13,9 +13,8 @@ const minutesSecondsPattern = '(0?[0-9]|[1-5][0-9]|60):[0-5][0-9]';
 const hundredthsPattern = `${minutesSecondsPattern}([.,][0-9]{2})?`;
 const hoursPattern = '([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]';
 
-export default function Profile({ role = 'atleta', preparation = null, setPreparations = () => {} }) {
+export default function Profile({ role = 'atleta', preparation = null, setPreparations = () => {}, email = 'alex.martin@example.com' }) {
   const [name, setName] = useState('Alex Martín');
-  const [email, setEmail] = useState('alex.martin@example.com');
   const [birthDate, setBirthDate] = useState('1998-04-12');
   const [gender, setGender] = useState('No especificado');
   const [club, setClub] = useState('');
@@ -67,7 +66,7 @@ export default function Profile({ role = 'atleta', preparation = null, setPrepar
 
         <div className="form-grid">
           <label className="field-label">Nombre<input value={name} onChange={(event) => setName(event.target.value)} /></label>
-          <label className="field-label">Correo electrónico<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
+          <label className="field-label"><span className="profile-label-row"><span>Correo electrónico</span><span className="readonly-tag" title="Este correo es personal para cada cuenta y no se puede modificar">No editable</span></span><input type="email" value={email} readOnly disabled className="profile-readonly-input" title="El correo electrónico está vinculado a tu cuenta y no se puede modificar" aria-readonly="true" /></label>
           <label className="field-label">Fecha de nacimiento<DatePicker value={birthDate} onChange={setBirthDate} ariaLabel="Elegir fecha de nacimiento" /></label>
           <label className="field-label">Género<select value={gender} onChange={(event) => setGender(event.target.value)}><option>No especificado</option><option>Femenino</option><option>Masculino</option><option>Otro</option></select></label>
           <label className="field-label">Club<input value={club} onChange={(event) => setClub(event.target.value)} placeholder="Añadir club" /></label>

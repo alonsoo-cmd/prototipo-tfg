@@ -30,6 +30,7 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, mobileOp
     <div className="workspace-label">WORKSPACE</div>
     <div className="role-switch" aria-label="Cambiar de rol">
       <button className={role === 'atleta' ? 'selected' : ''} onClick={() => onRoleChange('atleta', 'Dashboard')}>Atleta</button>
+      <button className={role === 'grupo' ? 'selected' : ''} onClick={() => onRoleChange('grupo', 'Dashboard')}>Grupo</button>
       <button className={role === 'entrenador' ? 'selected' : ''} onClick={() => onRoleChange('entrenador', 'Dashboard')}>Entrenador</button>
     </div>
     <nav className="sidebar-groups" aria-label="Navegación principal">
@@ -50,12 +51,12 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, mobileOp
         </section>
       </> : <section className="sidebar-group athlete-only-navigation">
         <h2 className="nav-label">MENÚ</h2>
-        {renderItems(athleteNavigation, 'atleta')}
+        {renderItems(athleteNavigation, role)}
         <button className={`nav-item ${page === 'Profile' ? 'active' : ''}`} onClick={() => onNavigate('Profile')} aria-current={page === 'Profile' ? 'page' : undefined}>
           <span className="nav-icon" aria-hidden="true">○</span>Perfil<span className="nav-arrow" aria-hidden="true">›</span>
         </button>
       </section>}
     </nav>
-    <div className="side-bottom"><div className="mini-avatar">AM</div><div><b>Alex Martín</b><small>{role === 'atleta' ? 'Atleta · Madrid' : 'Entrenador'}</small></div><button className="dots">···</button></div>
+    <div className="side-bottom"><div className="mini-avatar">AM</div><div><b>Alex Martín</b><small>{role === 'atleta' ? 'Atleta · Madrid' : role === 'grupo' ? 'Atleta de Grupo' : 'Entrenador'}</small></div><button className="dots">···</button></div>
   </aside>;
 }

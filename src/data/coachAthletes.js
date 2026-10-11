@@ -1,4 +1,5 @@
 export const coachAthletes = [
+  { id: 'grupo-general', initials: 'GR', name: 'Grupo General (Varios Atletas)', goal: 'Preparación Grupal', eventDate: '15 dic 2026', distance: 'Varios', duration: '12 semanas' },
   { id: 'lucia', initials: 'LF', name: 'Lucía Fernández', goal: 'Media maratón · Madrid', eventDate: '6 dic 2026', distance: 'Media maratón', duration: '12 semanas' },
   { id: 'diego', initials: 'DM', name: 'Diego Morales', goal: '10K · Valencia', eventDate: '15 nov 2026', distance: '10 km', duration: '10 semanas' },
   { id: 'sara', initials: 'SR', name: 'Sara Ruiz', goal: '5K · Alcalá', eventDate: '22 nov 2026', distance: '5 km', duration: '8 semanas' },

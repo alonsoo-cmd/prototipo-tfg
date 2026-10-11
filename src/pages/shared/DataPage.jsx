@@ -5,11 +5,36 @@ import './DataPage.css';
 const monthFormatter = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const shortDateFormatter = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', timeZone: 'UTC' });
 
-export default function DataPage({ trainingLogs = {}, onSession }) {
+export default function DataPage({ trainingLogs = {}, onSession, role, coachWeeks = [] }) {
   const [section, setSection] = useState('data');
   const [period, setPeriod] = useState('last30');
   const [phase, setPhase] = useState('all');
-  const history = useMemo(() => createTrainingHistory(trainingLogs), [trainingLogs]);
+  
+  const history = useMemo(() => {
+    if (role === 'grupo' && coachWeeks.length > 0) {
+      return coachWeeks.flatMap((week) => week.days.map((day, index) => {
+        const dateObj = new Date(Date.UTC(2026, 7, 24 + (week.number - 1) * 7 + index));
+        const dateStr = dateObj.toISOString().slice(0, 10);
+        return {
+          id: `${week.number}-${day.day}`,
+          preparationWeek: week.number,
+          phase: week.phase,
+          day: day.day,
+          date: dateStr,
+          type: day.type || 'Descanso',
+          description: day.desc || '',
+          distance: Number(day.km) || 0,
+          minutes: Number(day.mins) || 0,
+          trimps: Number(day.tr) || 0,
+          pace: '5:00',
+          averageHr: 140, restingHr: 50, hrv: 50, wellbeingTotal: 0,
+          zones: [0, 0, 0, 0], status: 'Planificado', isRest: !day.type
+        };
+      }));
+    }
+    return createTrainingHistory(trainingLogs);
+  }, [trainingLogs, role, coachWeeks]);
+
   const availableMonths = [...new Set(history.map((record) => record.date.slice(0, 7)))].sort();
   const rangeFilteredRecords = history.filter((record) => matchesPeriod(record.date, period, availableMonths));
   const filteredRecords = rangeFilteredRecords.filter((record) => phase === 'all' || record.phase === phase);
@@ -18,12 +43,40 @@ export default function DataPage({ trainingLogs = {}, onSession }) {
   const dailyRows = [...groupBy(filteredRecords, (record) => record.date).entries()]
     .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
     .map(([date, records]) => summarize(records, date, date));
+
+  const denseTrend = useMemo(() => {
+    let startDate, endDate;
+    if (period === 'last30') {
+      endDate = new Date();
+      endDate.setUTCHours(0, 0, 0, 0);
+      startDate = new Date(endDate);
+      startDate.setUTCDate(startDate.getUTCDate() - 29);
+    } else if (period === 'all') {
+      if (!dailyRows.length) return [];
+      startDate = new Date(`${dailyRows.at(-1).date}T00:00:00Z`);
+      endDate = new Date(`${dailyRows[0].date}T00:00:00Z`);
+    } else {
+      const [year, month] = period.split('-').map(Number);
+      startDate = new Date(Date.UTC(year, month - 1, 1));
+      endDate = new Date(Date.UTC(year, month, 0));
+    }
+    const days = [];
+    let current = new Date(startDate);
+    while (current <= endDate) {
+      const dateStr = current.toISOString().slice(0, 10);
+      const row = dailyRows.find(r => r.key === dateStr);
+      days.push(row || { key: dateStr, date: dateStr, empty: true });
+      current.setUTCDate(current.getUTCDate() + 1);
+    }
+    return days;
+  }, [period, dailyRows]);
+
   const recentSevenDays = dailyRows.slice(0, 7).reverse();
   const chartWeeks = weeklyRows;
   const typeBreakdown = summarizeTypes(filteredRecords);
   const zoneTotals = summarizeZones(filteredRecords);
   const wellnessTrend = dailyRows.slice(0, 30).reverse();
-  const rollingMileage = createRollingMileage(history.filter((record) => phase === 'all' || record.phase === phase), filteredRecords);
+  const rollingLoad = useMemo(() => createRollingLoad(history.filter((record) => phase === 'all' || record.phase === phase), denseTrend), [history, phase, denseTrend]);
 
   return (
     <div className="content data-page">
@@ -68,11 +121,13 @@ export default function DataPage({ trainingLogs = {}, onSession }) {
         />
       ) : (
         <ChartsSection
+          role={role}
           weeklyRows={chartWeeks}
           typeBreakdown={typeBreakdown}
           zoneTotals={zoneTotals}
-          wellnessTrend={wellnessTrend}
-          rollingMileage={rollingMileage}
+          denseTrend={denseTrend}
+          rollingLoad={rollingLoad}
+          onSession={onSession}
         />
       )}
     </div>
@@ -163,49 +218,18 @@ function sessionFromRecord(record) {
   };
 }
 
-function ChartsSection({ weeklyRows, typeBreakdown, zoneTotals, wellnessTrend, rollingMileage }) {
+function ChartsSection({ role, weeklyRows, typeBreakdown, zoneTotals, denseTrend, rollingLoad, onSession }) {
   return (
     <div className="data-section charts-section">
-      <div className="chart-grid three-charts">
-        <LineChart title="Kilómetros por semana" unit="km" values={weeklyRows.map((row) => row.kilometers)} labels={weeklyRows.map((row) => `S${row.week}`)} color="#4c88ad" />
-        <LineChart title="Minutos por semana" unit="min" values={weeklyRows.map((row) => row.minutes)} labels={weeklyRows.map((row) => `S${row.week}`)} color="#70a582" />
-        <LineChart title="TRIMPS por semana" unit="TRIMPS" values={weeklyRows.map((row) => row.trimps)} labels={weeklyRows.map((row) => `S${row.week}`)} color="#bd8b56" />
+      <div className="chart-grid">
+        <InternalLoadChart data={denseTrend} onSession={onSession} />
       </div>
-
       <div className="chart-grid two-charts">
         <TypeBreakdown data={typeBreakdown} />
         <ZoneBreakdown totals={zoneTotals} />
       </div>
-
-      <div className="chart-grid two-charts">
-        <LineChart
-          title="WT"
-          unit="Bienestar total · /50"
-          values={wellnessTrend.map((row) => row.wellbeingTotal)}
-          labels={wellnessTrend.map((row) => shortDateFormatter.format(new Date(`${row.date}T00:00:00Z`)))}
-          color="#bb7f99"
-        />
-        <LineChart
-          title="HRV"
-          unit="Milisegundos"
-          values={wellnessTrend.map((row) => row.hrv)}
-          labels={wellnessTrend.map((row) => shortDateFormatter.format(new Date(`${row.date}T00:00:00Z`)))}
-          color="#618eb1"
-        />
-        <LineChart
-          title="FC en reposo"
-          unit="Pulsaciones por minuto"
-          values={wellnessTrend.map((row) => row.restingHr)}
-          labels={wellnessTrend.map((row) => shortDateFormatter.format(new Date(`${row.date}T00:00:00Z`)))}
-          color="#d1786d"
-        />
-        <LineChart
-          title="Kilómetros acumulados en ventana móvil de 7 días"
-          unit="Cada punto suma el día y los seis anteriores"
-          values={rollingMileage.map((point) => point.distance)}
-          labels={rollingMileage.map((point) => shortDateFormatter.format(new Date(`${point.date}T00:00:00Z`)))}
-          color="#568e78"
-        />
+      <div className="chart-grid">
+        <ExternalLoadChart data={rollingLoad} />
       </div>
     </div>
   );
@@ -328,6 +352,7 @@ function summarize(records, label, key) {
   return {
     key,
     label,
+    records,
     date: records[0]?.date,
     week: records[0]?.preparationWeek,
     firstDate: days.sort()[0],
@@ -357,18 +382,28 @@ function summarizeZones(records) {
   return records.reduce((totals, record) => totals.map((total, index) => total + (record.zones[index] || 0)), [0, 0, 0, 0]);
 }
 
-function createRollingMileage(allPhaseRecords, visibleRecords) {
-  const visibleDates = new Set(visibleRecords.map((record) => record.date));
-  const byDate = new Map([...groupBy(allPhaseRecords, (record) => record.date)].map(([date, records]) => [date, records.reduce((sum, record) => sum + record.distance, 0)]));
-  return [...visibleDates].sort().map((date) => {
-    const end = new Date(`${date}T00:00:00Z`);
-    let distance = 0;
+function createRollingLoad(allPhaseRecords, denseTrend) {
+  const byDate = new Map([...groupBy(allPhaseRecords, (record) => record.date)].map(([date, records]) => [
+    date, 
+    {
+      distance: records.reduce((sum, record) => sum + record.distance, 0),
+      minutes: records.reduce((sum, record) => sum + record.minutes, 0),
+      trimps: records.reduce((sum, record) => sum + record.trimps, 0)
+    }
+  ]));
+
+  return denseTrend.map((trendDay) => {
+    const end = new Date(`${trendDay.date}T00:00:00Z`);
+    let distance = 0, minutes = 0, trimps = 0;
     for (let offset = 0; offset < 7; offset += 1) {
       const day = new Date(end);
       day.setUTCDate(day.getUTCDate() - offset);
-      distance += byDate.get(day.toISOString().slice(0, 10)) || 0;
+      const stats = byDate.get(day.toISOString().slice(0, 10)) || { distance: 0, minutes: 0, trimps: 0 };
+      distance += stats.distance;
+      minutes += stats.minutes;
+      trimps += stats.trimps;
     }
-    return { date, distance: round(distance) };
+    return { ...trendDay, rollingDistance: round(distance), rollingMinutes: round(minutes), rollingTrimps: round(trimps) };
   });
 }
 
@@ -468,4 +503,244 @@ function capitalize(value) {
 
 function round(value) {
   return Math.round(value * 10) / 10;
+}
+
+function getColorForType(type) {
+  if (!type) return '#cbd5e1';
+  const t = type.toLowerCase();
+  if (t.includes('competición')) return '#9d7aa9';
+  if (t.includes('test')) return '#d0a054';
+  if (t.includes('rodaje')) return '#78a487';
+  if (t.includes('series') || t.includes('cambio') || t.includes('cuesta')) return '#6892ad';
+  if (t.includes('tirada') || t.includes('long')) return '#bd8b56';
+  if (t.includes('fuerza') || t.includes('gym')) return '#6c7fa4';
+  return '#8e9ca5';
+}
+
+function InternalLoadChart({ data, onSession }) {
+  const [hoveredDay, setHoveredDay] = useState(null);
+  const width = 1200;
+  const height = 400;
+  const padding = { top: 30, right: 20, bottom: 30, left: 40 };
+  const plotWidth = width - padding.left - padding.right;
+  const plotHeight = height - padding.top - padding.bottom;
+
+  const dx = plotWidth / Math.max(1, data.length);
+  const barWidth = Math.max(4, dx * 0.6);
+
+  const maxWT = 50;
+  const maxLine = 120;
+  const minLine = 30;
+
+  const points = data.map((d, i) => {
+    const x = padding.left + i * dx + dx / 2;
+    const yWT = padding.top + plotHeight - ((d.wellbeingTotal || 0) / maxWT) * plotHeight;
+    const yHrv = d.hrv ? padding.top + plotHeight - ((d.hrv - minLine) / (maxLine - minLine)) * plotHeight : null;
+    const yFcr = d.restingHr ? padding.top + plotHeight - ((d.restingHr - minLine) / (maxLine - minLine)) * plotHeight : null;
+    
+    let barColor = '#e2e8f0';
+    if (d.records?.length > 0) {
+      const type = d.records.find(r => r.type && r.type !== 'Descanso')?.type;
+      barColor = getColorForType(type);
+    } else if (d.wellbeingTotal) {
+      barColor = '#cbd5e1';
+    }
+    
+    return { ...d, x, yWT, yHrv, yFcr, barColor };
+  });
+
+  const hrvPath = points.filter(p => p.yHrv !== null).map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.yHrv}`).join(' ');
+  const fcrPath = points.filter(p => p.yFcr !== null).map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.yFcr}`).join(' ');
+
+  return (
+    <section className="panel chart-card internal-load-chart">
+      <PanelHeading title="Carga Interna (Mensual)" description="Respuesta fisiológica y subjetiva al entrenamiento" />
+      <div className="chart-scroll" style={{ position: 'relative' }}>
+        <svg viewBox={`0 0 ${width} ${height}`} className="line-chart" style={{ minWidth: `${width}px` }}>
+          {[0, 0.25, 0.5, 0.75, 1].map(pct => {
+             const y = padding.top + plotHeight * pct;
+             return <g key={pct}>
+               <line x1={padding.left} x2={width - padding.right} y1={y} y2={y} className="chart-gridline" />
+               <text x={padding.left - 8} y={y + 3} textAnchor="end" className="chart-y-label">{Math.round(maxWT - pct * maxWT)}</text>
+             </g>
+          })}
+          
+          {points.map((p, i) => p.wellbeingTotal ? (
+            <rect key={`bar-${i}`} x={p.x - barWidth/2} y={p.yWT} width={barWidth} height={Math.max(0, padding.top + plotHeight - p.yWT)} fill={p.barColor} rx={3} opacity={0.85} />
+          ) : null)}
+
+          {hrvPath && <path d={hrvPath} fill="none" stroke="#618eb1" strokeWidth="2.5" strokeLinejoin="round" />}
+          {fcrPath && <path d={fcrPath} fill="none" stroke="#73a681" strokeWidth="2.5" strokeLinejoin="round" />}
+          
+          {points.map((p, i) => p.yHrv !== null && <circle key={`hrv-${i}`} cx={p.x} cy={p.yHrv} r={4} fill="#618eb1" stroke="#fff" strokeWidth="1.5" />)}
+          {points.map((p, i) => p.yFcr !== null && <circle key={`fcr-${i}`} cx={p.x} cy={p.yFcr} r={4} fill="#73a681" stroke="#fff" strokeWidth="1.5" />)}
+
+          {points.map((p, i) => (
+             <rect key={`interact-${i}`} x={padding.left + i * dx} y={padding.top} width={dx} height={plotHeight} fill="transparent" 
+                onMouseEnter={() => setHoveredDay(p)} 
+                onMouseLeave={() => setHoveredDay(null)}
+                onClick={() => p.records?.[0] && onSession && onSession(sessionFromRecord(p.records[0]))}
+                style={{ cursor: p.records?.length ? 'pointer' : 'default' }}
+             />
+          ))}
+          
+          {points.map((p, i) => p.records?.some(r => r.type === 'Competición' || r.type?.includes('Test')) ? (
+             <text key={`label-${i}`} x={p.x} y={p.yWT - 8} textAnchor="middle" fontSize={12} fill={p.barColor} fontWeight="700">
+               {p.records.find(r => r.type === 'Competición' || r.type?.includes('Test')).type}
+             </text>
+          ) : null)}
+          
+          {points.map((p, i) => i % Math.max(1, Math.floor(points.length / 10)) === 0 || i === points.length - 1 ? (
+             <text key={`x-${i}`} x={p.x} y={height - 10} textAnchor="middle" className="chart-axis-label">{p.date.slice(-2)}</text>
+          ) : null)}
+        </svg>
+
+        {hoveredDay && hoveredDay.records?.length > 0 && (
+          <div className="chart-tooltip" style={{
+            position: 'absolute',
+            left: Math.min(hoveredDay.x, width - 180),
+            top: 20,
+            background: '#1b2c3a',
+            color: '#fff',
+            padding: '10px 14px',
+            borderRadius: 8,
+            pointerEvents: 'none',
+            fontSize: 12,
+            zIndex: 10,
+            width: 170,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}>
+            <b style={{ display: 'block', color: '#99a3ac', marginBottom: 6, fontSize: 10 }}>{hoveredDay.date}</b>
+            {hoveredDay.records.map((r, i) => (
+              <div key={i} style={{ marginBottom: i < hoveredDay.records.length - 1 ? 8 : 0 }}>
+                <strong style={{ display: 'block', color: getColorForType(r.type), marginBottom: 2 }}>{r.type || 'Entrenamiento'}</strong>
+                <span style={{ fontSize: 11, color: '#e2e8f0' }}>{r.distance ? `${r.distance} km · ` : ''}{r.minutes ? `${r.minutes} min` : ''}</span>
+              </div>
+            ))}
+            {hoveredDay.wellbeingTotal > 0 && <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #3b4c5a', fontSize: 11, color: '#cbd5e1' }}>
+              WT: <b>{Math.round(hoveredDay.wellbeingTotal)}</b> · HRV: <b>{Math.round(hoveredDay.hrv)}</b> · FCR: <b>{Math.round(hoveredDay.restingHr || 0)}</b>
+            </div>}
+            <div style={{ marginTop: 8, color: '#618eb1', fontSize: 10, fontWeight: 500 }}>Clic para ver detalles ↗</div>
+          </div>
+        )}
+      </div>
+      <div className="chart-legend">
+        <span><i style={{ background: '#78a487' }} />Rodaje</span>
+        <span><i style={{ background: '#6892ad' }} />Series/Intensidad</span>
+        <span><i style={{ background: '#9d7aa9' }} />Competición</span>
+        <span><i style={{ background: '#618eb1', borderRadius: '50%' }} />HRV</span>
+        <span><i style={{ background: '#73a681', borderRadius: '50%' }} />FCR</span>
+      </div>
+    </section>
+  );
+}
+
+function ExternalLoadChart({ data }) {
+  const [hoveredDay, setHoveredDay] = useState(null);
+  const width = 1200;
+  const height = 400;
+  const padding = { top: 20, right: 40, bottom: 30, left: 40 };
+  const plotWidth = width - padding.left - padding.right;
+  const plotHeight = height - padding.top - padding.bottom;
+
+  const pointsData = data;
+  const dx = plotWidth / Math.max(1, pointsData.length - 1);
+
+  // Use dynamic max for normalization to overlap lines
+  const maxKm = Math.max(1, ...pointsData.map(d => d.rollingDistance || 0));
+  const maxMin = Math.max(1, ...pointsData.map(d => d.rollingMinutes || 0));
+  const maxTrimp = Math.max(1, ...pointsData.map(d => d.rollingTrimps || 0));
+
+  const points = pointsData.map((d, i) => {
+    const x = padding.left + i * dx;
+    // Overlap them in the same area, scaling relative to their own maximums
+    const yKm = padding.top + plotHeight - ((d.rollingDistance || 0) / maxKm) * plotHeight;
+    const yMin = padding.top + plotHeight - ((d.rollingMinutes || 0) / maxMin) * plotHeight;
+    const yTrimp = padding.top + plotHeight - ((d.rollingTrimps || 0) / maxTrimp) * plotHeight;
+    return { ...d, x, yKm, yMin, yTrimp };
+  });
+
+  const kmPath = points.map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.yKm}`).join(' ');
+  const kmAreaPath = points.length ? `${kmPath} L ${points.at(-1).x} ${padding.top + plotHeight} L ${points[0].x} ${padding.top + plotHeight} Z` : '';
+  const minPath = points.map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.yMin}`).join(' ');
+  const trimpPath = points.map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.yTrimp}`).join(' ');
+
+  return (
+    <section className="panel chart-card external-load-chart">
+      <PanelHeading title="Carga Externa Acumulada (Mensual)" description="Evolución superpuesta para ver eficiencia (divergencia entre volumen y tiempo)" />
+      <div className="chart-scroll" style={{ position: 'relative' }}>
+        <svg viewBox={`0 0 ${width} ${height}`} className="line-chart" style={{ minWidth: `${width}px` }}>
+           <defs>
+             <linearGradient id="kmGradient" x1="0" y1="0" x2="0" y2="1">
+               <stop offset="0%" stopColor="#4c88ad" stopOpacity="0.25" />
+               <stop offset="100%" stopColor="#4c88ad" stopOpacity="0" />
+             </linearGradient>
+           </defs>
+           {[0, 0.25, 0.5, 0.75, 1].map(pct => {
+             const y = padding.top + plotHeight * pct;
+             return <g key={pct}>
+               <line x1={padding.left} x2={width - padding.right} y1={y} y2={y} className="chart-gridline" />
+               <text x={padding.left - 8} y={y + 4} textAnchor="end" className="chart-y-label" fill="#4c88ad" fontWeight="bold">{Math.round(maxKm - pct * maxKm)}</text>
+               <text x={width - padding.right + 8} y={y + 4} textAnchor="start" className="chart-y-label" fill="#70a582" fontWeight="bold">{Math.round(maxMin - pct * maxMin)}</text>
+             </g>
+           })}
+
+           {kmAreaPath && <path d={kmAreaPath} fill="url(#kmGradient)" />}
+
+           <path d={kmPath} fill="none" stroke="#4c88ad" strokeWidth="3" strokeLinejoin="round" />
+           <path d={minPath} fill="none" stroke="#70a582" strokeWidth="2.5" strokeDasharray="6 6" strokeLinecap="round" strokeLinejoin="round" />
+           <path d={trimpPath} fill="none" stroke="#bd8b56" strokeWidth="2" strokeDasharray="2 4" strokeLinecap="round" strokeLinejoin="round" />
+           
+           {points.map((p, i) => <circle key={`km-${i}`} cx={p.x} cy={p.yKm} r={4} fill="#4c88ad" stroke="#fff" strokeWidth="1.5" />)}
+           
+           {points.map((p, i) => (
+             <rect key={`interact-${i}`} x={Math.max(0, p.x - dx/2)} y={padding.top} width={dx} height={plotHeight} fill="transparent" 
+                onMouseEnter={() => setHoveredDay(p)} 
+                onMouseLeave={() => setHoveredDay(null)}
+             />
+           ))}
+
+           {points.map((p, i) => i % Math.max(1, Math.floor(points.length / 10)) === 0 || i === points.length - 1 ? (
+             <text key={`x-${i}`} x={p.x} y={height - 10} textAnchor="middle" className="chart-axis-label">{p.date.slice(-2)}</text>
+          ) : null)}
+        </svg>
+
+        {hoveredDay && (
+          <div className="chart-tooltip" style={{
+            position: 'absolute',
+            left: Math.min(hoveredDay.x, width - 140),
+            top: 20,
+            background: '#1b2c3a',
+            color: '#fff',
+            padding: '10px 14px',
+            borderRadius: 8,
+            pointerEvents: 'none',
+            fontSize: 12,
+            zIndex: 10,
+            width: 130,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}>
+            <b style={{ display: 'block', color: '#99a3ac', marginBottom: 6, fontSize: 10 }}>{hoveredDay.date} (Últ. 7d)</b>
+            <div style={{ marginBottom: 4 }}><strong style={{ color: '#4c88ad' }}>{hoveredDay.rollingDistance}</strong> km</div>
+            <div style={{ marginBottom: 4 }}><strong style={{ color: '#70a582' }}>{hoveredDay.rollingMinutes}</strong> min</div>
+            <div><strong style={{ color: '#bd8b56' }}>{hoveredDay.rollingTrimps}</strong> TRIMPS</div>
+          </div>
+        )}
+      </div>
+      <div className="chart-legend">
+        <span style={{ display: 'flex', alignItems: 'center' }}>
+          <i style={{ background: 'linear-gradient(to bottom, rgba(76,136,173,0.5), transparent)', borderTop: '3px solid #4c88ad', height: 8, width: 12, marginRight: 6, display: 'inline-block', borderRadius: 0 }} />
+          Kilómetros (max {Math.round(maxKm)})
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center' }}>
+          <i style={{ borderBottom: '2.5px dashed #70a582', height: 0, width: 14, marginRight: 6, display: 'inline-block', borderRadius: 0, background: 'transparent' }} />
+          Minutos (max {Math.round(maxMin)})
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center' }}>
+          <i style={{ borderBottom: '2px dotted #bd8b56', height: 0, width: 14, marginRight: 6, display: 'inline-block', borderRadius: 0, background: 'transparent' }} />
+          TRIMPS (max {Math.round(maxTrimp)})
+        </span>
+      </div>
+    </section>
+  );
 }

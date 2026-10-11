@@ -131,8 +131,8 @@
 }
 
 .chart-gridline { stroke: #e9edf0; stroke-width: 1; }
-.chart-axis-label { fill: #8f9aa5; font: 9px 'DM Sans', sans-serif; }
-.chart-y-label { fill: #748291; font: 9px 'DM Sans', sans-serif; }
+.chart-axis-label { fill: #8f9aa5; font: 12px 'DM Sans', sans-serif; font-weight: 500; }
+.chart-y-label { fill: #748291; font: 12px 'DM Sans', sans-serif; font-weight: 500; }
 
 .chart-legend {
   display: flex;

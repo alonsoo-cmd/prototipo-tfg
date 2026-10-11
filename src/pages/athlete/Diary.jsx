@@ -4,7 +4,7 @@ import WorkoutStatus from '../../components/ui/WorkoutStatus.jsx';
 import './Diary.css';
 
 const wellbeingFields = [
-  ['mood', 'Humor'],
+  ['mood', 'Irritabilidad'],
   ['fatigue', 'Fatiga'],
   ['soreness', 'Agujetas'],
   ['sleep', 'Sueño'],
@@ -32,7 +32,17 @@ const injuryRegions = [
   { id: 'otro', label: 'Otro' },
 ];
 
+const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+function getSessionDate(weekNumber, dayName) {
+  const dayIndex = daysOfWeek.indexOf(dayName);
+  const firstDate = new Date(Date.UTC(2026, 9, 21 + (weekNumber - 8) * 7));
+  firstDate.setUTCDate(firstDate.getUTCDate() + dayIndex);
+  return firstDate;
+}
+
 export default function Diary({
+  role,
   week,
   setWeek,
   activePlan,
@@ -120,32 +130,79 @@ export default function Diary({
       <section className="week-layout">
         <div className="week-board">
           <div className="week-grid">
-            {weekSessions.map((session) => (
-              <article className="day-column" key={session.day}>
-                <div className="day-heading"><span>{session.day}</span><b>{session.date}</b></div>
-                <button className={`session-card ${session.tone}`} onClick={() => onSession(session)}>
-                  <div className="card-title">{session.type}<span>⌄</span></div>
-                  <div className="card-desc">{session.desc}</div>
-                  {session.shoes && <div className="session-shoes-note">👟 {session.shoes}</div>}
-                  <div className="card-meta">
-                    <span>{session.mins ? `${session.mins} min` : '—'}</span>
-                    <span>{session.km ? `${session.km} km` : '—'}</span>
-                  </div>
-                  <div className="card-state"><i />{session.state}</div>
-                </button>
-                <div className="diary-workout-status"><WorkoutStatus status={trainingLogs[logKey(week, session.day)]?.completionStatus || (trainingLogs[logKey(week, session.day)] ? 'completed' : null)} /></div>
-                <button
-                  className={`journal-button ${trainingLogs[logKey(week, session.day)] ? 'has-entry' : ''}`}
-                  onClick={() => setJournalDay(session)}
-                  aria-label={`Abrir diario de entrenamiento del ${session.day}`}
-                  title="Registrar entrenamiento y bienestar"
-                >
-                  <span aria-hidden="true">📓</span>
-                  <span>{trainingLogs[logKey(week, session.day)] ? 'Editado' : 'Registrar'}</span>
-                </button>
-                <div className="day-load"><span>{session.km ? session.km.toFixed(1).replace('.', ',') : '0,0'} km</span><span>{session.tr} TR</span></div>
-              </article>
-            ))}
+            {weekSessions.map((session) => {
+              const sessionDate = getSessionDate(week, session.day);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const isFuture = sessionDate > today;
+
+              const logEntry = trainingLogs[logKey(week, session.day)];
+              const status = logEntry?.completionStatus;
+              
+              const isCompleted = status === 'completed';
+              const isPartial = status === 'partial';
+              const isMissed = status === 'missed';
+
+              let nextStatus;
+              if (!status) nextStatus = 'completed';
+              else if (isCompleted) nextStatus = 'partial';
+              else if (isPartial) nextStatus = 'missed';
+              else if (isMissed) nextStatus = 'completed';
+
+              const icon = isCompleted ? '✅' : isPartial ? '⚠️' : isMissed ? '❌' : '⬜';
+              const label = isCompleted ? 'Hecho' : isPartial ? 'A medias' : isMissed ? 'No hecho' : 'Marcar';
+
+              return (
+                <article className="day-column" key={session.day}>
+                  <div className="day-heading"><span>{session.day}</span><b>{session.date}</b></div>
+                  <button className={`session-card ${session.tone}`} onClick={() => onSession(session)}>
+                    <div className="card-title">{session.type}<span>⌄</span></div>
+                    <div className="card-desc">{session.desc}</div>
+                    {session.shoes && <div className="session-shoes-note">👟 {session.shoes}</div>}
+                    <div className="card-meta">
+                      <span>{session.mins ? `${session.mins} min` : '—'}</span>
+                      <span>{session.km ? `${session.km} km` : '—'}</span>
+                    </div>
+                    <div className="card-state"><i />{session.state}</div>
+                  </button>
+                  <div className="diary-workout-status"><WorkoutStatus status={status || null} /></div>
+                  {role !== 'grupo' ? (
+                    <button
+                      className={`journal-button ${logEntry ? 'has-entry' : ''}`}
+                      onClick={() => setJournalDay(session)}
+                      aria-label={`Abrir diario de entrenamiento del ${session.day}`}
+                      title={isFuture ? "No puedes registrar días futuros" : "Registrar entrenamiento y bienestar"}
+                      disabled={isFuture}
+                      style={{ opacity: isFuture ? 0.5 : 1, cursor: isFuture ? 'not-allowed' : 'pointer' }}
+                    >
+                      <span aria-hidden="true">📓</span>
+                      <span>{logEntry ? 'Editado' : 'Registrar'}</span>
+                    </button>
+                  ) : (
+                    <button
+                      className={`journal-button ${isCompleted || isPartial ? 'has-entry' : ''}`}
+                      onClick={() => {
+                        const key = logKey(week, session.day);
+                        setTrainingLogs((prev) => ({
+                          ...prev,
+                          [key]: {
+                            ...prev[key],
+                            completionStatus: nextStatus,
+                          }
+                        }));
+                      }}
+                      title={isFuture ? "No puedes registrar asistencia de días futuros" : "Marcar asistencia"}
+                      disabled={isFuture}
+                      style={{ opacity: isFuture ? 0.5 : 1, cursor: isFuture ? 'not-allowed' : 'pointer' }}
+                    >
+                      <span aria-hidden="true">{icon}</span>
+                      <span>{label}</span>
+                    </button>
+                  )}
+                  <div className="day-load"><span>{session.km ? session.km.toFixed(1).replace('.', ',') : '0,0'} km</span><span>{session.tr} TR</span></div>
+                </article>
+              );
+            })}
           </div>
         </div>
         <WeeklyLoad week={week} />

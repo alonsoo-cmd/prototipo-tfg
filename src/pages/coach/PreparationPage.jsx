@@ -43,13 +43,61 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
   const [startingAthlete, setStartingAthlete] = useState(null);
   const [dropTarget, setDropTarget] = useState('');
   const [templateTypeFilter, setTemplateTypeFilter] = useState('all');
+  const [clipboard, setClipboard] = useState(null);
+  const [history, setHistory] = useState([]);
   const skipDayClick = useRef(false);
 
   const planWeeks = athlete.id === 'lucia' ? weeks : otherPlans[athlete.id] || copyWeeks(weeks);
   const current = planWeeks.find((week) => week.number === selectedWeek) || planWeeks.at(-1) || blankWeek(1);
+  
   const setPlanWeeks = (updater) => {
+    setHistory((prev) => [...prev, copyWeeks(planWeeks)].slice(-20));
     if (athlete.id === 'lucia') setWeeks(updater);
     else setOtherPlans((all) => ({ ...all, [athlete.id]: updater(all[athlete.id] || copyWeeks(weeks)) }));
+  };
+
+  const undo = () => {
+    if (!history.length) return;
+    const previous = history.at(-1);
+    setHistory((prev) => prev.slice(0, -1));
+    if (athlete.id === 'lucia') setWeeks(previous);
+    else setOtherPlans((all) => ({ ...all, [athlete.id]: previous }));
+    setNotice('Cambios revertidos.');
+  };
+
+  const copyCurrentWeek = () => {
+    setClipboard({ type: 'week', days: copyWeeks([current])[0].days });
+    setNotice(`Semana ${current.number} copiada al portapapeles.`);
+  };
+
+  const pasteWeek = () => {
+    if (!clipboard || clipboard.type !== 'week') return;
+    setPlanWeeks((all) => all.map((week) => week.number === current.number ? {
+      ...week,
+      days: week.days.map((targetDay, index) => {
+        const copiedDay = clipboard.days[index];
+        return { ...copiedDay, day: targetDay.day, date: targetDay.date, month: targetDay.month };
+      })
+    } : week));
+    setNotice(`Semana copiada pegada en la semana ${current.number}.`);
+  };
+
+  const copyDay = (day, event) => {
+    event.stopPropagation();
+    setClipboard({ type: 'day', day: { ...day } });
+    setNotice(`${day.day} copiado al portapapeles.`);
+  };
+
+  const pasteDay = (targetDay, event) => {
+    event.stopPropagation();
+    if (!clipboard || clipboard.type !== 'day') return;
+    const updatedDay = {
+      ...clipboard.day,
+      day: targetDay.day,
+      date: targetDay.date,
+      month: targetDay.month
+    };
+    saveDay(updatedDay);
   };
   const totals = useMemo(() => sumDays(current.days), [current.days]);
   const practicalDays = current.days.map((day) => ({ ...day, log: trainingLogs[`${current.number}-${day.day}`] })).filter((day) => day.log);
@@ -137,44 +185,52 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       <button className="button secondary" onClick={onProfile}>Perfil ↗</button>
     </div>
 
-    <section className="panel coach-practical-section">
-      <div className="schedule-heading"><div><div className="eyebrow">PREPARACIÓN PRÁCTICA</div><h2>Registros de la semana <span className="subtle-dates">{dateRange(practicalDays)}</span></h2><p>Solo aparecen los datos que el atleta ha registrado.</p></div><button className="text-button" onClick={() => setShowAllDays(true)}>Ver todos los entrenamientos →</button></div>
-      {practicalDays.length ? <div className="practical-log-list">{practicalDays.map((day) => <article className="practical-log-entry" key={day.day}>
-        <header className="practical-log-header"><div><b>{day.day}</b><span>{dayDate(day)}</span></div><small>Registro del atleta</small></header>
-        <div className="practical-log-activity">
-          <LogValue label="Distancia" value={day.log.distance} unit="km" />
-          <LogValue label="Duración" value={day.log.minutes} unit="min" />
-          <LogValue label="TRIMPS" value={day.log.trimps} />
-          <LogValue label="Ritmo medio" value={day.log.pace || calculatePace(day.log.minutes, day.log.distance)} unit="min/km" />
-          <LogValue label="FC media" value={day.log.averageHr} unit="ppm" />
-        </div>
-        <div className="practical-log-wellbeing"><b>Bienestar · escala 1–10</b><div>
-          <LogValue label="Fatiga" value={day.log.fatigue} />
-          <LogValue label="Humor" value={day.log.mood} />
-          <LogValue label="Agujetas" value={day.log.soreness} />
-          <LogValue label="Sueño" value={day.log.sleep} />
-          <LogValue label="Estrés" value={day.log.stress} />
-        </div></div>
-        {day.log.injuries?.length > 0 && <div className="practical-log-injuries"><b>Molestias registradas</b>{day.log.injuries.map((injury) => <p key={injury.region}><strong>{injury.regionLabel || injury.region.replaceAll('-', ' ')} · {injury.level}/10</strong>{injury.description && <span>{injury.description}</span>}</p>)}</div>}
-        {day.log.notes && <p className="practical-log-notes"><b>Notas</b>{day.log.notes}</p>}
-      </article>)}</div> : <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos esta semana.</p>}
-    </section>
+    {athlete.id !== 'grupo-general' && (
+      <section className="panel coach-practical-section">
+        <div className="schedule-heading"><div><div className="eyebrow">PREPARACIÓN PRÁCTICA</div><h2>Registros de la semana <span className="subtle-dates">{dateRange(practicalDays)}</span></h2><p>Solo aparecen los datos que el atleta ha registrado.</p></div><button className="text-button" onClick={() => setShowAllDays(true)}>Ver todos los entrenamientos →</button></div>
+        {practicalDays.length ? <div className="practical-log-list">{practicalDays.map((day) => <article className="practical-log-entry" key={day.day}>
+          <header className="practical-log-header"><div><b>{day.day}</b><span>{dayDate(day)}</span></div><small>Registro del atleta</small></header>
+          <div className="practical-log-activity">
+            <LogValue label="Distancia" value={day.log.distance} unit="km" />
+            <LogValue label="Duración" value={day.log.minutes} unit="min" />
+            <LogValue label="TRIMPS" value={day.log.trimps} />
+            <LogValue label="Ritmo medio" value={day.log.pace || calculatePace(day.log.minutes, day.log.distance)} unit="min/km" />
+            <LogValue label="FC media" value={day.log.averageHr} unit="ppm" />
+          </div>
+          <div className="practical-log-wellbeing"><b>Bienestar · escala 1–10</b><div>
+            <LogValue label="Fatiga" value={day.log.fatigue} />
+            <LogValue label="Irritabilidad" value={day.log.mood} />
+            <LogValue label="Agujetas" value={day.log.soreness} />
+            <LogValue label="Sueño" value={day.log.sleep} />
+            <LogValue label="Estrés" value={day.log.stress} />
+          </div></div>
+          {day.log.injuries?.length > 0 && <div className="practical-log-injuries"><b>Molestias registradas</b>{day.log.injuries.map((injury) => <p key={injury.region}><strong>{injury.regionLabel || injury.region.replaceAll('-', ' ')} · {injury.level}/10</strong>{injury.description && <span>{injury.description}</span>}</p>)}</div>}
+          {day.log.notes && <p className="practical-log-notes"><b>Notas</b>{day.log.notes}</p>}
+        </article>)}</div> : <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos esta semana.</p>}
+      </section>
+    )}
 
     <section className="panel schedule-editor coach-theory-section">
       <div className="schedule-heading"><div><div className="eyebrow">PREPARACIÓN TEÓRICA</div><h2>Plan semanal</h2><p>{athlete.duration} · {athlete.distance} · {planWeeks.length} semanas planificadas</p></div><div className="schedule-actions"><button className="button secondary" onClick={() => setShowAllWeeks(true)}>Semana {current.number} · ver todas ↗</button><button className="button primary" onClick={createWeek} disabled={planWeeks.length >= (Number.parseInt(athlete.duration, 10) || 12)}>＋ Nueva semana</button></div></div>
       <div className="week-tabs">{planWeeks.map((week) => <button key={week.number} className={selectedWeek === week.number ? 'selected' : ''} onClick={() => setSelectedWeek(week.number)}><small>SEM</small>{String(week.number).padStart(2, '0')}</button>)}</div>
-      <div className="selected-week-heading"><div><div className="eyebrow">SEMANA {current.number} · {current.phase.toUpperCase()}</div><h3>Semana {current.number} · planificación</h3></div><div className="phase-select"><label>Tipo de semana<select value={current.phase} onChange={(event) => setPlanWeeks((all) => all.map((week) => week.number === current.number ? { ...week, phase: event.target.value } : week))}>{phaseOptions.map((phase) => <option key={phase}>{phase}</option>)}</select></label></div></div>
+      <div className="selected-week-heading"><div><div className="eyebrow">SEMANA {current.number} · {current.phase.toUpperCase()}</div><h3>Semana {current.number} · planificación</h3></div><div className="week-actions" style={{ display: 'flex', gap: '8px' }}><button className="button secondary" type="button" onClick={undo} disabled={history.length === 0}>Deshacer</button><button className="button secondary" type="button" onClick={copyCurrentWeek}>Copiar semana</button><button className="button primary" type="button" onClick={pasteWeek} disabled={!clipboard}>Pegar semana</button></div></div>
       {workoutTemplates.length > 0 ? <section className="workout-template-library">
         <div className="workout-template-library-heading"><div><b>Entrenamientos predefinidos</b><span>Arrastra un bloque sobre el día que quieras planificar.</span></div><label>Tipo<select value={templateTypeFilter} onChange={(event) => setTemplateTypeFilter(event.target.value)}><option value="all">Todos</option>{workoutTypes.map((type) => <option key={type}>{type}</option>)}</select></label><span>{visibleWorkoutTemplates.length} disponibles</span></div>
         {visibleWorkoutTemplates.length ? <div className="workout-template-blocks">{visibleWorkoutTemplates.map((template) => <button type="button" draggable key={template.id} className={`workout-template-block workout-color-${workoutColor(template.type)}`} onDragStart={(event) => { event.dataTransfer.setData('application/x-stride-template', String(template.id)); event.dataTransfer.effectAllowed = 'copy'; }} onDragEnd={() => setDropTarget('')}>
           <b>{template.type}</b><span>{template.desc || template.blocks || 'Sin descripción'}</span><small>{template.mins || 0} min · {format(template.km)} km · {template.tr || 0} TR</small>
         </button>)}</div> : <p className="workout-template-filter-empty">No hay entrenamientos predefinidos de este tipo.</p>}
       </section> : <section className="workout-template-library workout-template-library-empty"><b>Entrenamientos predefinidos</b><span>No hay entrenamientos guardados. Puedes seguir planificando cada día manualmente.</span></section>}
-      <div className="coach-week-grid">{current.days.map((day) => <button key={day.day} onDragOver={(event) => { event.preventDefault(); setDropTarget(day.day); }} onDragLeave={() => setDropTarget((currentTarget) => currentTarget === day.day ? '' : currentTarget)} onDrop={(event) => placeTemplate(day, event)} className={`coach-workout-card ${day.type ? `workout-color-${workoutColor(day.type)}` : 'empty'} ${dropTarget === day.day ? 'drop-target' : ''}`} onClick={() => { if (skipDayClick.current) return; setEditingDay({ day, mode: 'edit' }); }}>
+      <div className="coach-week-grid">{current.days.map((day) => <button style={{ position: 'relative' }} key={day.day} onDragOver={(event) => { event.preventDefault(); setDropTarget(day.day); }} onDragLeave={() => setDropTarget((currentTarget) => currentTarget === day.day ? '' : currentTarget)} onDrop={(event) => placeTemplate(day, event)} className={`coach-workout-card ${day.type ? `workout-color-${workoutColor(day.type)}` : 'empty'} ${dropTarget === day.day ? 'drop-target' : ''}`} onClick={() => { if (skipDayClick.current) return; setEditingDay({ day, mode: 'edit' }); }}>
+        <div className="day-actions" style={{ position: 'absolute', top: '8px', right: '8px', display: 'flex', gap: '8px', zIndex: 2 }}>
+          <span role="button" aria-label="Copiar día" onClick={(e) => copyDay(day, e)} style={{ background: 'var(--surface-color)', borderRadius: '4px', padding: '2px 6px', fontSize: '12px', border: '1px solid var(--border-color)' }}>Copiar</span>
+          {clipboard?.type === 'day' && <span role="button" aria-label="Pegar día" onClick={(e) => pasteDay(day, e)} style={{ background: 'var(--primary-color)', color: 'white', borderRadius: '4px', padding: '2px 6px', fontSize: '12px', border: '1px solid var(--primary-color)' }}>Pegar</span>}
+        </div>
         <span className="coach-workout-day">{day.day}<small>{dayDate(day)}</small></span><b>{day.type || '+ Añadir entrenamiento'}</b><span className="coach-workout-description">{day.desc || day.blocks || (day.type ? 'Sin descripción' : 'Día en blanco')}</span>{day.shoes && <span className="coach-workout-description">👟 {day.shoes}</span>}<span className="coach-workout-metrics">{day.mins || 0} min · {format(day.km)} km · {day.tr || 0} TR</span><WorkoutStatus status={trainingLogs[`${current.number}-${day.day}`]?.completionStatus || (trainingLogs[`${current.number}-${day.day}`] ? 'completed' : null)} className="coach-workout-status" />
       </button>)}</div>
       <div className="coach-total-strip weekly-totals"><Stat label={`Km · semana ${current.number}`} value={`${format(totals.km)} km`} /><Stat label="Minutos" value={`${totals.mins} min`} /><Stat label="TRIMPS" value={totals.tr} /><button className="text-button" onClick={() => setShowAllWeeks(true)}>Ver desglose BX · BI · BII →</button></div>
     </section>
+
+    {athlete.id === 'grupo-general' && <GroupAttendancePanel currentWeek={current} trainingLogs={trainingLogs} />}
 
     <section className="panel new-week-section"><div><div className="eyebrow">PLANIFICACIÓN</div><h2>Nueva semana</h2><p>La semana {planWeeks.length + 1} se abrirá con los siete días en blanco para planificar desde cero.</p></div><button className="button primary" onClick={createWeek} disabled={planWeeks.length >= (Number.parseInt(athlete.duration, 10) || 12)}>＋ Crear semana {planWeeks.length + 1}</button></section>
     <section className="panel available-athletes-panel" id="available-athletes">
@@ -190,7 +246,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
     {editingDay && <WorkoutEditor key={`${athlete.id}-${current.number}-${editingDay.day.day}-${editingDay.mode}`} day={editingDay.day} mode={editingDay.mode} onClose={() => setEditingDay(null)} onSave={saveDay} />}
     {startingAthlete && <NewPreparationModal athlete={startingAthlete} onClose={() => setStartingAthlete(null)} onCreate={startPreparation} />}
     {showAllDays && <OverviewModal title={`Todos los entrenamientos · ${athlete.name}`} onClose={() => setShowAllDays(false)}>
-      {planWeeks.flatMap((week) => week.days.map((day) => ({ ...day, week: week.number, log: trainingLogs[`${week.number}-${day.day}`] }))).filter((day) => day.log).map((day) => <div className="overview-row" key={`${day.week}-${day.day}`}><b>{formatWorkoutDate(day.week, day.day)} · Registro del atleta</b><span>{day.log.distance || '—'} km · {day.log.minutes || '—'} min · {day.log.trimps || '—'} TR · Ritmo {day.log.pace || calculatePace(day.log.minutes, day.log.distance) || '—'} min/km</span><span>Fatiga {day.log.fatigue || '—'} · Humor {day.log.mood || '—'} · Agujetas {day.log.soreness || '—'} · Sueño {day.log.sleep || '—'} · Estrés {day.log.stress || '—'}</span></div>)}
+      {planWeeks.flatMap((week) => week.days.map((day) => ({ ...day, week: week.number, log: trainingLogs[`${week.number}-${day.day}`] }))).filter((day) => day.log).map((day) => <div className="overview-row" key={`${day.week}-${day.day}`}><b>{formatWorkoutDate(day.week, day.day)} · Registro del atleta</b><span>{day.log.distance || '—'} km · {day.log.minutes || '—'} min · {day.log.trimps || '—'} TR · Ritmo {day.log.pace || calculatePace(day.log.minutes, day.log.distance) || '—'} min/km</span><span>Fatiga {day.log.fatigue || '—'} · Irritabilidad {day.log.mood || '—'} · Agujetas {day.log.soreness || '—'} · Sueño {day.log.sleep || '—'} · Estrés {day.log.stress || '—'}</span></div>)}
       {!planWeeks.some((week) => week.days.some((day) => trainingLogs[`${week.number}-${day.day}`])) && <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos.</p>}
     </OverviewModal>}
     {showAllWeeks && <OverviewModal title={`Semanas · ${athlete.name}`} onClose={() => setShowAllWeeks(false)}>{planWeeks.map((week) => { const sum = sumDays(week.days); return <button className="overview-row" key={week.number} onClick={() => { setSelectedWeek(week.number); setShowAllWeeks(false); }}><b>Semana {week.number} · {week.phase}</b><span>{format(sum.km)} km · {sum.mins} min · {sum.tr} TRIMPS</span><span>{week.days.filter((day) => day.type).length} entrenamientos</span></button>; })}</OverviewModal>}
@@ -362,4 +418,64 @@ function formatWorkoutDate(weekNumber, dayName) {
   const dateLabel = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', timeZone: 'UTC' }).format(date);
   const weekday = new Intl.DateTimeFormat('es-ES', { weekday: 'long', timeZone: 'UTC' }).format(date);
   return `${dateLabel} - ${weekday}`;
+}
+
+function GroupAttendancePanel({ currentWeek, trainingLogs }) {
+  const members = [
+    { id: 'yo', name: 'Tú (Simulación)' },
+    { id: 'm1', name: 'Carlos Díaz' },
+    { id: 'm2', name: 'Ana Gómez' },
+    { id: 'm3', name: 'Luis Herrero' },
+    { id: 'm4', name: 'Marta Ruiz' },
+  ];
+
+  const daysWithWorkouts = currentWeek.days.filter((day) => day.type);
+
+  const getStatus = (memberId, day) => {
+    if (memberId === 'yo') {
+      const status = trainingLogs[`${currentWeek.number}-${day.day}`]?.completionStatus;
+      return status === 'completed' ? 'green' : status === 'partial' ? 'yellow' : status === 'missed' ? 'red' : 'gray';
+    }
+    const hash = memberId.charCodeAt(1) + day.day.charCodeAt(0) + currentWeek.number + day.day.length;
+    return hash % 4 === 0 ? 'yellow' : hash % 3 !== 0 ? 'green' : 'red';
+  };
+
+  return (
+    <section className="panel" style={{ marginTop: '24px' }}>
+      <div className="eyebrow">CONTROL GRUPAL</div>
+      <h2>Asistencia de la Semana {currentWeek.number}</h2>
+      <p>Verde: completado · Amarillo: a medias · Rojo: no realizado.</p>
+      
+      <div style={{ overflowX: 'auto', marginTop: '16px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
+          <thead>
+            <tr>
+              <th style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', width: '200px' }}>Entrenamiento</th>
+              {members.map(m => <th key={m.id} style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', fontSize: '13px', fontWeight: '600' }}>{m.name}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {daysWithWorkouts.length === 0 && <tr><td colSpan={members.length + 1} style={{ padding: '16px', textAlign: 'center', color: 'var(--muted-color)' }}>No hay entrenamientos planificados esta semana.</td></tr>}
+            {daysWithWorkouts.map(day => (
+              <tr key={day.day}>
+                <td style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', fontSize: '14px' }}><b>{day.day}</b><br/><small style={{ color: 'var(--muted-color)' }}>{day.type}</small></td>
+                {members.map(m => {
+                  const status = getStatus(m.id, day);
+                  return (
+                    <td key={m.id} style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)' }}>
+                      <div style={{
+                        width: '24px', height: '24px', borderRadius: '4px',
+                        background: status === 'green' ? '#22c55e' : status === 'yellow' ? '#eab308' : status === 'red' ? '#ef4444' : '#e5e7eb',
+                        border: '1px solid rgba(0,0,0,0.1)'
+                      }} title={status === 'green' ? 'Completado' : status === 'yellow' ? 'A medias' : status === 'red' ? 'No completado' : 'Pendiente'} />
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
 }

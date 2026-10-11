@@ -34,9 +34,9 @@ export default function App(){
    <Topbar role={role} page={page} onMenuClick={()=>setMobileNavOpen(open=>!open)} menuOpen={mobileNavOpen}/>
    {page==='Dashboard'&&<Dashboard role={role} weekNumber={week} weeks={coachWeeks} onNavigate={go} onSession={openSession} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>}
     
-   {page==='Diary'&&<Diary week={week} setWeek={setWeek} activePlan={activePlan} setActivePlan={setActivePlan} preparation={athletePreparation} onSession={openSession} onPlan={()=>go('Find coach')} onPhases={()=>setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>
+   {page==='Diary'&&<Diary role={role} week={week} setWeek={setWeek} activePlan={activePlan} setActivePlan={setActivePlan} preparation={athletePreparation} onSession={openSession} onPlan={()=>go('Find coach')} onPhases={()=>setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>
     }
-   {page==='Data'&&<DataPage trainingLogs={trainingLogs} onSession={openSession}/>
+   {page==='Data'&&<DataPage role={role} trainingLogs={trainingLogs} onSession={openSession} coachWeeks={coachWeeks}/>
     }
    {page==='Profile'&&<Profile role={role} preparation={preparations.find((item) => item.athleteId === 'alex') || null} setPreparations={setPreparations} />
     }
