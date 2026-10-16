@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { sessions } from '../../data/sessions.js';
 import WorkoutStatus from '../../components/ui/WorkoutStatus.jsx';
+import WeekTimeline, { getWeekDateRange } from '../../components/ui/WeekTimeline.jsx';
+import DiaryAveragesModal from '../../components/modals/DiaryAveragesModal.jsx';
 import './Diary.css';
 
 const wellbeingFields = [
@@ -54,8 +56,10 @@ export default function Diary({
   coachWeeks,
   trainingLogs,
   setTrainingLogs,
+  athleteProfile = { fcMax: 190, sex: 'male' },
 }) {
   const [journalDay, setJournalDay] = useState(null);
+  const [showAverages, setShowAverages] = useState(false);
   const visibleWeek = coachWeeks.find((item) => item.number === week);
   const weekSessions = visibleWeek?.days || sessions;
   const objectives = preparation?.objectives || [];
@@ -101,16 +105,26 @@ export default function Diary({
       <div className="page-heading">
         <div>
           <div className="eyebrow">PREPARACIÓN ACTIVA <span className="bullet">•</span> EJEMPLO</div>
-          <h1>{primaryObjective?.name || 'Media Maratón Madrid'} <span className="phase-badge">BII / Acumulación</span></h1>
+          <h1>{primaryObjective?.name || 'Media Maratón Madrid'} <span className="phase-badge">{visibleWeek?.phase || 'BII / Acumulación'}</span></h1>
           <p>{objectives.length > 1 ? `Objetivos · ${objectives.map((objective) => `${objective.name} (${objective.distance})`).join(' · ')}` : `Objetivo · ${primaryObjective?.distance || 'Media maratón'} · ${primaryObjective?.eventDate ? formatGoalDate(primaryObjective.eventDate) : '6 diciembre 2026'}`}</p>
         </div>
         <button className="button secondary week-select" onClick={onPhases}>Semana {week} <span>⌄</span></button>
       </div>
 
+      <WeekTimeline
+        weeks={coachWeeks}
+        selectedWeek={week}
+        onSelectWeek={setWeek}
+        currentWeek={8}
+      />
+
       <section className="diary-stats" aria-label="Estadísticas de los últimos siete días">
         <div className="diary-stats-heading">
-          <div className="eyebrow">ÚLTIMOS 7 DÍAS</div>
-          <small>{stats.daysLogged} {stats.daysLogged === 1 ? 'día registrado' : 'días registrados'}</small>
+          <div>
+            <div className="eyebrow">ÚLTIMOS 7 DÍAS</div>
+            <small>{stats.daysLogged} {stats.daysLogged === 1 ? 'día registrado' : 'días registrados'}</small>
+          </div>
+          <button className="text-button averages-trigger" onClick={() => setShowAverages(true)} aria-label="Ver medias semanales y mensuales">📊 Ver medias</button>
         </div>
         <Stat label="Kilómetros" value={formatNumber(stats.kilometers)} unit="km" />
         <Stat label="Minutos" value={formatNumber(stats.minutes)} unit="min" />
@@ -120,9 +134,9 @@ export default function Diary({
 
       <div className="week-control">
         <div>
-          <button className="bare-arrow" onClick={() => setWeek(Math.max(1, week - 1))}>‹</button>
-          <strong>Semana {week} · 21 — 27</strong>
-          <button className="bare-arrow" onClick={() => setWeek(Math.min(coachWeeks.length, week + 1))}>›</button>
+          <button className="bare-arrow" onClick={() => setWeek(Math.max(1, week - 1))} aria-label="Semana anterior">‹</button>
+          <strong>Semana {week} · {getWeekDateRange(week, 8)}</strong>
+          <button className="bare-arrow" onClick={() => setWeek(Math.min(coachWeeks.length, week + 1))} aria-label="Semana siguiente">›</button>
         </div>
         <button className="text-button" onClick={onPhases}>Ver todas las semanas y fases ↗</button>
       </div>
@@ -154,7 +168,7 @@ export default function Diary({
 
               return (
                 <article className="day-column" key={session.day}>
-                  <div className="day-heading"><span>{session.day}</span><b>{session.date}</b></div>
+                  <div className="day-heading"><span>{session.day}</span><b>{sessionDate.getUTCDate()}</b></div>
                   <button className={`session-card ${session.tone}`} onClick={() => onSession(session)}>
                     <div className="card-title">{session.type}<span>⌄</span></div>
                     <div className="card-desc">{session.desc}</div>
@@ -199,7 +213,12 @@ export default function Diary({
                       <span>{label}</span>
                     </button>
                   )}
-                  <div className="day-load"><span>{session.km ? session.km.toFixed(1).replace('.', ',') : '0,0'} km</span><span>{session.tr} TR</span></div>
+                  <div className="day-load">
+                    <span>{logEntry?.distance ? Number(logEntry.distance).toFixed(1).replace('.', ',') : (session.km ? session.km.toFixed(1).replace('.', ',') : '0,0')} km</span>
+                    <span className={logEntry?.trimps ? 'logged-trimp' : ''} title={logEntry?.trimps ? `TRIMP registrado: ${logEntry.trimps}` : `TRIMP planificado: ${session.tr}`}>
+                      {logEntry?.trimps ? `${logEntry.trimps} TR` : `${session.tr} TR`}
+                    </span>
+                  </div>
                 </article>
               );
             })}
@@ -214,6 +233,16 @@ export default function Diary({
           initialValues={trainingLogs[logKey(week, journalDay.day)]}
           onClose={() => setJournalDay(null)}
           onSave={(values) => saveJournal(journalDay.day, values)}
+          athleteProfile={athleteProfile}
+        />
+      )}
+
+      {showAverages && (
+        <DiaryAveragesModal
+          onClose={() => setShowAverages(false)}
+          trainingLogs={trainingLogs}
+          coachWeeks={coachWeeks}
+          currentWeek={week}
         />
       )}
     </div>
@@ -251,7 +280,7 @@ function WeeklyLoad({ week }) {
   );
 }
 
-export function JournalModal({ session, initialValues, onClose, onSave, hidePersonalFields = false }) {
+export function JournalModal({ session, initialValues, onClose, onSave, hidePersonalFields = false, athleteProfile = { fcMax: 190, sex: 'male' } }) {
   const [stravaConnected, setStravaConnected] = useState(false);
   const [intervalImage, setIntervalImage] = useState(null);
   const [intervalDraft, setIntervalDraft] = useState('');
@@ -264,26 +293,32 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
   const [workoutDetailSections, setWorkoutDetailSections] = useState(() => initialValues?.workoutDetailSections || createWorkoutDetailSections(session));
   const [trainingDetailsEnabled, setTrainingDetailsEnabled] = useState(() => Boolean(initialValues?.trainingDetailsEnabled || initialValues?.workoutDetailSections?.length));
   const [completionStatus, setCompletionStatus] = useState(() => initialValues?.completionStatus || 'completed');
-  const [values, setValues] = useState(() => ({
-    distance: initialValues?.distance ?? (session.km || ''),
-    minutes: initialValues?.minutes ?? (session.mins || ''),
-    trimps: '',
-    pace: initialValues?.pace ?? '',
-    averageHr: initialValues?.averageHr ?? '',
-    restingHr: initialValues?.restingHr ?? '',
-    hrv: initialValues?.hrv ?? '',
-    mood: initialValues?.mood ?? '',
-    fatigue: initialValues?.fatigue ?? '',
-    soreness: initialValues?.soreness ?? '',
-    sleep: initialValues?.sleep ?? '',
-    stress: initialValues?.stress ?? '',
-    notes: initialValues?.notes ?? '',
-    description: initialValues?.description ?? '',
-  }));
+  const [values, setValues] = useState(() => {
+    const mins = initialValues?.minutes ?? (session.mins || '');
+    const avgHr = initialValues?.averageHr ?? '';
+    const restHr = initialValues?.restingHr ?? '';
+    const initialTrimp = initialValues?.trimps || (mins && avgHr ? calculateTrimps(mins, avgHr, restHr, athleteProfile) : '');
+    return {
+      distance: initialValues?.distance ?? (session.km || ''),
+      minutes: mins,
+      trimps: initialTrimp,
+      pace: initialValues?.pace ?? '',
+      averageHr: avgHr,
+      restingHr: restHr,
+      hrv: initialValues?.hrv ?? '',
+      mood: initialValues?.mood ?? '',
+      fatigue: initialValues?.fatigue ?? '',
+      soreness: initialValues?.soreness ?? '',
+      sleep: initialValues?.sleep ?? '',
+      stress: initialValues?.stress ?? '',
+      notes: initialValues?.notes ?? '',
+      description: initialValues?.description ?? '',
+    };
+  });
 
   const update = (key, value) => setValues((current) => {
     const next = { ...current, [key]: value };
-    next.trimps = calculateTrimps(next.minutes, next.averageHr, next.restingHr);
+    next.trimps = calculateTrimps(next.minutes, next.averageHr, next.restingHr, athleteProfile);
     return next;
   });
   const supportsIntervals = /series|umbral|cuesta|interval|repeticion|repetición|fartlek|velocidad/i.test(`${session.type} ${session.blocks}`);
@@ -296,7 +331,7 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
     setValues((current) => ({
       ...current,
       distance: '9.6', minutes: '58', pace: '6:04', averageHr: '154',
-      trimps: calculateTrimps('58', '154', current.restingHr),
+      trimps: calculateTrimps('58', '154', current.restingHr, athleteProfile),
     }));
   };
 
@@ -320,7 +355,7 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
           completionStatus,
           trainingDetailsEnabled: workoutNotDone ? false : trainingDetailsEnabled,
           workoutDetailSections: workoutNotDone || !trainingDetailsEnabled ? [] : workoutDetailSections,
-          trimps: workoutNotDone ? '' : calculateTrimps(values.minutes, values.averageHr, values.restingHr),
+          trimps: workoutNotDone ? '' : (values.trimps || calculateTrimps(values.minutes, values.averageHr, values.restingHr, athleteProfile)),
         });
       }}>
         <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button>
@@ -396,14 +431,19 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
 
         {!isRestDay && showWorkoutData && <fieldset className="journal-fieldset">
           <legend>Datos del entrenamiento</legend>
-          <p className="wellbeing-help">TRIMPS se estima automáticamente con duración y FC media (FC máx. de referencia: 190 ppm).</p>
           <div className="journal-input-grid">
             <NumberField label="Distancia" unit="km" value={values.distance} onChange={(value) => update('distance', value)} step="0.1" />
             <NumberField label="Duración" unit="min" value={values.minutes} onChange={(value) => update('minutes', value)} />
-            <label className="field-label">TRIMPS <small className="journal-unit">calculado</small><input type="number" value={calculateTrimps(values.minutes, values.averageHr, values.restingHr)} readOnly placeholder="Completa duración y FC media" /></label>
             <TextField label="Ritmo medio" unit="min/km" value={values.pace} onChange={(value) => update('pace', value)} placeholder="5:20" />
             <NumberField label="FC media" unit="ppm" value={values.averageHr} onChange={(value) => update('averageHr', value)} />
           </div>
+          <TrimpCard
+            trimp={values.trimps}
+            athleteProfile={athleteProfile}
+            hasMinutes={Boolean(values.minutes)}
+            hasHr={Boolean(values.averageHr)}
+            hasRestHr={Boolean(values.restingHr)}
+          />
         </fieldset>}
 
         {!hidePersonalFields && <fieldset className="journal-fieldset">
@@ -488,14 +528,108 @@ function WorkoutDetailRow({ item, index, fields, allowHundredths = false, showCo
   </div>;
 }
 
-function calculateTrimps(minutes, averageHr, restingHr) {
+export function calculateTrimps(minutes, averageHr, restingHr, athleteProfile = { fcMax: 190, sex: 'male' }) {
   const duration = Number(minutes);
   const avg = Number(averageHr);
   const rest = Number(restingHr);
   if (!duration || !avg) return '';
-  const maxHr = 190;
-  const reserve = Math.max(0, Math.min(1, (avg - (rest || 60)) / (maxHr - (rest || 60))));
-  return Math.round(duration * reserve * 0.64 * Math.exp(1.92 * reserve));
+  const maxHr = Number(athleteProfile?.fcMax) || 190;
+  const k = athleteProfile?.sex === 'female' ? 1.67 : 1.92;
+  const restHr = rest || 60;
+  if (avg <= restHr) return 0;
+  const reserve = Math.max(0, Math.min(1, (avg - restHr) / (maxHr - restHr)));
+  return Math.round(duration * reserve * 0.64 * Math.exp(k * reserve));
+}
+
+export function getTrimpBadge(trimp) {
+  const value = Number(trimp);
+  if (!value || value <= 0) return null;
+  if (value < 50) {
+    return {
+      label: 'Carga baja',
+      category: 'Recuperación activa',
+      tone: 'green',
+      description: 'Estímulo suave ideal para regenerar o rodajes cortos sin fatiga residual.',
+    };
+  }
+  if (value < 100) {
+    return {
+      label: 'Carga moderada',
+      category: 'Mantenimiento aeróbico',
+      tone: 'blue',
+      description: 'Sesión aeróbica estándar que consolida la base sin sobrecargar el organismo.',
+    };
+  }
+  if (value < 160) {
+    return {
+      label: 'Carga alta',
+      category: 'Estímulo clave',
+      tone: 'amber',
+      description: 'Sesión exigente (series, umbral o tirada larga). Requiere descanso o asimilación posterior.',
+    };
+  }
+  return {
+    label: 'Carga muy alta',
+    category: 'Sobrecarga / Competición',
+    tone: 'red',
+    description: 'Estrés fisiológico muy elevado. Es recomendable programar descanso o regenerativo tras esta sesión.',
+  };
+}
+
+function TrimpCard({ trimp, athleteProfile, hasMinutes, hasHr, hasRestHr }) {
+  const badge = getTrimpBadge(trimp);
+  const fcMax = athleteProfile?.fcMax || 190;
+  const k = athleteProfile?.sex === 'female' ? '1,67' : '1,92';
+  const sexLabel = athleteProfile?.sex === 'female' ? 'mujer' : 'hombre';
+
+  return (
+    <div className={`journal-trimp-card ${trimp ? 'has-value' : 'empty'}`}>
+      <div className="journal-trimp-card-header">
+        <div className="journal-trimp-label-group">
+          <span className="journal-trimp-icon" aria-hidden="true">⚡</span>
+          <div>
+            <b>Impulso de entrenamiento (TRIMP)</b>
+            <small>Fórmula Banister · FC máx: {fcMax} ppm · {sexLabel} (k = {k})</small>
+          </div>
+        </div>
+        {badge && (
+          <span className={`trimp-impact-badge ${badge.tone}`}>
+            <span className="trimp-badge-dot" />
+            <span>{badge.label}</span>
+            <small>· {badge.category}</small>
+          </span>
+        )}
+      </div>
+
+      {trimp ? (
+        <div className="journal-trimp-card-body">
+          <div className="journal-trimp-value-display">
+            <strong>{trimp}</strong>
+            <span>TRIMPS</span>
+          </div>
+          <div className="journal-trimp-info">
+            <p className="journal-trimp-category-desc">{badge?.description}</p>
+            {!hasRestHr && (
+              <small className="journal-trimp-tip">
+                💡 Consejo: Añade tu FC en reposo en la sección de Salud para afinar la reserva cardíaca.
+              </small>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="journal-trimp-empty-guide">
+          <span>ℹ️</span>
+          <p>
+            {!hasMinutes && !hasHr
+              ? 'Introduce duración y FC media para calcular el TRIMP en tiempo real.'
+              : !hasMinutes
+                ? 'Introduce la duración para completar el cálculo de TRIMP.'
+                : 'Introduce la FC media para calcular el TRIMP exponencial.'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function hasWorkoutDetailOption(session) {

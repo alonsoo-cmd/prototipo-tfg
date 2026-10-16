@@ -45,7 +45,44 @@ export function createTrainingHistory(trainingLogs = {}) {
       const intensity = type === 'Umbral' || type === 'Series' || type === 'Competición';
       const zoneShares = intensity ? [0.2, 0.15, 0.5, 0.15] : [0.68, 0.22, 0.08, 0.02];
       const saved = Boolean(demoLog);
-      const isPast = date <= new Date().toISOString().slice(0, 10);
+      const todayKey = new Date().toLocaleDateString('en-CA');
+      const isPast = date <= todayKey;
+
+      let completionStatus;
+      if (demoLog?.completionStatus) {
+        completionStatus = demoLog.completionStatus;
+      } else if (isPast) {
+        if ((preparationWeek === 7 && dayIndex === 0) || (preparationWeek === 8 && dayIndex === 1)) {
+          completionStatus = 'partial';
+        } else if (preparationWeek === 7 && dayIndex === 2) {
+          completionStatus = 'missed';
+        } else {
+          completionStatus = 'completed';
+        }
+      } else {
+        completionStatus = 'unreported';
+      }
+
+      const status = completionStatus === 'completed'
+        ? 'Completado'
+        : completionStatus === 'partial'
+          ? 'A medias'
+          : completionStatus === 'missed'
+            ? 'No realizado'
+            : 'Planificado';
+
+      const defaultRpes = [5, 8, 4, 9, 6, 10, 7];
+      const defaultSensaciones = [
+        'Sensaciones fluidas y ritmo controlado',
+        'Esfuerzo alto, buen control de pulsaciones',
+        'Rodaje suave y regenerativo',
+        'Series intensas con buena técnica',
+        'Trabajo de fuerza completo con buen tono',
+        'Ritmo exigente de competición',
+        'Tirada larga con buena asimilación',
+      ];
+      const rpe = demoLog?.rpe ? Number(demoLog.rpe) : defaultRpes[dayIndex % defaultRpes.length];
+      const notes = demoLog?.notes || demoLog?.sensaciones || defaultSensaciones[dayIndex % defaultSensaciones.length];
 
       return {
         id: `${preparationWeek}-${day}`,
@@ -62,9 +99,17 @@ export function createTrainingHistory(trainingLogs = {}) {
         averageHr: numberValue(demoLog?.averageHr || 145 + ((preparationWeek * 3 + dayIndex * 5) % 22)),
         restingHr: numberValue(demoLog?.restingHr || 48 + ((preparationWeek + dayIndex) % 8)),
         hrv: numberValue(demoLog?.hrv || 52 + ((preparationWeek * 4 + dayIndex * 3) % 24)),
+        rpe,
+        notes,
+        mood,
+        fatigue,
+        soreness,
+        sleep,
+        stress,
         wellbeingTotal,
         zones: zoneShares.map((share) => Math.round(minutes * share)),
-        status: saved || isPast ? 'Completado' : 'Planificado',
+        status,
+        completionStatus,
         isRest,
       };
     });

@@ -13,7 +13,7 @@ const minutesSecondsPattern = '(0?[0-9]|[1-5][0-9]|60):[0-5][0-9]';
 const hundredthsPattern = `${minutesSecondsPattern}([.,][0-9]{2})?`;
 const hoursPattern = '([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]';
 
-export default function Profile({ role = 'atleta', preparation = null, setPreparations = () => {}, email = 'alex.martin@example.com' }) {
+export default function Profile({ role = 'atleta', preparation = null, setPreparations = () => {}, email = 'alex.martin@example.com', athleteProfile = { fcMax: 190, sex: 'male' }, setAthleteProfile = () => {} }) {
   const [name, setName] = useState('Alex Martín');
   const [birthDate, setBirthDate] = useState('1998-04-12');
   const [gender, setGender] = useState('No especificado');
@@ -104,6 +104,41 @@ export default function Profile({ role = 'atleta', preparation = null, setPrepar
           }}>＋ Añadir objetivo</button>
         </div>
       </section>
+
+      {role === 'atleta' && <section className="panel profile-physiology-panel">
+        <div className="panel-title"><div><h2>Parámetros fisiológicos</h2><p>Usados para calcular el TRIMP (carga interna) de cada entrenamiento</p></div></div>
+        <div className="form-grid">
+          <label className="field-label">
+            FC máxima
+            <small className="profile-physiology-help">Frecuencia cardíaca máxima en pulsaciones por minuto. Puedes estimarla como 220 − tu edad o medirla en un test de esfuerzo máximo.</small>
+            <div className="profile-fcmax-row">
+              <input
+                type="number"
+                min="100"
+                max="230"
+                step="1"
+                value={athleteProfile.fcMax}
+                onChange={(e) => setAthleteProfile((prev) => ({ ...prev, fcMax: Math.max(100, Math.min(230, Number(e.target.value))) }))}
+              />
+              <span className="profile-physiology-unit">ppm</span>
+            </div>
+          </label>
+          <label className="field-label">
+            Sexo biológico
+            <small className="profile-physiology-help">Afecta al coeficiente exponencial de la fórmula de Banister (k = 1,92 hombre · k = 1,67 mujer). Selecciona el que corresponda con tu fisiología.</small>
+            <select
+              value={athleteProfile.sex}
+              onChange={(e) => setAthleteProfile((prev) => ({ ...prev, sex: e.target.value }))}
+            >
+              <option value="male">Hombre (k = 1,92)</option>
+              <option value="female">Mujer (k = 1,67)</option>
+            </select>
+          </label>
+        </div>
+        <p className="profile-physiology-formula">
+          Fórmula Banister: TRIMP = <em>D</em> × ΔFC × 0,64 × e<sup>k·ΔFC</sup> &nbsp;·&nbsp; donde ΔFC = (FC<sub>media</sub> − FC<sub>reposo</sub>) / (FC<sub>máx</sub> − FC<sub>reposo</sub>)
+        </p>
+      </section>}
 
       <section className="panel profile-marks-panel">
         <div className="panel-title"><div><h2>Marcas personales</h2><p>Elige hasta 3 pruebas y añade tus mejores tiempos</p></div></div>

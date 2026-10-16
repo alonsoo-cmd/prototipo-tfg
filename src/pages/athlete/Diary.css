@@ -145,7 +145,7 @@
 
 .journal-input-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 12px;
 }
 
@@ -193,18 +193,19 @@
   display: flex;
   align-items: baseline;
   gap: 4px;
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .wellbeing-range-heading small {
-  color: #99a3ac;
-  font-size: 8px;
-  font-weight: 500;
+  color: #8793a0;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .wellbeing-range {
   width: 100%;
-  height: 9px;
+  height: 11px;
   margin: 3px 0;
   padding: 0;
   appearance: none;
@@ -213,32 +214,40 @@
   border-radius: 999px;
   outline: none;
   background: linear-gradient(to right, #39a96b 0%, #8bcf67 25%, #d8d85b 50%, #f0a04c 75%, #db5148 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 
 .wellbeing-range::-webkit-slider-thumb {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   appearance: none;
   -webkit-appearance: none;
   border: 3px solid #fff;
   border-radius: 50%;
-  background: #44596b;
-  box-shadow: 0 1px 5px #1b2c3a55;
+  background: #354e61;
+  box-shadow: 0 2px 6px #1b2c3a55;
+  cursor: pointer;
+  transition: transform .12s ease;
 }
 
 .wellbeing-range::-moz-range-thumb {
-  width: 13px;
-  height: 13px;
+  width: 20px;
+  height: 20px;
   border: 3px solid #fff;
   border-radius: 50%;
-  background: #44596b;
-  box-shadow: 0 1px 5px #1b2c3a55;
+  background: #354e61;
+  box-shadow: 0 2px 6px #1b2c3a55;
+  cursor: pointer;
+  transition: transform .12s ease;
 }
 
-.wellbeing-range:focus-visible::-webkit-slider-thumb {
-  outline: 2px solid #446f8b;
-  outline-offset: 2px;
+.wellbeing-range:hover::-webkit-slider-thumb, .wellbeing-range:hover::-moz-range-thumb {
+  transform: scale(1.1);
+}
+
+.wellbeing-range:focus-visible::-webkit-slider-thumb, .wellbeing-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(68, 111, 139, 0.35), 0 2px 6px #1b2c3a55;
 }
 
 .wellbeing-range-ends {
@@ -273,4 +282,431 @@
   .gym-detail-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workout-completion-options { grid-template-columns: 1fr; }
   .workout-completion-option { padding: 8px 10px; }
+}
+
+/* ── Diary Averages Modal ── */
+
+.diary-stats-heading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.averages-trigger {
+  align-self: flex-start;
+  padding: 4px 8px;
+  border: 1px solid #d5e1e9;
+  border-radius: 5px;
+  background: #f1f7fa;
+  color: #477594;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.averages-trigger:hover {
+  border-color: #a9c4d5;
+  background: #e3eef5;
+}
+
+.diary-averages-modal {
+  width: min(560px, calc(100vw - 40px));
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.averages-mode-toggle {
+  display: flex;
+  gap: 0;
+  margin: 0 0 16px;
+  padding: 3px;
+  border: 1px solid #e1e7eb;
+  border-radius: 8px;
+  background: #f5f7f9;
+}
+
+.averages-mode-toggle button {
+  flex: 1;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #627487;
+  font: 600 11px 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.averages-mode-toggle button:hover {
+  color: #3b5468;
+}
+
+.averages-mode-toggle button.active {
+  background: #fff;
+  color: #2d4155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.averages-period-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 0 0 6px;
+}
+
+.averages-period-nav > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 200px;
+}
+
+.averages-period-nav strong {
+  color: #2d4155;
+  font: 700 14px Manrope, sans-serif;
+}
+
+.averages-period-nav small {
+  color: #8793a0;
+  font-size: 10px;
+}
+
+.averages-days-count {
+  text-align: center;
+  margin: 0 0 18px;
+  color: #98a2ac;
+  font-size: 10px;
+}
+
+.averages-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.averages-block {
+  padding: 14px;
+  border: 1px solid #e8edf0;
+  border-radius: 8px;
+}
+
+.averages-block-title {
+  margin: 0 0 12px;
+  color: #536578;
+  font: 700 11px Manrope, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.averages-block-title small {
+  color: #98a2ac;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 6px;
+}
+
+.averages-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.averages-metrics-grid.two-cols {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.avg-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 11px;
+  border: 1px solid #edf0f2;
+  border-radius: 6px;
+  background: #fafbfc;
+}
+
+.avg-metric-label {
+  color: #8793a0;
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.avg-metric-value {
+  color: #2d4155;
+  font: 700 18px Manrope, sans-serif;
+}
+
+.avg-metric-value small {
+  color: #84909c;
+  font: 500 9px 'DM Sans', sans-serif;
+}
+
+.averages-totals {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #edf0f2;
+  color: #627487;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.averages-wellbeing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avg-wellbeing-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+}
+
+.avg-wellbeing-label {
+  color: #536578;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.avg-wellbeing-track {
+  height: 8px;
+  background: #edf0f2;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.avg-wellbeing-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.avg-wellbeing-value {
+  font: 700 12px Manrope, sans-serif;
+  text-align: right;
+}
+
+.averages-wt-total {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #edf0f2;
+  color: #536578;
+  font-size: 11px;
+}
+
+.averages-wt-total strong {
+  color: #2d4155;
+  font: 700 16px Manrope, sans-serif;
+}
+
+.averages-wt-total small {
+  color: #84909c;
+  font-size: 10px;
+}
+
+.averages-empty {
+  padding: 30px 20px;
+  text-align: center;
+  color: #8793a0;
+  font-size: 11px;
+}
+
+@media (max-width: 540px) {
+  .averages-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .avg-metric-value {
+    font-size: 15px;
+  }
+}
+
+/* ── TRIMP Card & Badges in Diary ── */
+
+.journal-trimp-card {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e2eaef;
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.journal-trimp-card.has-value {
+  border-color: #cbdbe6;
+  background: linear-gradient(135deg, #f3f8fb 0%, #ffffff 100%);
+  box-shadow: 0 1px 3px rgba(35, 60, 80, 0.04);
+}
+
+.journal-trimp-card.empty {
+  border-style: dashed;
+  background: #fbfcfd;
+}
+
+.journal-trimp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.journal-trimp-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.journal-trimp-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #ebf3f8;
+  color: #3b6b8c;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.journal-trimp-label-group b {
+  display: block;
+  color: #34485b;
+  font: 700 11px Manrope, sans-serif;
+}
+
+.journal-trimp-label-group small {
+  display: block;
+  color: #8393a1;
+  font-size: 9px;
+}
+
+.trimp-impact-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.trimp-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.trimp-impact-badge.green {
+  background: #eef7ee;
+  color: #2e693b;
+  border: 1px solid #c2e2c6;
+}
+.trimp-impact-badge.green .trimp-badge-dot {
+  background: #3fa654;
+}
+
+.trimp-impact-badge.blue {
+  background: #eef4f9;
+  color: #2b597c;
+  border: 1px solid #c3d9eb;
+}
+.trimp-impact-badge.blue .trimp-badge-dot {
+  background: #3780b8;
+}
+
+.trimp-impact-badge.amber {
+  background: #fff7eb;
+  color: #925c19;
+  border: 1px solid #fae0b8;
+}
+.trimp-impact-badge.amber .trimp-badge-dot {
+  background: #d98820;
+}
+
+.trimp-impact-badge.red {
+  background: #fdf0f0;
+  color: #9e3333;
+  border: 1px solid #f6c8c8;
+}
+.trimp-impact-badge.red .trimp-badge-dot {
+  background: #d84545;
+}
+
+.journal-trimp-card-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eef2f5;
+}
+
+.journal-trimp-value-display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.journal-trimp-value-display strong {
+  color: #1e3347;
+  font: 800 24px Manrope, sans-serif;
+  line-height: 1;
+}
+
+.journal-trimp-value-display span {
+  color: #7b8c9c;
+  font: 700 9px 'DM Sans', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.journal-trimp-info {
+  flex: 1;
+}
+
+.journal-trimp-category-desc {
+  margin: 0;
+  color: #516474;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.journal-trimp-tip {
+  display: block;
+  margin-top: 4px;
+  color: #7f91a0;
+  font-size: 9px;
+}
+
+.journal-trimp-empty-guide {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: #8495a4;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.journal-trimp-empty-guide p {
+  margin: 0;
+}
+
+.day-load .logged-trimp {
+  color: #31658c;
+  font-weight: 700;
+  background: #eef5fa;
+  padding: 1px 4px;
+  border-radius: 4px;
 }

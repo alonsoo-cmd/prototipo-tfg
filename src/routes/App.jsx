@@ -14,13 +14,15 @@ import Metric from '../components/ui/Metric.jsx';
 import ActivityForm from '../components/modals/ActivityForm.jsx';
 import Sidebar from '../components/layout/Sidebar.jsx';
 import Topbar from '../components/layout/Topbar.jsx';
+import { getWeekStatus } from '../components/ui/WeekTimeline.jsx';
 
 export default function App(){
  const [trainingLogs, setTrainingLogs] = useState({});
+ const [athleteProfile, setAthleteProfile] = useState({ fcMax: 190, sex: 'male' });
  const [workoutTemplates, setWorkoutTemplates] = useState(() => createSampleWorkoutTemplates());
  const [requestDate, setRequestDate] = useState('2026-12-06');
  const [preparations, setPreparations] = useState([{ id: 1, athleteId: 'alex', athleteName: 'Alex Martín', name: 'Preparación de otoño', duration: '12 semanas', coach: 'Lucía Fernández', objectives: [{ id: 11, name: 'Media Maratón Madrid', distance: 'Media maratón', eventDate: '2026-12-06' }] }]);
- const [role,setRole]=useState('atleta'), [page,setPage]=useState('Dashboard'), [week,setWeek]=useState(8), [modal,setModal]=useState(null), [activeSession,setActiveSession]=useState(sessions[0]), [activePlan,setActivePlan]=useState(true), [comment,setComment]=useState(''), [comments,setComments]=useState([]), [connected,setConnected]=useState(false), [requestSent,setRequestSent]=useState(false), [requestStatus,setRequestStatus]=useState('Pendiente'), [coachWeeks,setCoachWeeks]=useState(()=>Array.from({length:8},(_,i)=>({number:i+1,phase:i<3?'BI · Base':'BII · Acumulación',days:sessions.map(s=>({...s}))}))), [uploaded,setUploaded]=useState(false), [mobileNavOpen,setMobileNavOpen]=useState(false);
+ const [role,setRole]=useState('atleta'), [page,setPage]=useState('Dashboard'), [week,setWeek]=useState(8), [modal,setModal]=useState(null), [activeSession,setActiveSession]=useState(sessions[0]), [activePlan,setActivePlan]=useState(true), [comment,setComment]=useState(''), [comments,setComments]=useState([]), [connected,setConnected]=useState(false), [requestSent,setRequestSent]=useState(false), [requestStatus,setRequestStatus]=useState('Pendiente'), [coachWeeks,setCoachWeeks]=useState(()=>Array.from({length:12},(_,i)=>({number:i+1,phase:i<3?'BI · Base':i<8?'BII · Acumulación':i<10?'BII · Transformación':i<11?'BIII · Realización':'Competición',days:sessions.map(s=>({...s}))}))), [uploaded,setUploaded]=useState(false), [mobileNavOpen,setMobileNavOpen]=useState(false);
  const go=p=>{setPage(p);setModal(null)};
  const openSession=s=>{setActiveSession(s);setModal('session')};
  const addComment=()=>{if(comment.trim()){setComments([...comments,comment.trim()]);setComment('')}};
@@ -34,11 +36,11 @@ export default function App(){
    <Topbar role={role} page={page} onMenuClick={()=>setMobileNavOpen(open=>!open)} menuOpen={mobileNavOpen}/>
    {page==='Dashboard'&&<Dashboard role={role} weekNumber={week} weeks={coachWeeks} onNavigate={go} onSession={openSession} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>}
     
-   {page==='Diary'&&<Diary role={role} week={week} setWeek={setWeek} activePlan={activePlan} setActivePlan={setActivePlan} preparation={athletePreparation} onSession={openSession} onPlan={()=>go('Find coach')} onPhases={()=>setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs}/>
+   {page==='Diary'&&<Diary role={role} week={week} setWeek={setWeek} activePlan={activePlan} setActivePlan={setActivePlan} preparation={athletePreparation} onSession={openSession} onPlan={()=>go('Find coach')} onPhases={()=>setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs} athleteProfile={athleteProfile}/>
     }
-   {page==='Data'&&<DataPage role={role} trainingLogs={trainingLogs} onSession={openSession} coachWeeks={coachWeeks}/>
+   {page==='Data'&&<DataPage role={role} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs} onSession={openSession} coachWeeks={coachWeeks}/>
     }
-   {page==='Profile'&&<Profile role={role} preparation={preparations.find((item) => item.athleteId === 'alex') || null} setPreparations={setPreparations} />
+   {page==='Profile'&&<Profile role={role} preparation={preparations.find((item) => item.athleteId === 'alex') || null} setPreparations={setPreparations} athleteProfile={athleteProfile} setAthleteProfile={setAthleteProfile} />
     }
    {page==='Find coach'&&<FindCoach onRequest={()=>setModal('request')} sent={requestSent} setSent={setRequestSent}/>
     }
@@ -154,14 +156,37 @@ export default function App(){
       return groups;
     }, {})).map((phase) => <details className="phase-workout-group" key={phase.name} open={phase.weeks.some((planWeek) => planWeek.number === week)}>
       <summary>{phase.name}<small>{phase.weeks.length} {phase.weeks.length === 1 ? 'semana' : 'semanas'}</small></summary>
-      {phase.weeks.map((planWeek) => <details className={`phase-week ${planWeek.number === week ? 'current' : ''}`} key={planWeek.number} open={planWeek.number === week}>
-        <summary>Semana {planWeek.number}{planWeek.number === week && <small>Semana seleccionada</small>}</summary>
-        <div className="phase-week-workouts">{planWeek.days.filter((day) => day.type).map((day) => <div className="phase-workout-item" key={day.day}>
-          <div><b>{day.day} · {day.type}</b><small>{day.date} {day.month || 'oct'}</small></div>
-          <p>{day.desc || day.blocks || 'Sin descripción'}</p>
-          <span>{day.mins || 0} min · {day.km || 0} km{day.shoes ? ` · 👟 ${day.shoes}` : ''}</span>
-        </div>)}{!planWeek.days.some((day) => day.type) && <p className="phase-no-workouts">Todavía no hay entrenamientos planificados para esta semana.</p>}</div>
-      </details>)}
+      {phase.weeks.map((planWeek) => {
+        const status = getWeekStatus(planWeek.number, 8);
+        return <details className={`phase-week ${planWeek.number === week ? 'current' : ''}`} key={planWeek.number} open={planWeek.number === week}>
+          <summary style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>Semana {planWeek.number}</span>
+            <span className={`week-timeline-badge ${status}`}>
+              {status === 'past' && '✓ Realizada'}
+              {status === 'current' && '● Actual'}
+              {status === 'future' && 'Planificada'}
+            </span>
+            {planWeek.number === week && <small>Semana seleccionada</small>}
+            <button
+              type="button"
+              className="text-button"
+              style={{ marginLeft: 'auto', fontSize: '10px' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setWeek(planWeek.number);
+                setModal(null);
+              }}
+            >
+              Ir a semana →
+            </button>
+          </summary>
+          <div className="phase-week-workouts">{planWeek.days.filter((day) => day.type).map((day) => <div className="phase-workout-item" key={day.day}>
+            <div><b>{day.day} · {day.type}</b><small>{day.date} {day.month || 'oct'}</small></div>
+            <p>{day.desc || day.blocks || 'Sin descripción'}</p>
+            <span>{day.mins || 0} min · {day.km || 0} km{day.shoes ? ` · 👟 ${day.shoes}` : ''}</span>
+          </div>)}{!planWeek.days.some((day) => day.type) && <p className="phase-no-workouts">Todavía no hay entrenamientos planificados para esta semana.</p>}</div>
+        </details>;
+      })}
     </details>)}</div>
     <button className="button primary" onClick={()=>setModal(null)}>Cerrar resumen</button>
     </>

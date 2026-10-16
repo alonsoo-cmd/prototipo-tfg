@@ -98,29 +98,54 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
         <div className="today-wellbeing-preview">
           <div className="eyebrow">BIENESTAR DE HOY</div>
           <div className="today-wellbeing-ranges">{[['mood', 'Irritabilidad'], ['fatigue', 'Fatiga'], ['soreness', 'Agujetas'], ['sleep', 'Sueño'], ['stress', 'Estrés']].map(([key, label]) => {
-            const value = wellbeingDraft[key] ?? todayLog?.[key];
-            return <div className="today-wellbeing-row" key={key}>
-              <label htmlFor={`today-${key}`}>{label}</label>
-              <input
-                id={`today-${key}`}
-                className="today-wellbeing-slider"
-                type="range"
-                min="1"
-                max="10"
-                step="1"
-                value={value ?? 1}
-                aria-label={`${label} de hoy, de 1 a 10`}
-                aria-valuetext={value ? `${value} de 10` : 'Sin registrar'}
-                onChange={(event) => setWellbeingDraft((current) => ({ ...current, [key]: event.target.value }))}
-              />
-              {value !== '' && value !== undefined && <b>{value}</b>}
-            </div>;
+            const rawValue = wellbeingDraft[key] ?? todayLog?.[key];
+            const numValue = Number(rawValue);
+            const hasValue = rawValue !== '' && rawValue !== undefined && rawValue !== null && !Number.isNaN(numValue);
+            const displayValue = hasValue ? numValue : null;
+            return (
+              <div className="today-wellbeing-row" key={key}>
+                <label htmlFor={`today-${key}`}>{label}</label>
+                <input
+                  id={`today-${key}`}
+                  className="today-wellbeing-slider"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  value={displayValue ?? 1}
+                  aria-label={`${label} de hoy, de 1 a 10`}
+                  aria-valuetext={displayValue !== null ? `${displayValue} de 10` : 'Sin registrar'}
+                  onPointerDown={() => {
+                    if (displayValue === null) {
+                      setWellbeingDraft((current) => ({ ...current, [key]: 1 }));
+                    }
+                  }}
+                  onChange={(event) => {
+                    const nextValue = Number(event.target.value) || 1;
+                    setWellbeingDraft((current) => ({ ...current, [key]: nextValue }));
+                  }}
+                />
+                <b
+                  className={`today-wellbeing-badge ${displayValue !== null ? 'has-value' : 'is-empty'}`}
+                  aria-label={displayValue !== null ? `${label}: ${displayValue} de 10` : `${label}: sin registrar`}
+                  title={displayValue !== null ? `${displayValue}/10` : 'Sin registrar'}
+                >
+                  {displayValue !== null ? displayValue : '—'}
+                </b>
+              </div>
+            );
           })}</div>
           <div className="today-health-injuries">
             <section className="today-health-section"><div className="eyebrow today-health-heading">SALUD</div>
               <div className="today-health-fields">
-                <label>FC en reposo <span>ppm</span><input type="number" min="25" max="240" value={wellbeingDraft.restingHr ?? todayLog?.restingHr ?? ''} onChange={(event) => setWellbeingDraft((current) => ({ ...current, restingHr: event.target.value }))} /></label>
-                <label>HRV <span>ms</span><input type="number" min="0" value={wellbeingDraft.hrv ?? todayLog?.hrv ?? ''} onChange={(event) => setWellbeingDraft((current) => ({ ...current, hrv: event.target.value }))} /></label>
+                <label>FC en reposo <span>ppm</span><input type="number" min="25" max="240" value={wellbeingDraft.restingHr ?? todayLog?.restingHr ?? ''} onChange={(event) => {
+                  const val = event.target.value;
+                  setWellbeingDraft((current) => ({ ...current, restingHr: val }));
+                }} /></label>
+                <label>HRV <span>ms</span><input type="number" min="0" value={wellbeingDraft.hrv ?? todayLog?.hrv ?? ''} onChange={(event) => {
+                  const val = event.target.value;
+                  setWellbeingDraft((current) => ({ ...current, hrv: val }));
+                }} /></label>
               </div>
             </section>
             <section className="today-injury-section"><div className="eyebrow today-health-heading">MOLESTIAS</div>

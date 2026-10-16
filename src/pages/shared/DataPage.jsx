@@ -1,11 +1,13 @@
 import { Fragment, useMemo, useState } from 'react';
 import { createTrainingHistory, preparationPhases } from '../../data/trainingHistory.js';
+import { getWeekDateRange } from '../../components/ui/WeekTimeline.jsx';
+import { workoutColor } from '../../data/coachAthletes.js';
 import './DataPage.css';
 
 const monthFormatter = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const shortDateFormatter = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', timeZone: 'UTC' });
 
-export default function DataPage({ trainingLogs = {}, onSession, role, coachWeeks = [] }) {
+export default function DataPage({ trainingLogs = {}, setTrainingLogs, onSession, role, coachWeeks = [] }) {
   const [section, setSection] = useState('data');
   const [period, setPeriod] = useState('last30');
   const [phase, setPhase] = useState('all');
@@ -15,6 +17,25 @@ export default function DataPage({ trainingLogs = {}, onSession, role, coachWeek
       return coachWeeks.flatMap((week) => week.days.map((day, index) => {
         const dateObj = new Date(Date.UTC(2026, 7, 24 + (week.number - 1) * 7 + index));
         const dateStr = dateObj.toISOString().slice(0, 10);
+        const todayKey = new Date().toLocaleDateString('en-CA');
+        const isPast = dateStr <= todayKey;
+        let completionStatus = demoLog?.completionStatus;
+        if (!completionStatus && isPast) {
+          if ((week.number === 7 && index === 0) || (week.number === 8 && index === 1)) {
+            completionStatus = 'partial';
+          } else if (week.number === 7 && index === 2) {
+            completionStatus = 'missed';
+          } else {
+            completionStatus = 'completed';
+          }
+        }
+        const status = completionStatus === 'completed'
+          ? 'Completado'
+          : completionStatus === 'partial'
+            ? 'A medias'
+            : completionStatus === 'missed'
+              ? 'No realizado'
+              : 'Planificado';
         return {
           id: `${week.number}-${day.day}`,
           preparationWeek: week.number,
@@ -28,7 +49,12 @@ export default function DataPage({ trainingLogs = {}, onSession, role, coachWeek
           trimps: Number(day.tr) || 0,
           pace: '5:00',
           averageHr: 140, restingHr: 50, hrv: 50, wellbeingTotal: 0,
-          zones: [0, 0, 0, 0], status: 'Planificado', isRest: !day.type
+          rpe: 6,
+          notes: day.desc || 'Entrenamiento de grupo',
+          zones: [0, 0, 0, 0],
+          status,
+          completionStatus: completionStatus || 'unreported',
+          isRest: !day.type
         };
       }));
     }
@@ -118,6 +144,7 @@ export default function DataPage({ trainingLogs = {}, onSession, role, coachWeek
           records={filteredRecords}
           recentSevenDays={recentSevenDays}
           onSession={onSession}
+          setTrainingLogs={setTrainingLogs}
         />
       ) : (
         <ChartsSection
@@ -134,28 +161,263 @@ export default function DataPage({ trainingLogs = {}, onSession, role, coachWeek
   );
 }
 
-function DataSection({ records, recentSevenDays, onSession }) {
+function DataSection({ records, recentSevenDays, onSession, setTrainingLogs }) {
+  const [viewMode, setViewMode] = useState('table');
   const monthGroups = [...groupBy(records, (record) => record.date.slice(0, 7)).entries()]
     .sort(([monthA], [monthB]) => monthB.localeCompare(monthA));
+
   return (
     <div className="data-section">
       <section className="panel data-table-panel">
-        <PanelHeading title="Detalle de entrenamientos" description={`${records.length} sesiones dentro del periodo y fase seleccionados`} />
-        <div className="training-calendar">
-          {!monthGroups.length && <p className="empty-chart">No hay sesiones para mostrar.</p>}
-          {monthGroups.map(([month, monthRecords]) => <TrainingCalendarMonth key={month} month={month} records={monthRecords} allRecords={records} onSession={onSession} />)}
+        <div className="panel-header-with-actions">
+          <PanelHeading title="Detalle de entrenamientos" description={`${records.length} sesiones dentro del periodo y fase seleccionados`} />
+          <div className="view-mode-toggle" role="tablist" aria-label="Modo de visualización de entrenamientos">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={viewMode === 'table'}
+              className={`view-mode-button ${viewMode === 'table' ? 'active' : ''}`}
+              onClick={() => setViewMode('table')}
+            >
+              <span aria-hidden="true">▤</span> Tabla detallada
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={viewMode === 'calendar'}
+              className={`view-mode-button ${viewMode === 'calendar' ? 'active' : ''}`}
+              onClick={() => setViewMode('calendar')}
+            >
+              <span aria-hidden="true">▦</span> Calendario
+            </button>
+          </div>
         </div>
+
+        {viewMode === 'table' ? (
+          <DetailedTrainingTable
+            records={records}
+            onSession={onSession}
+            setTrainingLogs={setTrainingLogs}
+          />
+        ) : (
+          <div className="training-calendar">
+            {!monthGroups.length && <p className="empty-chart">No hay sesiones para mostrar.</p>}
+            {monthGroups.map(([month, monthRecords]) => (
+              <TrainingCalendarMonth
+                key={month}
+                month={month}
+                records={monthRecords}
+                allRecords={records}
+                onSession={onSession}
+                setTrainingLogs={setTrainingLogs}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="panel data-table-panel recent-seven-panel">
-        <PanelHeading title="Últimos 7 días" description="Kilómetros, minutos y TRIMPS de los siete días más recientes del periodo" />
+        <PanelHeading title="Últimos 7 días" description="Kilómetros, minutos y TRIMPS consolidados de los siete días más recientes del periodo" />
         <SummaryTable rows={recentSevenDays} firstColumn="Día" />
       </section>
     </div>
   );
 }
 
-function TrainingCalendarMonth({ month, records, allRecords, onSession }) {
+function StatusSemaphor({ status, label, onClick }) {
+  return (
+    <button
+      type="button"
+      className={`status-semaphor-pill status-${status}`}
+      onClick={onClick}
+      title={onClick ? `${label} (clic para alternar estado)` : label}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      aria-label={`Estado: ${label}`}
+    >
+      <span className={`calendar-status-dot status-${status}`} aria-hidden="true" />
+      <span className="status-semaphor-text">{label}</span>
+    </button>
+  );
+}
+
+function RpeBadge({ rpe }) {
+  if (!rpe) return <span className="muted">—</span>;
+  const tone = rpe <= 4 ? 'low' : rpe <= 7 ? 'mid' : 'high';
+  return (
+    <span className={`rpe-badge rpe-${tone}`} title={`RPE ${rpe}/10 (escala de esfuerzo percibido)`}>
+      <b>{rpe}</b><small>/10</small>
+    </span>
+  );
+}
+
+function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
+  const weekGroups = useMemo(() => {
+    const groups = groupBy(records, (r) => r.preparationWeek);
+    return [...groups.entries()].sort(([weekA], [weekB]) => Number(weekB) - Number(weekA));
+  }, [records]);
+
+  if (!records.length) {
+    return <p className="empty-chart">No hay sesiones dentro del periodo y fase seleccionados.</p>;
+  }
+
+  return (
+    <div className="table-scroll detailed-training-table-wrap">
+      <table className="analytics-table detailed-analytics-table">
+        <thead>
+          <tr>
+            <th style={{ width: '100px' }}>Fecha</th>
+            <th style={{ width: '125px' }}>Estado</th>
+            <th style={{ width: '135px' }}>Tipo sesión</th>
+            <th style={{ width: '80px' }} className="num-col">Kms</th>
+            <th style={{ width: '80px' }} className="num-col">Minutos</th>
+            <th style={{ width: '80px' }} className="num-col">TRIMPS</th>
+            <th style={{ width: '75px' }} className="num-col">RPE</th>
+            <th style={{ width: '85px' }} className="num-col">FC media</th>
+            <th>Sensaciones / Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {weekGroups.map(([weekNum, weekRecords]) => {
+            const weekKm = weekRecords.reduce((sum, r) => sum + (Number(r.distance) || 0), 0);
+            const weekMin = weekRecords.reduce((sum, r) => sum + (Number(r.minutes) || 0), 0);
+            const weekTrimp = weekRecords.reduce((sum, r) => sum + (Number(r.trimps) || 0), 0);
+            const validRpe = weekRecords.map((r) => Number(r.rpe)).filter((v) => Number.isFinite(v) && v > 0);
+            const avgRpe = validRpe.length ? (validRpe.reduce((a, b) => a + b, 0) / validRpe.length).toFixed(1) : null;
+            const validHr = weekRecords.map((r) => Number(r.averageHr)).filter((v) => Number.isFinite(v) && v > 0);
+            const avgHr = validHr.length ? Math.round(validHr.reduce((a, b) => a + b, 0) / validHr.length) : null;
+            const completedCount = weekRecords.filter((r) => (r.completionStatus || r.status) === 'completed' || r.status === 'Completado').length;
+            const phaseName = weekRecords[0]?.phase || '';
+            const weekRange = getWeekDateRange(Number(weekNum), 8);
+
+            return (
+              <Fragment key={`week-group-${weekNum}`}>
+                <tr className="table-week-header-row">
+                  <td colSpan="9">
+                    <div className="table-week-header-badge">
+                      <strong>Semana {weekNum}</strong>
+                      <span className="phase-chip">{phaseName}</span>
+                      <span className="week-range-text">· {weekRange}</span>
+                      <span className="week-completion-pill">
+                        {completedCount} de {weekRecords.length} completados
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+
+                {weekRecords.map((record) => {
+                  const compStatus = record.completionStatus || (record.status === 'Completado' ? 'completed' : 'unreported');
+                  const statusLabel = compStatus === 'completed'
+                    ? 'Completado'
+                    : compStatus === 'partial'
+                      ? 'Incompleto'
+                      : compStatus === 'missed'
+                        ? 'No realizado'
+                        : (record.status || 'Planificado');
+                  const colorKey = workoutColor(record.type);
+
+                  const toggleStatus = (e) => {
+                    if (setTrainingLogs) {
+                      e.stopPropagation();
+                      const next = compStatus === 'completed' ? 'partial' : compStatus === 'partial' ? 'missed' : 'completed';
+                      setTrainingLogs((prev) => ({
+                        ...prev,
+                        [record.id]: {
+                          ...prev[record.id],
+                          completionStatus: next,
+                        },
+                      }));
+                    }
+                  };
+
+                  return (
+                    <tr
+                      key={record.id}
+                      className="training-record-row"
+                      onClick={() => onSession?.(sessionFromRecord(record))}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Ver entrenamiento ${record.type} del ${formatDate(record.date)}`}
+                    >
+                      <td className="date-col">
+                        <b>{record.day.slice(0, 3)}</b>
+                        <small>{formatDate(record.date)}</small>
+                      </td>
+                      <td>
+                        <StatusSemaphor
+                          status={compStatus}
+                          label={statusLabel}
+                          onClick={setTrainingLogs ? toggleStatus : undefined}
+                        />
+                      </td>
+                      <td>
+                        <span className={`session-type-chip workout-color-${colorKey}`}>
+                          {record.type}
+                        </span>
+                      </td>
+                      <td className="num-col">
+                        <b>{formatNumber(record.distance, 1)}</b>
+                        <small className="unit"> km</small>
+                      </td>
+                      <td className="num-col">
+                        <b>{record.minutes}</b>
+                        <small className="unit"> min</small>
+                      </td>
+                      <td className="num-col">
+                        <span className={`trimp-cell-badge ${record.trimps > 100 ? 'high' : ''}`}>
+                          {record.trimps}
+                        </span>
+                      </td>
+                      <td className="num-col">
+                        <RpeBadge rpe={record.rpe} />
+                      </td>
+                      <td className="num-col">
+                        {record.averageHr ? (
+                          <span><b>{record.averageHr}</b><small className="unit"> ppm</small></span>
+                        ) : '—'}
+                      </td>
+                      <td className="notes-col">
+                        <span className="notes-text" title={record.notes}>
+                          {record.notes || record.description || '—'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+
+                <tr className="table-week-summary-row">
+                  <td colSpan="3">
+                    <span className="weekly-summary-title">∑ Total Semana {weekNum}</span>
+                    <small className="weekly-summary-subtitle">Acumulado semanal</small>
+                  </td>
+                  <td className="num-col">
+                    <strong className="summary-val">{formatNumber(weekKm, 1)} km</strong>
+                  </td>
+                  <td className="num-col">
+                    <strong className="summary-val">{weekMin} min</strong>
+                  </td>
+                  <td className="num-col">
+                    <strong className="summary-val">{weekTrimp} TR</strong>
+                  </td>
+                  <td className="num-col">
+                    {avgRpe ? <small>Media: {avgRpe}</small> : '—'}
+                  </td>
+                  <td className="num-col">
+                    {avgHr ? <small>Media: {avgHr} ppm</small> : '—'}
+                  </td>
+                  <td>
+                    <small className="muted">{completedCount}/{weekRecords.length} sesiones completadas</small>
+                  </td>
+                </tr>
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function TrainingCalendarMonth({ month, records, allRecords, onSession, setTrainingLogs }) {
   const [year, monthNumber] = month.split('-').map(Number);
   const daysInMonth = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
   const firstWeekday = (new Date(Date.UTC(year, monthNumber - 1, 1)).getUTCDay() + 6) % 7;
@@ -164,7 +426,14 @@ function TrainingCalendarMonth({ month, records, allRecords, onSession }) {
   while (cells.length % 7) cells.push(null);
   return (
     <section className="training-calendar-month" aria-label={capitalize(monthFormatter.format(new Date(`${month}-01T00:00:00Z`)))}>
-      <h3>{capitalize(monthFormatter.format(new Date(`${month}-01T00:00:00Z`)))}</h3>
+      <div className="training-calendar-month-header">
+        <h3>{capitalize(monthFormatter.format(new Date(`${month}-01T00:00:00Z`)))}</h3>
+        <div className="training-calendar-status-legend" aria-label="Leyenda de estados de entrenamiento">
+          <span><span className="calendar-status-dot status-completed" aria-hidden="true" />Completado</span>
+          <span><span className="calendar-status-dot status-partial" aria-hidden="true" />A medias</span>
+          <span><span className="calendar-status-dot status-missed" aria-hidden="true" />No realizado</span>
+        </div>
+      </div>
       <div className="training-calendar-grid">
         {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((day) => <b className="training-calendar-weekday" key={day}>{day}</b>)}
         <b className="training-calendar-weekday training-calendar-summary-heading">Semana</b>
@@ -182,9 +451,52 @@ function TrainingCalendarMonth({ month, records, allRecords, onSession }) {
               const dayRecords = day ? recordsByDay.get(day) || [] : [];
               return <div className={`training-calendar-day${day ? '' : ' outside'}`} key={`${month}-${weekIndex}-${dayIndex}`}>
                 {day && <><span className="training-calendar-date">{day}</span><div className="training-calendar-sessions">
-                  {dayRecords.map((record) => <button className="training-calendar-session" key={record.id} onClick={() => onSession?.(sessionFromRecord(record))} aria-label={`Ver ${record.type}, ${formatDate(record.date)}`}>
-                    <b>{record.type}</b><span>{formatNumber(record.distance, 1)} km · {record.minutes} min</span>
-                  </button>)}
+                  {dayRecords.map((record) => {
+                    const colorKey = workoutColor(record.type);
+                    const compStatus = record.completionStatus || (record.status === 'Completado' ? 'completed' : 'unreported');
+                    const statusLabel = compStatus === 'completed'
+                      ? 'Completado'
+                      : compStatus === 'partial'
+                        ? 'A medias'
+                        : compStatus === 'missed'
+                          ? 'No realizado'
+                          : (record.status || 'Planificado');
+
+                    return (
+                      <button
+                        className={`training-calendar-session workout-color-${colorKey}`}
+                        key={record.id}
+                        onClick={() => onSession?.(sessionFromRecord(record))}
+                        aria-label={`Ver ${record.type}, ${formatDate(record.date)} · ${statusLabel}`}
+                      >
+                        <div className="training-calendar-session-header">
+                          <b>{record.type}</b>
+                          <span
+                            className={`calendar-status-dot status-${compStatus}`}
+                            title={`${statusLabel}${setTrainingLogs ? ' · Clic para alternar estado' : ''}`}
+                            role="img"
+                            aria-label={statusLabel}
+                            onClick={(event) => {
+                              if (setTrainingLogs) {
+                                event.stopPropagation();
+                                const next = compStatus === 'completed' ? 'partial' : compStatus === 'partial' ? 'missed' : 'completed';
+                                setTrainingLogs((prev) => ({
+                                  ...prev,
+                                  [record.id]: {
+                                    ...prev[record.id],
+                                    completionStatus: next,
+                                  }
+                                }));
+                              }
+                            }}
+                          />
+                        </div>
+                        <span className="training-calendar-session-meta">
+                          {formatNumber(record.distance, 1)} km · {record.minutes} min
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div></>}
               </div>;
             })}
@@ -203,7 +515,15 @@ function sessionFromRecord(record) {
   const dateLabel = new Intl.DateTimeFormat('es-ES', {
     day: 'numeric', month: 'long', timeZone: 'UTC',
   }).format(date);
-  const tone = /series|umbral|competición/i.test(record.type) ? 'blue' : 'navy';
+  const compStatus = record.completionStatus || (record.status === 'Completado' ? 'completed' : 'unreported');
+  const stateLabel = compStatus === 'completed'
+    ? 'Completado'
+    : compStatus === 'partial'
+      ? 'A medias'
+      : compStatus === 'missed'
+        ? 'No realizado'
+        : (record.status || 'Planificado');
+  const tone = compStatus === 'completed' ? 'green' : compStatus === 'partial' ? 'yellow' : compStatus === 'missed' ? 'pink' : (/series|umbral|competición/i.test(record.type) ? 'blue' : 'navy');
   return {
     ...record,
     date: date.getUTCDate(),
@@ -213,7 +533,7 @@ function sessionFromRecord(record) {
     km: record.distance,
     tr: String(record.trimps),
     blocks: record.description,
-    state: record.status,
+    state: stateLabel,
     tone,
   };
 }
@@ -240,6 +560,10 @@ function PanelHeading({ title, description }) {
 }
 
 function SummaryTable({ rows, firstColumn }) {
+  const totalKm = rows.reduce((s, r) => s + (r.kilometers || 0), 0);
+  const totalMin = rows.reduce((s, r) => s + (r.minutes || 0), 0);
+  const totalTrimp = rows.reduce((s, r) => s + (r.trimps || 0), 0);
+
   return (
     <div className="table-scroll">
       <table className="analytics-table summary-analytics-table">
@@ -255,6 +579,15 @@ function SummaryTable({ rows, firstColumn }) {
             </tr>
           ))}
           {!rows.length && <EmptyRow columns={5} />}
+          {rows.length > 0 && (
+            <tr className="summary-consolidated-row">
+              <td><b>Consolidado (Últimos 7 días)</b></td>
+              <td><b>{formatNumber(totalKm, 1)} km</b></td>
+              <td><b>{totalMin} min</b></td>
+              <td><b>{totalTrimp}</b></td>
+              <td><small className="muted">Total acumulado</small></td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

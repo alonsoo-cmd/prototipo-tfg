@@ -1,0 +1,185 @@
+.week-timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 14px 0 18px;
+  padding: 14px 16px;
+  border: 1px solid #dce8dd;
+  border-radius: 10px;
+  background: #f7faf7;
+}
+
+.week-timeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.week-timeline-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.week-timeline-title .eyebrow {
+  color: #5c7b64;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  margin: 0;
+}
+
+.week-timeline-title strong {
+  color: #2c4232;
+  font: 700 14px Manrope, sans-serif;
+}
+
+.return-current-week-btn {
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #7cb587;
+  color: #256b37;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.return-current-week-btn:hover {
+  background: #eaf5ec;
+  border-color: #256b37;
+  transform: translateY(-1px);
+}
+
+.week-timeline-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+  scrollbar-width: thin;
+}
+
+.week-timeline-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  flex: 0 0 145px;
+  min-width: 145px;
+  padding: 10px 12px;
+  border: 1px solid #d7e4d8;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.week-timeline-card:hover {
+  transform: translateY(-2px);
+  border-color: #72a97f;
+  box-shadow: 0 4px 12px #26834415;
+}
+
+.week-timeline-card.selected {
+  border-color: #268344;
+  background: #f1f8f2;
+  box-shadow: 0 0 0 1.5px #268344, 0 4px 12px #26834420;
+}
+
+.week-timeline-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 6px;
+}
+
+.week-timeline-num {
+  font: 700 12px Manrope, sans-serif;
+  color: #273e2d;
+}
+
+.week-timeline-badge {
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: .2px;
+  white-space: nowrap;
+}
+
+.week-timeline-badge.past {
+  background: #eaf4eb;
+  color: #2b6d39;
+  border: 1px solid #cce3ce;
+}
+
+.week-timeline-badge.current {
+  background: #268344;
+  color: #fff;
+  border: 1px solid #268344;
+}
+
+.week-timeline-badge.future {
+  background: #edf1f4;
+  color: #687988;
+  border: 1px solid #d9e1e6;
+}
+
+.week-timeline-dates {
+  font-size: 9px;
+  color: #556b5a;
+  font-weight: 600;
+}
+
+.week-timeline-phase {
+  font-size: 8px;
+  color: #839786;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.week-history-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 14px;
+  margin-top: 4px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+
+.week-history-alert.past {
+  background: #eff7f0;
+  border: 1px solid #cbe3ce;
+  color: #275d33;
+}
+
+.week-history-alert.future {
+  background: #f3f6f9;
+  border: 1px solid #dbe2e8;
+  color: #4b6174;
+}
+
+.week-history-alert button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.week-history-alert button:hover {
+  opacity: .8;
+}

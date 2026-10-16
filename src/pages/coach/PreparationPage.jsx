@@ -1,8 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
 import { coachAthletes, gymExercises, workoutColor, workoutTypes } from '../../data/coachAthletes.js';
 import { athleteDirectory } from '../../data/athleteDirectory.js';
+import { createTrainingHistory } from '../../data/trainingHistory.js';
 import DatePicker from '../../components/ui/DatePicker.jsx';
 import WorkoutStatus from '../../components/ui/WorkoutStatus.jsx';
+import WeekTimeline, { getWeekStatus } from '../../components/ui/WeekTimeline.jsx';
 
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const phaseOptions = ['BI · Base', 'BII · Acumulación', 'BII · Transformación', 'BIII · Realización', 'Competición', 'Descarga'];
@@ -100,7 +102,30 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
     saveDay(updatedDay);
   };
   const totals = useMemo(() => sumDays(current.days), [current.days]);
-  const practicalDays = current.days.map((day) => ({ ...day, log: trainingLogs[`${current.number}-${day.day}`] })).filter((day) => day.log);
+  const recordedHistory = useMemo(() => createTrainingHistory(trainingLogs), [trainingLogs]);
+  const completedHistory = useMemo(() => {
+    return recordedHistory.filter((item) => ['completed', 'partial', 'missed'].includes(item.completionStatus));
+  }, [recordedHistory]);
+  const last7Workouts = useMemo(() => {
+    return completedHistory.slice(-7).reverse();
+  }, [completedHistory]);
+  const last7Totals = useMemo(() => {
+    if (!last7Workouts.length) {
+      return { km: 0, mins: 0, tr: 0, completed: 0, partial: 0, missed: 0, avgWt: null, avgHr: null, avgPace: '' };
+    }
+    const km = last7Workouts.reduce((sum, w) => sum + (Number(w.distance) || 0), 0);
+    const mins = last7Workouts.reduce((sum, w) => sum + (Number(w.minutes) || 0), 0);
+    const tr = last7Workouts.reduce((sum, w) => sum + (Number(w.trimps) || 0), 0);
+    const completed = last7Workouts.filter((w) => w.completionStatus === 'completed').length;
+    const partial = last7Workouts.filter((w) => w.completionStatus === 'partial').length;
+    const missed = last7Workouts.filter((w) => w.completionStatus === 'missed').length;
+    const wtTotal = last7Workouts.reduce((sum, w) => sum + (Number(w.wellbeingTotal) || 0), 0);
+    const avgWt = wtTotal / last7Workouts.length;
+    const hrTotal = last7Workouts.reduce((sum, w) => sum + (Number(w.averageHr) || 0), 0);
+    const avgHr = Math.round(hrTotal / last7Workouts.length);
+    const avgPace = calculatePace(mins, km);
+    return { km, mins, tr, completed, partial, missed, avgWt, avgHr, avgPace };
+  }, [last7Workouts]);
   const athletePreparation = preparations.find((item) => item.athleteId === athlete.id) || null;
   const athleteObjectives = athletePreparation?.objectives || [];
   const visibleWorkoutTemplates = workoutTemplates.filter((template) => templateTypeFilter === 'all' || template.type === templateTypeFilter);
@@ -185,34 +210,92 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       <button className="button secondary" onClick={onProfile}>Perfil ↗</button>
     </div>
 
-    {athlete.id !== 'grupo-general' && (
-      <section className="panel coach-practical-section">
-        <div className="schedule-heading"><div><div className="eyebrow">PREPARACIÓN PRÁCTICA</div><h2>Registros de la semana <span className="subtle-dates">{dateRange(practicalDays)}</span></h2><p>Solo aparecen los datos que el atleta ha registrado.</p></div><button className="text-button" onClick={() => setShowAllDays(true)}>Ver todos los entrenamientos →</button></div>
-        {practicalDays.length ? <div className="practical-log-list">{practicalDays.map((day) => <article className="practical-log-entry" key={day.day}>
-          <header className="practical-log-header"><div><b>{day.day}</b><span>{dayDate(day)}</span></div><small>Registro del atleta</small></header>
-          <div className="practical-log-activity">
-            <LogValue label="Distancia" value={day.log.distance} unit="km" />
-            <LogValue label="Duración" value={day.log.minutes} unit="min" />
-            <LogValue label="TRIMPS" value={day.log.trimps} />
-            <LogValue label="Ritmo medio" value={day.log.pace || calculatePace(day.log.minutes, day.log.distance)} unit="min/km" />
-            <LogValue label="FC media" value={day.log.averageHr} unit="ppm" />
-          </div>
-          <div className="practical-log-wellbeing"><b>Bienestar · escala 1–10</b><div>
-            <LogValue label="Fatiga" value={day.log.fatigue} />
-            <LogValue label="Irritabilidad" value={day.log.mood} />
-            <LogValue label="Agujetas" value={day.log.soreness} />
-            <LogValue label="Sueño" value={day.log.sleep} />
-            <LogValue label="Estrés" value={day.log.stress} />
-          </div></div>
-          {day.log.injuries?.length > 0 && <div className="practical-log-injuries"><b>Molestias registradas</b>{day.log.injuries.map((injury) => <p key={injury.region}><strong>{injury.regionLabel || injury.region.replaceAll('-', ' ')} · {injury.level}/10</strong>{injury.description && <span>{injury.description}</span>}</p>)}</div>}
-          {day.log.notes && <p className="practical-log-notes"><b>Notas</b>{day.log.notes}</p>}
-        </article>)}</div> : <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos esta semana.</p>}
-      </section>
-    )}
+    <section className="panel coach-practical-section">
+      <div className="schedule-heading">
+        <div>
+          <div className="eyebrow">PREPARACIÓN PRÁCTICA</div>
+          <h2>Resumen de los últimos 7 días de entrenamientos <span className="subtle-dates">{formatRecentDateRange(last7Workouts)}</span></h2>
+          <p>Entrenamientos realizados y registros de {athlete.name} en las últimas 7 sesiones.</p>
+        </div>
+        <button className="text-button" type="button" onClick={() => setShowAllDays(true)}>Ver todos los entrenamientos →</button>
+      </div>
+
+      <div className="coach-total-strip weekly-totals" style={{ margin: '14px 0 16px', padding: '12px 14px', background: 'rgba(255,255,255,0.7)', borderRadius: '8px', border: '1px solid #dce8dc' }}>
+        <Stat label="Kilómetros (7d)" value={`${format(last7Totals.km)} km`} />
+        <Stat label="Tiempo total" value={`${last7Totals.mins} min`} />
+        <Stat label="Carga (TRIMPS)" value={last7Totals.tr} />
+        <Stat label="Completados" value={`${last7Totals.completed} de ${last7Workouts.length}`} />
+        <Stat label="Ritmo medio" value={last7Totals.avgPace ? `${last7Totals.avgPace} min/km` : '—'} />
+        <Stat label="FC media" value={last7Totals.avgHr ? `${last7Totals.avgHr} ppm` : '—'} />
+        <Stat label="Bienestar (WT)" value={last7Totals.avgWt ? `${format(last7Totals.avgWt)} / 50` : '—'} />
+      </div>
+
+      {last7Workouts.length ? <div className="practical-log-list">{last7Workouts.map((item) => {
+        const isCompleted = item.completionStatus === 'completed';
+        const isPartial = item.completionStatus === 'partial';
+        return (
+          <article className="practical-log-entry" key={item.id}>
+            <header className="practical-log-header">
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                <b>{item.day}</b>
+                <span>{formatShortDate(item.date)}</span>
+                <small style={{ color: 'var(--muted-color)', fontSize: '10px' }}>Semana {item.preparationWeek}</small>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '5px',
+                  padding: '2px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: '600',
+                  background: isCompleted ? '#dcfce7' : isPartial ? '#fef9c3' : '#fee2e2',
+                  color: isCompleted ? '#15803d' : isPartial ? '#854d0e' : '#b91c1c'
+                }}>
+                  <span style={{
+                    width: '6px', height: '6px', borderRadius: '50%',
+                    background: isCompleted ? '#22c55e' : isPartial ? '#eab308' : '#ef4444'
+                  }} />
+                  {item.status}
+                </span>
+                <span style={{ fontSize: '12px', fontWeight: '700', color: '#1f2937' }}>{item.type}</span>
+              </div>
+            </header>
+            <div className="practical-log-activity">
+              <LogValue label="Distancia" value={item.distance} unit="km" />
+              <LogValue label="Duración" value={item.minutes} unit="min" />
+              <LogValue label="TRIMPS" value={item.trimps} />
+              <LogValue label="Ritmo medio" value={item.pace} unit="min/km" />
+              <LogValue label="FC media" value={item.averageHr} unit="ppm" />
+              <LogValue label="Esfuerzo" value={`RPE ${item.rpe}/10`} />
+            </div>
+            <div className="practical-log-wellbeing">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <b>Bienestar · escala 1–10</b>
+                <span style={{ fontSize: '11px', fontWeight: '700', color: '#3f7048' }}>WT {item.wellbeingTotal}/50</span>
+              </div>
+              <div>
+                <LogValue label="Fatiga" value={item.fatigue} />
+                <LogValue label="Irritabilidad" value={item.mood} />
+                <LogValue label="Agujetas" value={item.soreness} />
+                <LogValue label="Sueño" value={item.sleep} />
+                <LogValue label="Estrés" value={item.stress} />
+              </div>
+            </div>
+            {item.injuries?.length > 0 && <div className="practical-log-injuries">
+              <b>Molestias registradas</b>
+              {item.injuries.map((injury) => <p key={injury.region}><strong>{injury.regionLabel || injury.region.replaceAll('-', ' ')} · {injury.level}/10</strong>{injury.description && <span>{injury.description}</span>}</p>)}
+            </div>}
+            {item.notes && <p className="practical-log-notes"><b>Sensaciones:</b> <span>{item.notes}</span></p>}
+          </article>
+        );
+      })}</div> : <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos en los últimos 7 días.</p>}
+    </section>
 
     <section className="panel schedule-editor coach-theory-section">
       <div className="schedule-heading"><div><div className="eyebrow">PREPARACIÓN TEÓRICA</div><h2>Plan semanal</h2><p>{athlete.duration} · {athlete.distance} · {planWeeks.length} semanas planificadas</p></div><div className="schedule-actions"><button className="button secondary" onClick={() => setShowAllWeeks(true)}>Semana {current.number} · ver todas ↗</button><button className="button primary" onClick={createWeek} disabled={planWeeks.length >= (Number.parseInt(athlete.duration, 10) || 12)}>＋ Nueva semana</button></div></div>
-      <div className="week-tabs">{planWeeks.map((week) => <button key={week.number} className={selectedWeek === week.number ? 'selected' : ''} onClick={() => setSelectedWeek(week.number)}><small>SEM</small>{String(week.number).padStart(2, '0')}</button>)}</div>
+      <WeekTimeline
+        weeks={planWeeks}
+        selectedWeek={selectedWeek}
+        onSelectWeek={setSelectedWeek}
+        currentWeek={8}
+      />
       <div className="selected-week-heading"><div><div className="eyebrow">SEMANA {current.number} · {current.phase.toUpperCase()}</div><h3>Semana {current.number} · planificación</h3></div><div className="week-actions" style={{ display: 'flex', gap: '8px' }}><button className="button secondary" type="button" onClick={undo} disabled={history.length === 0}>Deshacer</button><button className="button secondary" type="button" onClick={copyCurrentWeek}>Copiar semana</button><button className="button primary" type="button" onClick={pasteWeek} disabled={!clipboard}>Pegar semana</button></div></div>
       {workoutTemplates.length > 0 ? <section className="workout-template-library">
         <div className="workout-template-library-heading"><div><b>Entrenamientos predefinidos</b><span>Arrastra un bloque sobre el día que quieras planificar.</span></div><label>Tipo<select value={templateTypeFilter} onChange={(event) => setTemplateTypeFilter(event.target.value)}><option value="all">Todos</option>{workoutTypes.map((type) => <option key={type}>{type}</option>)}</select></label><span>{visibleWorkoutTemplates.length} disponibles</span></div>
@@ -230,8 +313,6 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       <div className="coach-total-strip weekly-totals"><Stat label={`Km · semana ${current.number}`} value={`${format(totals.km)} km`} /><Stat label="Minutos" value={`${totals.mins} min`} /><Stat label="TRIMPS" value={totals.tr} /><button className="text-button" onClick={() => setShowAllWeeks(true)}>Ver desglose BX · BI · BII →</button></div>
     </section>
 
-    {athlete.id === 'grupo-general' && <GroupAttendancePanel currentWeek={current} trainingLogs={trainingLogs} />}
-
     <section className="panel new-week-section"><div><div className="eyebrow">PLANIFICACIÓN</div><h2>Nueva semana</h2><p>La semana {planWeeks.length + 1} se abrirá con los siete días en blanco para planificar desde cero.</p></div><button className="button primary" onClick={createWeek} disabled={planWeeks.length >= (Number.parseInt(athlete.duration, 10) || 12)}>＋ Crear semana {planWeeks.length + 1}</button></section>
     <section className="panel available-athletes-panel" id="available-athletes">
       <div className="panel-title"><div><h2>Atletas disponibles</h2><p>Solo aparecen atletas que no están asignados a otro entrenador y no tienen una preparación activa.</p></div><span className="count-badge">{availableAthletes.length}</span></div>
@@ -246,10 +327,30 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
     {editingDay && <WorkoutEditor key={`${athlete.id}-${current.number}-${editingDay.day.day}-${editingDay.mode}`} day={editingDay.day} mode={editingDay.mode} onClose={() => setEditingDay(null)} onSave={saveDay} />}
     {startingAthlete && <NewPreparationModal athlete={startingAthlete} onClose={() => setStartingAthlete(null)} onCreate={startPreparation} />}
     {showAllDays && <OverviewModal title={`Todos los entrenamientos · ${athlete.name}`} onClose={() => setShowAllDays(false)}>
-      {planWeeks.flatMap((week) => week.days.map((day) => ({ ...day, week: week.number, log: trainingLogs[`${week.number}-${day.day}`] }))).filter((day) => day.log).map((day) => <div className="overview-row" key={`${day.week}-${day.day}`}><b>{formatWorkoutDate(day.week, day.day)} · Registro del atleta</b><span>{day.log.distance || '—'} km · {day.log.minutes || '—'} min · {day.log.trimps || '—'} TR · Ritmo {day.log.pace || calculatePace(day.log.minutes, day.log.distance) || '—'} min/km</span><span>Fatiga {day.log.fatigue || '—'} · Irritabilidad {day.log.mood || '—'} · Agujetas {day.log.soreness || '—'} · Sueño {day.log.sleep || '—'} · Estrés {day.log.stress || '—'}</span></div>)}
-      {!planWeeks.some((week) => week.days.some((day) => trainingLogs[`${week.number}-${day.day}`])) && <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos.</p>}
+      {completedHistory.slice().reverse().map((day) => <div className="overview-row" key={day.id}>
+        <b>Semana {day.preparationWeek} · {day.day} ({formatShortDate(day.date)}) · {day.type}</b>
+        <span>{day.distance || '—'} km · {day.minutes || '—'} min · {day.trimps || '—'} TR · Ritmo {day.pace || '—'} min/km · FC {day.averageHr || '—'} ppm · {day.status}</span>
+        <span>Fatiga {day.fatigue || '—'} · Irritabilidad {day.mood || '—'} · Agujetas {day.soreness || '—'} · Sueño {day.sleep || '—'} · Estrés {day.stress || '—'} · WT {day.wellbeingTotal || '—'}/50</span>
+        {day.notes && <span style={{ color: 'var(--muted-color)', fontStyle: 'italic' }}>“{day.notes}”</span>}
+      </div>)}
+      {!completedHistory.length && <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos.</p>}
     </OverviewModal>}
-    {showAllWeeks && <OverviewModal title={`Semanas · ${athlete.name}`} onClose={() => setShowAllWeeks(false)}>{planWeeks.map((week) => { const sum = sumDays(week.days); return <button className="overview-row" key={week.number} onClick={() => { setSelectedWeek(week.number); setShowAllWeeks(false); }}><b>Semana {week.number} · {week.phase}</b><span>{format(sum.km)} km · {sum.mins} min · {sum.tr} TRIMPS</span><span>{week.days.filter((day) => day.type).length} entrenamientos</span></button>; })}</OverviewModal>}
+    {showAllWeeks && <OverviewModal title={`Semanas · ${athlete.name}`} onClose={() => setShowAllWeeks(false)}>{planWeeks.map((week) => {
+      const status = getWeekStatus(week.number, 8);
+      const sum = sumDays(week.days);
+      return <button className="overview-row" key={week.number} onClick={() => { setSelectedWeek(week.number); setShowAllWeeks(false); }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <b>Semana {week.number} · {week.phase}</b>
+          <span className={`week-timeline-badge ${status}`}>
+            {status === 'past' && '✓ Realizada'}
+            {status === 'current' && '● Actual'}
+            {status === 'future' && 'Planificada'}
+          </span>
+        </div>
+        <span>{format(sum.km)} km · {sum.mins} min · {sum.tr} TRIMPS</span>
+        <span>{week.days.filter((day) => day.type).length} entrenamientos</span>
+      </button>;
+    })}</OverviewModal>}
   </div>;
 }
 
@@ -420,62 +521,20 @@ function formatWorkoutDate(weekNumber, dayName) {
   return `${dateLabel} - ${weekday}`;
 }
 
-function GroupAttendancePanel({ currentWeek, trainingLogs }) {
-  const members = [
-    { id: 'yo', name: 'Tú (Simulación)' },
-    { id: 'm1', name: 'Carlos Díaz' },
-    { id: 'm2', name: 'Ana Gómez' },
-    { id: 'm3', name: 'Luis Herrero' },
-    { id: 'm4', name: 'Marta Ruiz' },
-  ];
-
-  const daysWithWorkouts = currentWeek.days.filter((day) => day.type);
-
-  const getStatus = (memberId, day) => {
-    if (memberId === 'yo') {
-      const status = trainingLogs[`${currentWeek.number}-${day.day}`]?.completionStatus;
-      return status === 'completed' ? 'green' : status === 'partial' ? 'yellow' : status === 'missed' ? 'red' : 'gray';
-    }
-    const hash = memberId.charCodeAt(1) + day.day.charCodeAt(0) + currentWeek.number + day.day.length;
-    return hash % 4 === 0 ? 'yellow' : hash % 3 !== 0 ? 'green' : 'red';
-  };
-
-  return (
-    <section className="panel" style={{ marginTop: '24px' }}>
-      <div className="eyebrow">CONTROL GRUPAL</div>
-      <h2>Asistencia de la Semana {currentWeek.number}</h2>
-      <p>Verde: completado · Amarillo: a medias · Rojo: no realizado.</p>
-      
-      <div style={{ overflowX: 'auto', marginTop: '16px' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
-          <thead>
-            <tr>
-              <th style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', width: '200px' }}>Entrenamiento</th>
-              {members.map(m => <th key={m.id} style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', fontSize: '13px', fontWeight: '600' }}>{m.name}</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {daysWithWorkouts.length === 0 && <tr><td colSpan={members.length + 1} style={{ padding: '16px', textAlign: 'center', color: 'var(--muted-color)' }}>No hay entrenamientos planificados esta semana.</td></tr>}
-            {daysWithWorkouts.map(day => (
-              <tr key={day.day}>
-                <td style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', fontSize: '14px' }}><b>{day.day}</b><br/><small style={{ color: 'var(--muted-color)' }}>{day.type}</small></td>
-                {members.map(m => {
-                  const status = getStatus(m.id, day);
-                  return (
-                    <td key={m.id} style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)' }}>
-                      <div style={{
-                        width: '24px', height: '24px', borderRadius: '4px',
-                        background: status === 'green' ? '#22c55e' : status === 'yellow' ? '#eab308' : status === 'red' ? '#ef4444' : '#e5e7eb',
-                        border: '1px solid rgba(0,0,0,0.1)'
-                      }} title={status === 'green' ? 'Completado' : status === 'yellow' ? 'A medias' : status === 'red' ? 'No completado' : 'Pendiente'} />
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
+function formatRecentDateRange(workouts) {
+  if (!workouts.length) return '';
+  const oldest = workouts[workouts.length - 1];
+  const newest = workouts[0];
+  return `${formatShortDate(oldest.date)} – ${formatShortDate(newest.date)} 2026`;
 }
+
+function formatShortDate(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length < 3) return dateStr;
+  const d = parts[2];
+  const m = Number(parts[1]);
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${Number(d)} ${months[m - 1] || 'oct'}`;
+}
+

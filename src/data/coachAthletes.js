@@ -1,5 +1,4 @@
 export const coachAthletes = [
-  { id: 'grupo-general', initials: 'GR', name: 'Grupo General (Varios Atletas)', goal: 'Preparación Grupal', eventDate: '15 dic 2026', distance: 'Varios', duration: '12 semanas' },
   { id: 'lucia', initials: 'LF', name: 'Lucía Fernández', goal: 'Media maratón · Madrid', eventDate: '6 dic 2026', distance: 'Media maratón', duration: '12 semanas' },
   { id: 'diego', initials: 'DM', name: 'Diego Morales', goal: '10K · Valencia', eventDate: '15 nov 2026', distance: '10 km', duration: '10 semanas' },
   { id: 'sara', initials: 'SR', name: 'Sara Ruiz', goal: '5K · Alcalá', eventDate: '22 nov 2026', distance: '5 km', duration: '8 semanas' },
@@ -22,15 +21,30 @@ export const gymExercises = [
 ];
 
 export function workoutColor(type) {
+  if (!type) return 'default';
   if (type === 'Descanso') return 'rest';
   if (type === 'Rodaje') return 'easy';
-  if (type === 'Long run / tirada larga') return 'long';
+  if (type === 'Long run / tirada larga' || type === 'Long run') return 'long';
   if (type === 'Cambios') return 'changes';
+  if (type === 'Umbral') return 'threshold';
   if (type === 'Cuestas') return 'hills';
-  if (type === 'Series largas' || type === 'Series cortas') return 'series';
+  if (type === 'Series largas' || type === 'Series cortas' || type === 'Series') return 'series';
   if (type === 'Competición') return 'race';
-  if (type === 'Gimnasio') return 'gym';
+  if (type === 'Gimnasio' || type.startsWith('Gym')) return 'gym';
   if (['Acondicionamiento físico', 'Core', 'Movilidad', 'Pliometría'].includes(type)) return 'conditioning';
   if (type === 'Test') return 'test';
+
+  const t = String(type).toLowerCase();
+  if (t.includes('descanso')) return 'rest';
+  if (t.includes('competición') || t.includes('competicion')) return 'race';
+  if (t.includes('cuesta')) return 'hills';
+  if (t.includes('cambio')) return 'changes';
+  if (t.includes('umbral')) return 'threshold';
+  if (t.includes('serie')) return 'series';
+  if (t.includes('long') || t.includes('tirada')) return 'long';
+  if (t.includes('gym') || t.includes('gimnasio') || t.includes('fuerza')) return 'gym';
+  if (t.includes('test')) return 'test';
+  if (t.includes('core') || t.includes('movilidad') || t.includes('pliometr') || t.includes('acondicionamiento')) return 'conditioning';
+  if (t.includes('rodaje')) return 'easy';
   return 'default';
 }

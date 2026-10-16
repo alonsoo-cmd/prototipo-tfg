@@ -51,17 +51,57 @@
 .data-panel-title h2 { font-size: 13px; }
 .data-panel-title p { line-height: 1.45; }
 .training-calendar { display: grid; gap: 22px; }
-.training-calendar-month h3 { margin: 0 0 10px; color: #405164; font: 700 13px Manrope, sans-serif; text-transform: capitalize; }
+.training-calendar-month-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.training-calendar-month-header h3 { margin: 0; color: #405164; font: 700 13px Manrope, sans-serif; text-transform: capitalize; }
+.training-calendar-status-legend { display: flex; align-items: center; gap: 12px; color: #6d7b8b; font-size: 8.5px; font-weight: 500; }
+.training-calendar-status-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+
+.calendar-status-dot { display: inline-block; width: 10px; height: 10px; flex: 0 0 10px; border-radius: 2.5px; box-sizing: border-box; transition: transform .12s ease; }
+.calendar-status-dot.status-completed { background: #4caf60; border: 1px solid #388e3c; box-shadow: 0 1px 2px rgba(76, 175, 80, .3); }
+.calendar-status-dot.status-partial { background: #efc54b; border: 1px solid #d1a329; box-shadow: 0 1px 2px rgba(239, 197, 75, .3); }
+.calendar-status-dot.status-missed { background: #df6262; border: 1px solid #ce5353; box-shadow: 0 1px 2px rgba(223, 98, 98, .3); }
+.calendar-status-dot.status-unreported { background: #e2e8f0; border: 1px solid #cbd5e1; }
+.training-calendar-session .calendar-status-dot { cursor: pointer; }
+.training-calendar-session .calendar-status-dot:hover { transform: scale(1.22); }
+
 .training-calendar-grid { display: grid; grid-template-columns: minmax(88px, .62fr) repeat(7, minmax(0, 1fr)); border-top: 1px solid #e8edf1; border-left: 1px solid #e8edf1; }
 .training-calendar-weekday { padding: 8px 5px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #f8fafb; color: #8793a0; font-size: 9px; font-weight: 600; text-align: center; }
 .training-calendar-day { min-height: 96px; min-width: 0; padding: 6px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #fff; }
 .training-calendar-day.outside { background: #fafbfc; }
 .training-calendar-date { display: block; margin-bottom: 5px; color: #718092; font-size: 9px; font-weight: 600; }
 .training-calendar-sessions { display: grid; gap: 4px; }
-.training-calendar-session { display: grid; gap: 3px; width: 100%; padding: 5px 6px; border: 1px solid #dbe9f4; border-radius: 5px; background: #edf5fb; color: #405f76; text-align: left; }
-.training-calendar-session:hover,.training-calendar-session:focus-visible { border-color: #8fb4ca; background: #e3f0f7; outline: none; }
-.training-calendar-session b { overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
-.training-calendar-session span { color: #6c8392; font-size: 7px; }
+.training-calendar-session { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 5px 6px; border: 1px solid #dbe9f4; border-left: 3px solid #6892ad; border-radius: 5px; background: #edf5fb; color: #3e586d; text-align: left; transition: transform .12s ease, box-shadow .12s ease; box-sizing: border-box; }
+.training-calendar-session:hover,.training-calendar-session:focus-visible { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.07); outline: none; }
+.training-calendar-session-header { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.training-calendar-session b { overflow: hidden; font-size: 8px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.training-calendar-session-meta { color: inherit; opacity: .82; font-size: 7px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Colores de entrenamientos en el calendario */
+.training-calendar-session.workout-color-easy { border-color: #cbdccb; border-left-color: #5e9668; background: #f0f7ef; color: #2e4d36; }
+.training-calendar-session.workout-color-easy:hover { border-color: #b5ceb6; background: #e6f3e5; }
+.training-calendar-session.workout-color-long { border-color: #cfe0e1; border-left-color: #55949b; background: #edf6f6; color: #274b50; }
+.training-calendar-session.workout-color-long:hover { border-color: #bad3d5; background: #e2f1f1; }
+.training-calendar-session.workout-color-series { border-color: #ddd5ed; border-left-color: #927ca9; background: #f4f0f8; color: #4b395d; }
+.training-calendar-session.workout-color-series:hover { border-color: #cbbede; background: #ede6f5; }
+.training-calendar-session.workout-color-race { border-color: #ebd3d7; border-left-color: #b86d78; background: #fbf0f1; color: #5c2f37; }
+.training-calendar-session.workout-color-race:hover { border-color: #dfbcc2; background: #f8e5e8; }
+.training-calendar-session.workout-color-gym { border-color: #d1dceb; border-left-color: #6487b0; background: #eef3fa; color: #314763; }
+.training-calendar-session.workout-color-gym:hover { border-color: #b9cbe1; background: #e4ecf7; }
+.training-calendar-session.workout-color-threshold { border-color: #ebd6be; border-left-color: #c97d3e; background: #faf3ea; color: #5d3d20; }
+.training-calendar-session.workout-color-threshold:hover { border-color: #ddbf9d; background: #f6ebd9; }
+.training-calendar-session.workout-color-changes { border-color: #e8ddbc; border-left-color: #b68c46; background: #faf5e9; color: #57441d; }
+.training-calendar-session.workout-color-changes:hover { border-color: #d8c89b; background: #f5eed8; }
+.training-calendar-session.workout-color-hills { border-color: #ebd5cd; border-left-color: #c77863; background: #fbf0eb; color: #5c362c; }
+.training-calendar-session.workout-color-hills:hover { border-color: #dfbfb4; background: #f8e6de; }
+.training-calendar-session.workout-color-test { border-color: #d4d9ec; border-left-color: #727fb3; background: #f0f2fa; color: #384061; }
+.training-calendar-session.workout-color-test:hover { border-color: #bcc3e2; background: #e6e9f6; }
+.training-calendar-session.workout-color-conditioning { border-color: #cfe0dd; border-left-color: #5f9b91; background: #edf7f4; color: #274d45; }
+.training-calendar-session.workout-color-conditioning:hover { border-color: #b8d4cf; background: #e1f1ed; }
+.training-calendar-session.workout-color-rest { border-color: #e0e4e6; border-left-color: #a2a9ad; background: #f3f5f6; color: #59636a; }
+.training-calendar-session.workout-color-rest:hover { border-color: #ccd2d6; background: #eaecee; }
+.training-calendar-session.workout-color-default { border-color: #dbe9f4; border-left-color: #6892ad; background: #edf5fb; color: #405f76; }
+.training-calendar-session.workout-color-default:hover { border-color: #8fb4ca; background: #e3f0f7; }
+
 .training-calendar-week-summary { grid-column: 8; display: flex; flex-direction: column; justify-content: center; gap: 5px; min-width: 0; padding: 8px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #f3f7f9; color: #718092; font-size: 8px; }
 .training-calendar-week-summary span { font-weight: 600; }
 .training-calendar-week-summary b { color: #405f76; font-size: 9px; }
@@ -191,4 +231,303 @@
   .training-calendar-session { padding: 4px; }
   .training-calendar-session b { font-size: 7px; }
   .training-calendar-session span { font-size: 6px; }
+  .calendar-status-dot { width: 8px; height: 8px; flex: 0 0 8px; }
+  .training-calendar-status-legend { font-size: 7.5px; gap: 8px; }
+}
+
+/* ── Panel Header Actions & View Mode Toggle ── */
+.panel-header-with-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.panel-header-with-actions .data-panel-title {
+  margin-bottom: 0;
+}
+
+.view-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid #dce4e8;
+  border-radius: 7px;
+  background: #f1f5f8;
+}
+
+.view-mode-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 11px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #637587;
+  font: 600 10px 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.view-mode-button:hover {
+  color: #2e4355;
+}
+
+.view-mode-button.active {
+  background: #fff;
+  color: #244158;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Detailed Training Table ── */
+.detailed-training-table-wrap {
+  border: 1px solid #e5eaee;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.detailed-analytics-table {
+  min-width: 880px;
+  border-collapse: collapse;
+}
+
+.detailed-analytics-table th {
+  padding: 10px 9px;
+  background: #f7fafc;
+  border-bottom: 1px solid #e1e8ed;
+  color: #768696;
+  font: 700 8.5px Manrope, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.detailed-analytics-table td {
+  padding: 8px 9px;
+  border-top: 1px solid #edf1f4;
+  font-size: 9.5px;
+  color: #495a6b;
+  min-width: 0 !important;
+  white-space: nowrap;
+}
+
+.detailed-analytics-table .num-col {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.detailed-analytics-table th.num-col {
+  text-align: right;
+}
+
+.detailed-analytics-table td .unit {
+  color: #8c9ba8;
+  font-size: 8px;
+}
+
+.table-week-header-row td {
+  padding: 8px 10px;
+  background: #f3f7fa;
+  border-top: 2px solid #e1e9ef;
+  border-bottom: 1px solid #e4ecf2;
+}
+
+.table-week-header-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.table-week-header-badge strong {
+  color: #1e364a;
+  font: 700 12px Manrope, sans-serif;
+}
+
+.table-week-header-badge .phase-chip {
+  padding: 2px 7px;
+  border-radius: 12px;
+  background: #e5edf3;
+  color: #43627d;
+  font-size: 8.5px;
+  font-weight: 600;
+}
+
+.table-week-header-badge .week-range-text {
+  color: #7b8d9e;
+  font-size: 9px;
+}
+
+.table-week-header-badge .week-completion-pill {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #eef6ef;
+  color: #2e6939;
+  border: 1px solid #cae3ce;
+  font-size: 8.5px;
+  font-weight: 700;
+}
+
+.date-col b {
+  display: block;
+  color: #273b4d;
+  font-weight: 700;
+  font-size: 9.5px;
+}
+
+.date-col small {
+  color: #8899a7;
+  font-size: 8px;
+}
+
+/* ── Status Semaphor Pill ── */
+.status-semaphor-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 8.5px;
+  font-weight: 600;
+  background: transparent;
+  text-align: left;
+  transition: transform 0.12s ease;
+}
+
+.status-semaphor-pill:hover {
+  filter: brightness(0.96);
+}
+
+.status-semaphor-pill.status-completed {
+  background: #edf7ee;
+  color: #256534;
+  border-color: #c4e4c9;
+}
+
+.status-semaphor-pill.status-partial {
+  background: #fff9e6;
+  color: #85610a;
+  border-color: #f7e099;
+}
+
+.status-semaphor-pill.status-missed {
+  background: #fdf0f0;
+  color: #9c2e2e;
+  border-color: #f5c4c4;
+}
+
+.status-semaphor-pill.status-unreported {
+  background: #f1f5f9;
+  color: #64748b;
+  border-color: #cbd5e1;
+}
+
+/* ── Session Type Chip ── */
+.session-type-chip {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-size: 8.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── TRIMP and RPE Badges ── */
+.trimp-cell-badge {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-weight: 700;
+  color: #2e475d;
+}
+
+.trimp-cell-badge.high {
+  background: #fcf1e5;
+  color: #925414;
+}
+
+.rpe-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.rpe-badge.rpe-low {
+  background: #eef7ee;
+  color: #2a6838;
+}
+
+.rpe-badge.rpe-mid {
+  background: #edf5fc;
+  color: #275d86;
+}
+
+.rpe-badge.rpe-high {
+  background: #fef0ea;
+  color: #9e461a;
+}
+
+.rpe-badge small {
+  font-size: 7.5px;
+  opacity: 0.8;
+}
+
+.notes-col {
+  max-width: 220px;
+}
+
+.notes-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #5d6f80;
+  font-size: 8.5px;
+}
+
+/* ── Weekly Summary Total Row ── */
+.table-week-summary-row {
+  background: #f8fafc;
+  border-top: 1px solid #dce4ea;
+  border-bottom: 2px solid #cbd8e2;
+}
+
+.table-week-summary-row td {
+  padding: 9px;
+  border-top: 1px solid #dce4ea;
+}
+
+.weekly-summary-title {
+  display: block;
+  color: #1e3549;
+  font: 700 10.5px Manrope, sans-serif;
+}
+
+.weekly-summary-subtitle {
+  color: #8898a7;
+  font-size: 8px;
+}
+
+.table-week-summary-row .summary-val {
+  color: #1a3246;
+  font-size: 10px;
+}
+
+/* ── 7-Day Consolidated Row ── */
+.summary-consolidated-row td {
+  background: #edf4f8;
+  border-top: 2px solid #bcd1df;
+  color: #1d374d;
+  font-weight: 700;
 }
