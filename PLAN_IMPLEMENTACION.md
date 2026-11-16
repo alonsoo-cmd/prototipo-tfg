@@ -76,17 +76,19 @@
 - **Visto:** "Rodaje · 34 min · 11,5 km" (2:57/km), "Tirada larga · 32 min · 14,9 km" (2:09/km), "Cuestas · 52 min · 3,8 km".
 - **Origen:** `src/data/workoutTemplates.js:28-32` genera minutos y kilómetros por separado.
 - **Cambio:** calcular los km a partir de los minutos y un ritmo por tipo (por ejemplo rodaje 5:00/km, series 4:00/km, bici 2:15/km).
-- [ ] Hecho · **Comprobación:** ningún ritmo de carrera por debajo de 3:00/km en Entrenamientos.
+- [x] Hecho · **Comprobación:** ningún ritmo de carrera por debajo de 3:00/km en Entrenamientos.
 
 ### 1.4 Historial de ejemplo poco creíble (M)
 - **Visto:** rodaje suave a 166 ppm y series a 149 ppm; todas las semanas 7/7 completadas; mismas notas y mismo RPE cada semana; competición todos los sábados con RPE 10.
 - **Archivo:** `src/data/trainingHistory.js`.
 - **Cambio:**
-  - [ ] FC media según el tipo de sesión (rodaje < umbral < series < competición).
-  - [ ] Alguna sesión "a medias" o "no realizada" por semana.
-  - [ ] Competición solo en semanas de competición.
-  - [ ] Dos o tres notas distintas por tipo.
+  - [x] FC media según el tipo de sesión (rodaje < umbral < series < competición).
+  - [x] Alguna sesión "a medias" o "no realizada" por semana.
+  - [x] Competición solo en semanas de competición.
+  - [x] Dos o tres notas distintas por tipo.
 - **Comprobación:** en Datos, ningún rodaje tiene más FC que unas series de la misma semana.
+  - [x] Además: competiciones en las semanas 5 (10 km), 8 (cross universitario) y 12 (Media Maratón, domingo); RPE por tipo; la tirada larga es la sesión más larga; las sesiones no realizadas tienen 0 km y las sesiones a medias, el 55 %. `groupHistory.js` usa la misma regla de estados.
+  - [ ] Pendiente menor: Datos dice "Incompleto" y el resto de la app "A medias".
 
 ### 1.5 El editor de plantillas guarda formularios vacíos (S)
 - **Visto:** al pulsar "Guardar entrenamiento" sin rellenar nada se crea "Entrenamiento · 0 min · 0 km · 0 TR".

@@ -1,4 +1,5 @@
 import { logKey } from '../domain/training.js';
+import { demoCompletionStatus } from './trainingHistory.js';
 import { sessionDateKey, todayKey } from '../domain/calendar.js';
 
 /**
@@ -11,15 +12,7 @@ export function createGroupHistory(coachWeeks = [], trainingLogs = {}) {
     const isPast = dateStr <= todayKey();
     const log = trainingLogs[logKey(week.number, day.day)];
     let completionStatus = log?.completionStatus;
-    if (!completionStatus && isPast) {
-      if ((week.number === 7 && index === 0) || (week.number === 8 && index === 1)) {
-        completionStatus = 'partial';
-      } else if (week.number === 7 && index === 2) {
-        completionStatus = 'missed';
-      } else {
-        completionStatus = 'completed';
-      }
-    }
+    if (!completionStatus && isPast) completionStatus = day.type ? demoCompletionStatus(week.number, index) : 'completed';
     const status = completionStatus === 'completed'
       ? 'Completado'
       : completionStatus === 'partial'

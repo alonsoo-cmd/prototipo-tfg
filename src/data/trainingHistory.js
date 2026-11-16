@@ -3,17 +3,71 @@ import { sessionDateKey, todayKey } from '../domain/calendar.js';
 
 const weekdays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const weeklyKilometers = [37, 41, 44, 48, 52, 47, 55, 50, 58, 54, 43, 32];
-const dayWeights = [0.11, 0.19, 0.12, 0.19, 0.09, 0.16, 0.14];
-const workoutTypes = ['Gym + Rodaje', 'Umbral', 'Rodaje', 'Series', 'Gym + Rodaje', 'Competición', 'Long run'];
-const workoutDescriptions = [
-  'Fuerza general y carrera suave',
-  'Bloques de umbral con recuperación',
-  'Carrera continua suave',
-  'Series controladas',
-  'Fuerza y rectas progresivas',
-  'Sesión de calidad o competición',
-  'Carrera continua larga',
-];
+// Reparto del volumen semanal: la tirada larga del domingo es la sesión más larga.
+const dayWeights = [0.12, 0.15, 0.12, 0.16, 0.1, 0.11, 0.24];
+const baseWeekTypes = ['Gym + Rodaje', 'Umbral', 'Rodaje', 'Series', 'Gym + Rodaje', 'Rodaje', 'Long run'];
+
+// Semanas con competición: control de 10 km (sem. 5), universitarios (sem. 8)
+// y la Media Maratón de Madrid el domingo de la semana 12.
+const competitions = {
+  5: { dayIndex: 5, distance: 10, description: 'Control de 10 km en ruta' },
+  8: { dayIndex: 5, distance: 8, description: 'Cross universitario' },
+  12: { dayIndex: 6, distance: 21.1, description: 'Media Maratón de Madrid' },
+};
+
+const workoutDescriptions = {
+  'Gym + Rodaje': 'Fuerza general y carrera suave',
+  'Umbral': 'Bloques de umbral con recuperación',
+  'Rodaje': 'Carrera continua suave',
+  'Series': 'Series controladas',
+  'Long run': 'Carrera continua larga',
+  'Competición': 'Competición',
+};
+
+// Ritmo medio de la sesión completa en min/km (incluye calentamiento y recuperaciones).
+const sessionPace = { 'Gym + Rodaje': 5.6, 'Rodaje': 5.4, 'Long run': 5.3, 'Umbral': 4.75, 'Series': 4.85, 'Competición': 4.3 };
+
+// FC media (ppm) por tipo: rodaje < tirada < umbral < series < competición.
+const heartRate = { 'Gym + Rodaje': [136, 6], 'Rodaje': [138, 7], 'Long run': [146, 6], 'Umbral': [158, 6], 'Series': [165, 6], 'Competición': [173, 5] };
+
+// RPE habitual por tipo (mínimo y amplitud).
+const rpeRange = { 'Gym + Rodaje': [4, 2], 'Rodaje': [3, 2], 'Long run': [5, 2], 'Umbral': [7, 2], 'Series': [8, 2], 'Competición': [9, 1] };
+
+const effortShare = {
+  easy: [0.7, 0.22, 0.06, 0.02],
+  hard: [0.25, 0.2, 0.42, 0.13],
+};
+
+const sampleNotes = {
+  'Gym + Rodaje': ['Fuerza completa, piernas algo cargadas al rodar', 'Buen tono en el gimnasio y rodaje fácil', 'Sentadilla pesada; el rodaje costó al principio'],
+  'Umbral': ['Bloques controlados, pulsaciones estables', 'El último bloque se hizo largo', 'Ritmo de umbral cómodo, buena señal'],
+  'Rodaje': ['Rodaje suave y regenerativo', 'Piernas sueltas, ritmo conversacional', 'Algo de viento, pero sin forzar'],
+  'Series': ['Series intensas con buena técnica', 'Las dos últimas repeticiones costaron', 'Recuperaciones cortas, buen ritmo'],
+  'Long run': ['Tirada larga con buena asimilación', 'Final progresivo sin problemas', 'Últimos 3 km pesados, hidratación justa'],
+  'Competición': ['Salida prudente y buen final', 'Carrera dura, ritmo por encima de lo previsto'],
+};
+
+const partialNotes = ['Corté antes por molestias en el gemelo', 'Muy cansado: hice la mitad de la sesión', 'Me quedé sin tiempo y recorté el final'];
+const missedNotes = ['No pude entrenar por trabajo', 'Resfriado, descanso total', 'Viaje: sin entrenamiento'];
+
+/** Tipo de sesión de un día concreto (la competición solo aparece en sus semanas). */
+export function historyWorkoutType(week, dayIndex) {
+  const competition = competitions[week];
+  if (competition?.dayIndex === dayIndex) return 'Competición';
+  if (competition && dayIndex === competition.dayIndex - 1) return 'Rodaje'; // día previo suave
+  return baseWeekTypes[dayIndex];
+}
+
+/**
+ * Estado de ejemplo de una sesión ya pasada: cada semana hay una sesión a medias
+ * y, una de cada tres semanas, otra no realizada. Nunca afecta a la competición.
+ */
+export function demoCompletionStatus(week, dayIndex) {
+  if (competitions[week]?.dayIndex === dayIndex) return 'completed';
+  if (dayIndex === (week * 3 + 1) % 7) return 'partial';
+  if (week % 3 === 1 && dayIndex === (week * 5 + 4) % 7) return 'missed';
+  return 'completed';
+}
 
 /**
  * Genera el historial de 12 semanas. Los registros reales de `trainingLogs`
@@ -26,39 +80,33 @@ export function createTrainingHistory(trainingLogs = {}, weeks = []) {
 
     return weekdays.map((day, dayIndex) => {
       const date = sessionDateKey(preparationWeek, dayIndex);
-      const plannedDistance = round(weeklyTotal * dayWeights[dayIndex]);
-      const type = workoutTypes[dayIndex];
-      const plannedMinutes = Math.round(plannedDistance * paceFactor(type));
+      const type = historyWorkoutType(preparationWeek, dayIndex);
+      const competition = type === 'Competición' ? competitions[preparationWeek] : null;
+      // Variación determinista (misma demo en cada carga) que cambia con la semana y el día.
+      const jitter = (amplitude, salt = 0) => ((preparationWeek * 31 + dayIndex * 17 + salt * 7) % (amplitude + 1));
+      const plannedDistance = competition ? competition.distance : round(weeklyTotal * dayWeights[dayIndex]);
+      const plannedMinutes = Math.round(plannedDistance * sessionPace[type]);
       const demoLog = trainingLogs[`${preparationWeek}-${day}`];
       const isRest = false;
-      const distance = valueOrDemo(demoLog?.distance, plannedDistance);
-      const minutes = valueOrDemo(demoLog?.minutes, plannedMinutes);
-      const trimps = valueOrDemo(demoLog?.trimps, Math.round(minutes * effortFactor(type)));
+      const isPast = date <= todayKey();
+
+      let completionStatus;
+      if (demoLog?.completionStatus) completionStatus = demoLog.completionStatus;
+      else if (isPast) completionStatus = demoCompletionStatus(preparationWeek, dayIndex);
+      else completionStatus = 'unreported';
+      const done = completionStatus === 'missed' ? 0 : completionStatus === 'partial' ? 0.55 : 1;
+
+      const distance = valueOrDemo(demoLog?.distance, round(plannedDistance * done));
+      const minutes = valueOrDemo(demoLog?.minutes, Math.round(plannedMinutes * done));
+      const intensity = type === 'Umbral' || type === 'Series' || type === 'Competición';
+      const trimps = valueOrDemo(demoLog?.trimps, Math.round(minutes * (intensity ? 1.8 : 1.2)));
       const mood = demoLog?.mood === '' || demoLog?.mood === undefined ? 2 + ((preparationWeek + dayIndex) % 4) : Number(demoLog.mood);
       const fatigue = demoLog?.fatigue === '' || demoLog?.fatigue === undefined ? 3 + ((preparationWeek + dayIndex * 2) % 5) : Number(demoLog.fatigue);
       const soreness = demoLog?.soreness === '' || demoLog?.soreness === undefined ? 2 + ((preparationWeek + dayIndex) % 5) : Number(demoLog.soreness);
       const sleep = demoLog?.sleep === '' || demoLog?.sleep === undefined ? 2 + ((preparationWeek + dayIndex * 3) % 4) : Number(demoLog.sleep);
       const stress = demoLog?.stress === '' || demoLog?.stress === undefined ? 2 + ((preparationWeek * 2 + dayIndex) % 5) : Number(demoLog.stress);
       const wellbeingTotal = mood + fatigue + soreness + sleep + stress;
-      const intensity = type === 'Umbral' || type === 'Series' || type === 'Competición';
-      const zoneShares = intensity ? [0.2, 0.15, 0.5, 0.15] : [0.68, 0.22, 0.08, 0.02];
-      const saved = Boolean(demoLog);
-      const isPast = date <= todayKey();
-
-      let completionStatus;
-      if (demoLog?.completionStatus) {
-        completionStatus = demoLog.completionStatus;
-      } else if (isPast) {
-        if ((preparationWeek === 7 && dayIndex === 0) || (preparationWeek === 8 && dayIndex === 1)) {
-          completionStatus = 'partial';
-        } else if (preparationWeek === 7 && dayIndex === 2) {
-          completionStatus = 'missed';
-        } else {
-          completionStatus = 'completed';
-        }
-      } else {
-        completionStatus = 'unreported';
-      }
+      const zoneShares = intensity ? effortShare.hard : effortShare.easy;
 
       const status = completionStatus === 'completed'
         ? 'Completado'
@@ -68,18 +116,16 @@ export function createTrainingHistory(trainingLogs = {}, weeks = []) {
             ? 'No realizado'
             : 'Planificado';
 
-      const defaultRpes = [5, 8, 4, 9, 6, 10, 7];
-      const defaultSensaciones = [
-        'Sensaciones fluidas y ritmo controlado',
-        'Esfuerzo alto, buen control de pulsaciones',
-        'Rodaje suave y regenerativo',
-        'Series intensas con buena técnica',
-        'Trabajo de fuerza completo con buen tono',
-        'Ritmo exigente de competición',
-        'Tirada larga con buena asimilación',
-      ];
-      const rpe = demoLog?.rpe ? Number(demoLog.rpe) : defaultRpes[dayIndex % defaultRpes.length];
-      const notes = demoLog?.notes || demoLog?.sensaciones || defaultSensaciones[dayIndex % defaultSensaciones.length];
+      const [rpeBase, rpeSpread] = rpeRange[type];
+      const sampleRpe = completionStatus === 'missed' ? 0 : Math.min(10, rpeBase + jitter(rpeSpread - 1, 3) + (preparationWeek === 12 && competition ? 1 : 0));
+      const rpe = demoLog?.rpe ? Number(demoLog.rpe) : sampleRpe;
+      const [hrBase, hrSpread] = heartRate[type];
+      const sampleHr = completionStatus === 'missed' ? 0 : hrBase + jitter(hrSpread, 5);
+      const notesPool = completionStatus === 'missed' ? missedNotes : completionStatus === 'partial' ? partialNotes : sampleNotes[type];
+      const sampleNote = competition && completionStatus === 'completed'
+        ? `${competition.description}: ${sampleNotes['Competición'][preparationWeek % 2].toLocaleLowerCase('es-ES')}`
+        : notesPool[(preparationWeek + dayIndex) % notesPool.length];
+      const notes = demoLog?.notes || demoLog?.sensaciones || sampleNote;
 
       const isCycling = type === 'Bicicleta' || /bicicleta|bici|ciclismo/i.test(type);
 
@@ -90,13 +136,13 @@ export function createTrainingHistory(trainingLogs = {}, weeks = []) {
         day,
         date,
         type,
-        description: workoutDescriptions[dayIndex],
+        description: competition?.description || workoutDescriptions[type],
         distance: numberValue(distance),
         minutes: numberValue(minutes),
         trimps: numberValue(trimps),
         speed: demoLog?.speed || (isCycling ? (demoLog?.pace || formatSpeed(minutes, distance)) : ''),
-        pace: isCycling ? '' : (demoLog?.pace || formatPace(plannedMinutes, plannedDistance)),
-        averageHr: numberValue(demoLog?.averageHr || 145 + ((preparationWeek * 3 + dayIndex * 5) % 22)),
+        pace: isCycling ? '' : (demoLog?.pace || formatPace(minutes, distance)),
+        averageHr: numberValue(demoLog?.averageHr || sampleHr),
         restingHr: numberValue(demoLog?.restingHr || 48 + ((preparationWeek + dayIndex) % 8)),
         hrv: numberValue(demoLog?.hrv || 52 + ((preparationWeek * 4 + dayIndex * 3) % 24)),
         rpe,
@@ -128,15 +174,6 @@ function numberValue(value) {
 
 function round(value) {
   return Math.round(value * 10) / 10;
-}
-
-function paceFactor(type) {
-  if (type === 'Bicicleta' || /bicicleta|bici|ciclismo/i.test(type)) return 2.2;
-  return type === 'Gym + Rodaje' ? 6 : type === 'Umbral' || type === 'Series' ? 5 : 5.5;
-}
-
-function effortFactor(type) {
-  return type === 'Umbral' || type === 'Series' || type === 'Competición' ? 1.8 : 1.2;
 }
 
 function formatPace(minutes, distance) {
