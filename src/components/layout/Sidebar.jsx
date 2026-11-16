@@ -55,6 +55,6 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, activePl
         </button>
       </section>}
     </nav>
-    <div className="side-bottom"><div className="mini-avatar">AM</div><div><b>Alex Martín</b><small>{ROLE_SUBTITLES[role]}</small></div><button className="dots">···</button></div>
+    <div className="side-bottom"><div className="mini-avatar">AM</div><div><b>Alex Martín</b><small>{ROLE_SUBTITLES[role]}</small></div></div>
   </aside>;
 }

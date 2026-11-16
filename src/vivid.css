@@ -40,7 +40,6 @@ body { color: var(--ink); background: #f3f5f2; }
 .side-bottom { border-color: #34455b; }
 .side-bottom small { color: #a7b4c4; }
 .mini-avatar { color: #14243a; background: var(--lime); }
-.dots { color: #c1ccd8; }
 
 .topbar { background: #fff; border-color: var(--line); }
 .breadcrumb { color: #616e83; }
@@ -48,8 +47,6 @@ body { color: var(--ink); background: #f3f5f2; }
 .demo-pill { color: #394b61; background: #f7f8f6; border-color: #dce2e4; }
 .demo-pill i { background: var(--coral); }
 .top-avatar { color: #fff; background: var(--blue); }
-.icon-button { color: #34475e; }
-.icon-button em { background: var(--coral); }
 
 .content { color: var(--ink); }
 .eyebrow { color: #526176; }
