@@ -1,6 +1,6 @@
 import { PAGES, ROLE_SUBTITLES, athleteNavigation, coachNavigation } from '../../routes/navigation.js';
 
-export default function Sidebar({ role, page, onRoleChange, onNavigate, mobileOpen = false }) {
+export default function Sidebar({ role, page, onRoleChange, onNavigate, activePlan = true, onTogglePlan, mobileOpen = false }) {
   const navigate = (nextRole, nextPage) => onRoleChange(nextRole, nextPage);
   const renderItems = (items, itemRole) => items.map((name) => (
     <button
@@ -24,6 +24,10 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, mobileOp
         <button type="button" aria-pressed={role === 'grupo'} className={role === 'grupo' ? 'selected' : ''} onClick={() => onRoleChange('grupo', 'Dashboard')}>Grupo</button>
         <button type="button" aria-pressed={role === 'entrenador'} className={role === 'entrenador' ? 'selected' : ''} onClick={() => onRoleChange('entrenador', 'Dashboard')}>Entrenador</button>
       </div>
+      {role === 'atleta' && <label className="demo-plan-toggle">
+        <input type="checkbox" checked={!activePlan} onChange={(event) => onTogglePlan(!event.target.checked)} />
+        Sin preparación
+      </label>}
       <small className="demo-mode-help">Cambia de vista para probar el prototipo. En la versión real dependerá de tu cuenta.</small>
     </div>
     <nav className="sidebar-groups" aria-label="Navegación principal">
@@ -44,7 +48,8 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, mobileOp
         </section>
       </> : <section className="sidebar-group athlete-only-navigation">
         <h2 className="nav-label">MENÚ</h2>
-        {renderItems(athleteNavigation, role)}
+        {/* «Buscar entrenador» solo existe para quien aún no tiene preparación (y, por tanto, entrenador). */}
+        {renderItems(role === 'atleta' && !activePlan ? [...athleteNavigation, 'Find coach'] : athleteNavigation, role)}
         <button className={`nav-item ${page === 'Profile' ? 'active' : ''}`} onClick={() => onNavigate('Profile')} aria-current={page === 'Profile' ? 'page' : undefined}>
           <span className="nav-icon" aria-hidden="true">{PAGES.Profile.icon}</span>{PAGES.Profile.label}<span className="nav-arrow" aria-hidden="true">›</span>
         </button>

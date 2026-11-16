@@ -1,11 +1,17 @@
-export default function FindCoach({onRequest,sent,setSent}){return <div className="content">
+export default function FindCoach({onRequest,requestCoach=null}){
+  // Un atleta solo puede tener un entrenador: con una solicitud enviada no se puede pedir otra.
+  const requestButton = (coachName, className) => requestCoach
+    ? <button className={`button ${requestCoach === coachName ? 'primary' : 'secondary'}`} disabled>{requestCoach === coachName ? 'Solicitud enviada' : 'Solicitar preparación'}</button>
+    : <button className={`button ${className}`} onClick={() => onRequest(coachName)}>Solicitar preparación</button>;
+  return <div className="content">
     <div className="page-heading">
     <div>
     <div className="eyebrow">DIRECTORIO</div>
     <h1>Encuentra un entrenador</h1>
-    <p>Consulta perfiles y solicita una preparación.</p>
+    <p>Consulta perfiles y solicita una preparación. Solo puedes tener un entrenador.</p>
     </div>
     </div>
+    {requestCoach && <p className="find-coach-pending" role="status">Has enviado una solicitud a <b>{requestCoach}</b>. Mientras esté pendiente no puedes solicitar otra preparación.</p>}
     <div className="search-row">
     <div className="search-field">
     <span>⌕</span>
@@ -33,7 +39,7 @@ export default function FindCoach({onRequest,sent,setSent}){return <div classNam
     <span>Presencial y online</span>
     </div>
     </div>
-    <button className="button primary" onClick={onRequest}>{sent?'Solicitud enviada':'Solicitar preparación'}</button>
+    {requestButton('Carlos Ruiz', 'primary')}
     </article>
     <article className="coach-card">
     <div className="coach-avatar alt">LM</div>
@@ -50,7 +56,7 @@ export default function FindCoach({onRequest,sent,setSent}){return <div classNam
     <span>Online</span>
     </div>
     </div>
-    <button className="button secondary" onClick={onRequest}>Ver perfil</button>
+    {requestButton('Lucía Morales', 'secondary')}
     </article>
     </div>
     </div>}

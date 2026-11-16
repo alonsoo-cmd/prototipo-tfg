@@ -6,11 +6,11 @@ import { formatLongDate } from '../../utils/format.js';
 const targetDistances = ['400 m', '800 m', '1.500 m', '3.000 m', '5 km', '10 km', 'Media maratón', 'Maratón'];
 
 /** Atleta: formulario para solicitar una preparación a un entrenador. */
-export function PreparationRequestForm({ requestDate, setRequestDate, onSubmit }) {
+export function PreparationRequestForm({ coachName, requestDate, setRequestDate, onSubmit }) {
   return <>
-    <div className="eyebrow">SOLICITUD DE PREPARACIÓN</div>
+    <div className="eyebrow">SOLICITUD DE PREPARACIÓN{coachName ? ` · ${coachName.toUpperCase()}` : ''}</div>
     <h2>Cuéntanos tu objetivo</h2>
-    <p className="muted">La solicitud se enviará al entrenador para su revisión.</p>
+    <p className="muted">La solicitud se enviará a {coachName || 'el entrenador'} para su revisión. Solo puedes tener un entrenador: mientras esté pendiente no podrás pedir otra.</p>
     <label className="field-label">Fecha objetivo<DatePicker value={requestDate} onChange={setRequestDate} ariaLabel="Elegir fecha objetivo" /></label>
     <label className="field-label">Distancia objetivo<select defaultValue="10 km">
       {targetDistances.map((distance) => <option key={distance}>{distance}</option>)}
@@ -21,13 +21,13 @@ export function PreparationRequestForm({ requestDate, setRequestDate, onSubmit }
 }
 
 /** Atleta: confirmación de solicitud enviada. */
-export function RequestSentNotice({ onBack }) {
+export function RequestSentNotice({ coachName, onBack }) {
   return <div className="center-state">
     <div className="success-icon">✓</div>
     <div className="eyebrow">SOLICITUD ENVIADA</div>
     <h2>Solicitud registrada</h2>
-    <p>El entrenador recibirá los datos de tu objetivo y fechas.</p>
-    <button className="button primary" onClick={onBack}>Volver al diario</button>
+    <p>{coachName || 'El entrenador'} recibirá los datos de tu objetivo y fechas. Te avisaremos cuando responda.</p>
+    <button className="button primary" onClick={onBack}>Volver a Inicio</button>
   </div>;
 }
 

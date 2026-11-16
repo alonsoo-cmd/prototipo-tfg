@@ -215,3 +215,8 @@ body { color: var(--ink); background: #f3f5f2; }
 
 /* Error de validación en formularios (mismo tono que el aviso del bienestar en Inicio) */
 .form-error { margin: 16px 0 0; color: #a33a32; font-size: var(--text-sm); font-weight: 600; }
+
+/* Modo demostración: interruptor «Sin preparación» del atleta */
+.demo-plan-toggle { display: flex; align-items: center; gap: 8px; margin: 10px 2px 0; color: #d5e0ea; font-size: var(--text-sm); cursor: pointer; }
+.demo-plan-toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--lime); cursor: pointer; }
+.find-coach-pending { margin: 0 0 16px; padding: 12px 14px; border: 1px solid #e3e8d0; border-radius: 8px; background: #f7fbe9; color: var(--ink); font-size: var(--text-sm); }

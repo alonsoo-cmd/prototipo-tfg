@@ -99,7 +99,10 @@
 ### 1.6 "Buscar entrenador" es inaccesible (S-M, según D3)
 - **Visto:** `activePlan` empieza en `true` y en todo el código solo existe `setActivePlan(true)` (`Diary.jsx:76`). Nunca se llega a `FindCoach`, ni al formulario de solicitud, ni al aviso de solicitud enviada.
 - **Cambio propuesto:** enlace "Buscar entrenador" en Perfil → Preparación, o un interruptor "Sin preparación" en el modo demostración.
-- [ ] Hecho · **Comprobación:** se llega a la página con el ratón, se envía una solicitud y aparece el aviso.
+- [x] Hecho · **Comprobación:** se llega a la página con el ratón, se envía una solicitud y aparece el aviso.
+  - Decisión (16 nov): un atleta solo puede tener un entrenador, así que "Buscar entrenador" solo existe en el modo **Sin preparación** (interruptor del modo demostración, rol Atleta). No hay enlace en Perfil.
+  - Sin preparación: Inicio y Diario muestran "Empieza una preparación" y el menú añade "Buscar entrenador". Con una solicitud enviada, Inicio muestra "Esperando a <entrenador>" y no se puede pedir otra.
+  - Volver a activar la preparación limpia la solicitud y sale de "Buscar entrenador".
 
 ### 1.7 Botones que no hacen nada (S)
 

@@ -19,11 +19,8 @@ export default function Diary({
   role,
   week,
   setWeek,
-  activePlan,
-  setActivePlan,
   preparation = null,
   onSession,
-  onPlan,
   onPhases,
   coachWeeks,
   trainingLogs,
@@ -58,21 +55,6 @@ export default function Diary({
     setJournalDay(null);
     setToast(`Registro del ${day.toLocaleLowerCase('es-ES')} guardado`);
   };
-
-  if (!activePlan) {
-    return (
-      <div className="content empty-page">
-        <div className="empty-card">
-          <div className="empty-graphic">↗</div>
-          <div className="eyebrow">PREPARACIÓN</div>
-          <h1>Empieza una preparación</h1>
-          <p>Encuentra un entrenador y define un objetivo para organizar tu calendario de entrenamiento.</p>
-          <button className="button primary large" onClick={onPlan}>Empezar preparación <span>→</span></button>
-          <button className="text-button" onClick={() => setActivePlan(true)}>Ver vista de ejemplo</button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="content diary-page">

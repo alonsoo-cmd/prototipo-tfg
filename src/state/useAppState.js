@@ -44,6 +44,8 @@ export function useAppState() {
   // ── Solicitud de preparación (simulada) ──────────────────
   const [requestDate, setRequestDate] = useState('2026-12-06');
   const [requestSent, setRequestSent] = useState(false);
+  // Entrenador al que se ha enviado la solicitud (un atleta solo puede tener uno).
+  const [requestCoach, setRequestCoach] = useState(null);
   const [requestStatus, setRequestStatus] = useState('Pendiente');
 
   const go = (nextPage) => {
@@ -56,6 +58,17 @@ export function useAppState() {
     setPage(nextPage);
     setMobileNavOpen(false);
     setFocusAthleteId(null);
+  };
+  // Modo demostración: atleta con o sin preparación activa.
+  const togglePlan = (hasPlan) => {
+    setActivePlan(hasPlan);
+    setModal(null);
+    if (hasPlan) {
+      // Con preparación ya tiene entrenador: la búsqueda y la solicitud dejan de tener sentido.
+      setRequestSent(false);
+      setRequestCoach(null);
+      if (page === 'Find coach') setPage('Dashboard');
+    }
   };
   const openSession = (session) => {
     setActiveSession(session);
@@ -81,7 +94,7 @@ export function useAppState() {
     role, page, week, setWeek, mobileNavOpen, setMobileNavOpen,
     go, changeRole,
     modal, setModal, closeModal, activeSession, openSession,
-    activePlan, setActivePlan,
+    activePlan, setActivePlan, togglePlan, requestCoach, setRequestCoach,
     comment, setComment, comments, addComment, connected, setConnected, uploaded, setUploaded,
     focusAthleteId, setFocusAthleteId,
     requestDate, setRequestDate, requestSent, setRequestSent, requestStatus, setRequestStatus,

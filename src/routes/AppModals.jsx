@@ -12,8 +12,8 @@ export default function AppModals({ state }) {
   return <ModalShell onClose={closeModal} wide={modal === 'phases'}>
     {modal === 'session' && <SessionDetailModal session={state.activeSession} onRegister={() => setModal('activity')} onClose={closeModal} />}
     {modal === 'activity' && <ActivityForm connected={state.connected} setConnected={state.setConnected} uploaded={state.uploaded} setUploaded={state.setUploaded} comments={state.comments} comment={state.comment} setComment={state.setComment} addComment={state.addComment} />}
-    {modal === 'request' && <PreparationRequestForm requestDate={state.requestDate} setRequestDate={state.setRequestDate} onSubmit={() => { state.setRequestSent(true); setModal('request-done'); }} />}
-    {modal === 'request-done' && <RequestSentNotice onBack={() => go('Diary')} />}
+    {modal === 'request' && <PreparationRequestForm coachName={state.requestCoach} requestDate={state.requestDate} setRequestDate={state.setRequestDate} onSubmit={() => { state.setRequestSent(true); setModal('request-done'); }} />}
+    {modal === 'request-done' && <RequestSentNotice coachName={state.requestCoach} onBack={() => go('Dashboard')} />}
     {modal === 'request-review' && <RequestReview
       onReject={() => { state.setRequestStatus('Rechazada'); closeModal(); }}
       onAccept={() => { state.setRequestStatus('Aceptada'); closeModal(); }}

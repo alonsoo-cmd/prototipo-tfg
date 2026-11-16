@@ -8,7 +8,7 @@ import AppModals from './AppModals.jsx';
 /** Shell de la aplicación: layout (menú lateral + barra superior), página activa y modales globales. */
 export default function App() {
   const state = useAppState();
-  const { role, page, go, changeRole, mobileNavOpen, setMobileNavOpen } = state;
+  const { role, page, go, changeRole, mobileNavOpen, setMobileNavOpen, activePlan, togglePlan } = state;
 
   // Al cambiar de página o de rol, la nueva vista empieza arriba.
   useEffect(() => { window.scrollTo(0, 0); }, [page, role]);
@@ -19,6 +19,8 @@ export default function App() {
       page={page}
       mobileOpen={mobileNavOpen}
       onRoleChange={changeRole}
+      activePlan={activePlan}
+      onTogglePlan={togglePlan}
       onNavigate={(nextPage) => { go(nextPage); setMobileNavOpen(false); }}
     />
     {mobileNavOpen && <button className="mobile-nav-backdrop" aria-label="Cerrar menú" onClick={() => setMobileNavOpen(false)} />}
