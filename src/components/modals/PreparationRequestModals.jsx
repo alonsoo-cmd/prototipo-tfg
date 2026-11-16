@@ -1,5 +1,7 @@
 import DatePicker from '../ui/DatePicker.jsx';
 import Metric from '../ui/Metric.jsx';
+import { pendingRequest } from '../../data/preparationRequest.js';
+import { formatLongDate } from '../../utils/format.js';
 
 const targetDistances = ['400 m', '800 m', '1.500 m', '3.000 m', '5 km', '10 km', 'Media maratón', 'Maratón'];
 
@@ -32,14 +34,14 @@ export function RequestSentNotice({ onBack }) {
 /** Entrenador: revisión de una solicitud recibida. */
 export function RequestReview({ onReject, onAccept }) {
   return <>
-    <div className="eyebrow">SOLICITUD RECIBIDA · HACE 2 H</div>
-    <h2>Lucía Fernández</h2>
+    <div className="eyebrow">SOLICITUD RECIBIDA · {pendingRequest.receivedAgo.toUpperCase()}</div>
+    <h2>{pendingRequest.name}</h2>
     <div className="detail-metrics">
-      <Metric label="Distancia" value="Media maratón" />
-      <Metric label="Fecha objetivo" value="6 dic 2026" />
-      <Metric label="Ubicación" value="Madrid" />
+      <Metric label="Distancia" value={pendingRequest.distance} />
+      <Metric label="Fecha objetivo" value={formatLongDate(pendingRequest.eventDate)} />
+      <Metric label="Ubicación" value={pendingRequest.location} />
     </div>
-    <p className="muted">“Estoy preparando mi primera media maratón. Me gustaría empezar en septiembre.”</p>
+    <p className="muted">“{pendingRequest.message}”</p>
     <div className="inline-actions">
       <button className="button secondary" onClick={onReject}>Rechazar</button>
       <button className="button primary" onClick={onAccept}>Aceptar solicitud</button>

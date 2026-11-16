@@ -1,12 +1,20 @@
 import { useState } from 'react';
 import { coachAthletes } from '../../data/coachAthletes.js';
 import { createInjuryAlerts } from '../../data/injuryAlerts.js';
-import { CURRENT_WEEK } from '../../domain/calendar.js';
+import { CURRENT_WEEK, DAYS_OF_WEEK, sessionDate, today } from '../../domain/calendar.js';
+import { demoCompletionStatus } from '../../data/trainingHistory.js';
+import { pendingRequest } from '../../data/preparationRequest.js';
+import { formatLongDate } from '../../utils/format.js';
 
 const attendanceLabels = { green: 'Completado', yellow: 'A medias', red: 'No realizado', gray: 'Pendiente' };
 const attendanceGlyphs = { green: '✓', yellow: '½', red: '✕', gray: '—' };
 
-export default function CoachHome({go,openRequest,requestStatus,weeks,trainingLogs={}}){
+export default function CoachHome({go,openAthlete,openRequest,requestStatus,weeks,trainingLogs={}}){
+  // Cifras calculadas a partir de los datos (antes estaban escritas a mano).
+  const athletes = coachAthletes.filter((athlete) => !athlete.isCoach);
+  const preparationsInProgress = coachAthletes.length; // incluye la preparación propia del entrenador
+  const pendingRequests = requestStatus === 'Pendiente' ? 1 : 0;
+  const featured = coachAthletes[0];
   const injuryAlerts = createInjuryAlerts(weeks, trainingLogs, 'Alex Martín');
   const [selectedWeek, setSelectedWeek] = useState(CURRENT_WEEK);
   const currentWeek = weeks.find((w) => w.number === selectedWeek) || weeks.find((w) => w.number === CURRENT_WEEK) || weeks[0];
@@ -32,28 +40,28 @@ export default function CoachHome({go,openRequest,requestStatus,weeks,trainingLo
     <div className="coach-stats">
     <div className="stat-card">
     <small>Atletas activos</small>
-    <b>{coachAthletes.length}</b>
+    <b>{athletes.length}</b>
     <span>Con preparación activa</span>
     </div>
     <div className="stat-card">
     <small>Preparaciones</small>
-    <b>{coachAthletes.length}</b>
-    <span>En curso</span>
+    <b>{preparationsInProgress}</b>
+    <span>En curso · incluida la tuya</span>
     </div>
     <div className="stat-card">
     <small>Solicitudes nuevas</small>
-    <b>1</b>
-    <span>Requiere revisión</span>
+    <b>{pendingRequests}</b>
+    <span>{pendingRequests ? 'Requiere revisión' : 'Nada pendiente'}</span>
     </div>
     </div>
     <section className="active-prep-card">
     <div className="active-prep-icon">↗</div>
     <div className="active-prep-info">
-    <div className="eyebrow">PREPARACIÓN ACTIVA · {weeks.length} DE 12 SEMANAS</div>
+    <div className="eyebrow">PREPARACIÓN ACTIVA · SEMANA {CURRENT_WEEK} DE {weeks.length}</div>
     <h2>Media Maratón Madrid</h2>
-    <p>Lucía Fernández · Objetivo: media maratón · 6 dic 2026</p>
+    <p>{featured.name} · Objetivo: media maratón · {featured.eventDate}</p>
     </div>
-    <button className="button secondary" onClick={()=>go('Preparations')}>Ver semanas →</button>
+    <button className="button secondary" onClick={()=>openAthlete(featured.id)}>Ver semanas →</button>
     </section>
     <div className="coach-columns">
     <section className="panel">
@@ -62,11 +70,11 @@ export default function CoachHome({go,openRequest,requestStatus,weeks,trainingLo
     <h2>Atletas</h2>
     <p>Personas vinculadas a tus preparaciones</p>
     </div>
-    <span className="count-badge">{coachAthletes.length}</span>
+    <span className="count-badge">{athletes.length}</span>
     </div>
-    <div className="coach-athlete-list">{coachAthletes.map((athlete)=><button className="request-row" key={athlete.id} onClick={()=>go('Preparations')}>
+    <div className="coach-athlete-list">{coachAthletes.map((athlete)=><button className="request-row" key={athlete.id} onClick={()=>openAthlete(athlete.id)}>
       <div className="mini-avatar">{athlete.initials}</div>
-      <div className="request-person"><b>{athlete.name}</b><small>Preparación activa · {athlete.goal} · {athlete.eventDate}</small></div>
+      <div className="request-person"><b>{athlete.name}</b><small>{athlete.isCoach ? 'Tu preparación' : 'Preparación activa'} · {athlete.goal} · {athlete.eventDate}</small></div>
       <span className="row-chevron">›</span>
     </button>)}</div>
     </section>
@@ -75,19 +83,19 @@ export default function CoachHome({go,openRequest,requestStatus,weeks,trainingLo
     <div>
     <h2>Solicitudes de preparación</h2>
     </div>
-    <span className="count-badge">1</span>
+    <span className="count-badge">{pendingRequests}</span>
     </div>
     <button className="request-row" onClick={openRequest}>
-    <div className="mini-avatar pink-avatar">LF</div>
+    <div className="mini-avatar pink-avatar">{pendingRequest.initials}</div>
     <div className="request-person">
-    <b>Lucía Fernández</b>
-    <small>Media maratón · 6 dic 2026</small>
+    <b>{pendingRequest.name}</b>
+    <small>{pendingRequest.distance} · {formatLongDate(pendingRequest.eventDate)}</small>
     </div>
-    <span className="request-new">Nueva</span>
+    <span className="request-new">{pendingRequests ? 'Nueva' : requestStatus}</span>
     <span className="row-chevron">›</span>
     </button>
     <div className="request-footer">
-    <span>Madrid · Recibida hoy</span>
+    <span>{pendingRequest.location} · {pendingRequest.received}</span>
     <button className="text-button" onClick={openRequest}>Revisar solicitud →</button>
     </div>
     <small className="demo-caption">Estado de ejemplo: {requestStatus}</small>
@@ -105,22 +113,22 @@ export default function CoachHome({go,openRequest,requestStatus,weeks,trainingLo
 }
 
 function GroupAttendancePanel({ currentWeek, trainingLogs, selectedWeek, setSelectedWeek, totalWeeks = 12 }) {
+  // Integrantes del grupo: los atletas de la lista (sin el entrenador) y tu propio registro.
   const members = [
-    { id: 'yo', name: 'Tú (Simulación)' },
-    { id: 'm1', name: 'Carlos Díaz' },
-    { id: 'm2', name: 'Ana Gómez' },
-    { id: 'm3', name: 'Luis Herrero' },
-    { id: 'm4', name: 'Marta Ruiz' },
+    { id: 'yo', name: 'Tú (modo grupo)' },
+    ...coachAthletes.filter((athlete) => !athlete.isCoach).slice(0, 4).map(({ id, name }) => ({ id, name })),
   ];
 
   const daysWithWorkouts = currentWeek?.days ? currentWeek.days.filter((day) => day.type) : [];
 
   const getStatus = (memberId, day) => {
+    if (sessionDate(currentWeek.number, day.day) > today()) return 'gray';
     if (memberId === 'yo') {
-      const status = trainingLogs[`${currentWeek.number}-${day.day}`]?.completionStatus;
+      const status = trainingLogs[`${currentWeek.number}-${day.day}`]?.completionStatus
+        || demoCompletionStatus(currentWeek.number, DAYS_OF_WEEK.indexOf(day.day));
       return status === 'completed' ? 'green' : status === 'partial' ? 'yellow' : status === 'missed' ? 'red' : 'gray';
     }
-    const hash = memberId.charCodeAt(1) + day.day.charCodeAt(0) + currentWeek.number + day.day.length;
+    const hash = memberId.charCodeAt(0) + memberId.charCodeAt(1) + day.day.charCodeAt(0) + currentWeek.number + day.day.length;
     return hash % 4 === 0 ? 'yellow' : hash % 3 !== 0 ? 'green' : 'red';
   };
 

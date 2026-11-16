@@ -25,6 +25,8 @@ export function useAppState() {
   const [page, setPage] = useState('Dashboard');
   const [week, setWeek] = useState(CURRENT_WEEK);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // Atleta que se abre al entrar en Preparaciones (p. ej. al pulsarlo en el panel de Atletas).
+  const [focusAthleteId, setFocusAthleteId] = useState(null);
 
   // ── Modales globales ─────────────────────────────────────
   const [modal, setModal] = useState(null);
@@ -47,11 +49,13 @@ export function useAppState() {
   const go = (nextPage) => {
     setPage(nextPage);
     setModal(null);
+    setFocusAthleteId(null);
   };
   const changeRole = (nextRole, nextPage) => {
     setRole(nextRole);
     setPage(nextPage);
     setMobileNavOpen(false);
+    setFocusAthleteId(null);
   };
   const openSession = (session) => {
     setActiveSession(session);
@@ -79,6 +83,7 @@ export function useAppState() {
     modal, setModal, closeModal, activeSession, openSession,
     activePlan, setActivePlan,
     comment, setComment, comments, addComment, connected, setConnected, uploaded, setUploaded,
+    focusAthleteId, setFocusAthleteId,
     requestDate, setRequestDate, requestSent, setRequestSent, requestStatus, setRequestStatus,
   };
 }

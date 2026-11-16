@@ -117,12 +117,14 @@
 
 ### 1.8 Panel del entrenador (Atletas) con datos contradictorios (M)
 - **Archivo:** `src/pages/coach/CoachHome.jsx`.
-- [ ] Las cifras "6 / 6 / 1" están escritas a mano: calcularlas desde `coachAthletes` y `preparations`.
-- [ ] Línea 51: "12 DE 12 SEMANAS" usa `weeks.length`. Debe ser "semana actual de total".
-- [ ] Lucía Fernández tiene preparación activa y, a la vez, una solicitud "Nueva" para la misma carrera. Cambiar la solicitante por alguien sin preparación.
-- [ ] Todas las filas de atleta abren Preparaciones sin seleccionar al atleta pulsado.
-- [ ] La tabla de asistencia usa otros nombres (Carlos Díaz, Luis Herrero, Marta Ruiz) que no están en la lista de atletas.
-- [ ] La solicitud dice "me gustaría empezar en septiembre" y está fechada en noviembre.
+- [x] Las cifras "6 / 6 / 1" están escritas a mano: calcularlas desde `coachAthletes` y `preparations`.
+- [x] Línea 51: "12 DE 12 SEMANAS" usa `weeks.length`. Debe ser "semana actual de total".
+- [x] Lucía Fernández tiene preparación activa y, a la vez, una solicitud "Nueva" para la misma carrera. Cambiar la solicitante por alguien sin preparación.
+- [x] Todas las filas de atleta abren Preparaciones sin seleccionar al atleta pulsado.
+- [x] La tabla de asistencia usa otros nombres (Carlos Díaz, Luis Herrero, Marta Ruiz) que no están en la lista de atletas.
+- [x] La solicitud dice "me gustaría empezar en septiembre" y está fechada en noviembre.
+- [x] Además: la solicitud es ahora de Clara Romero (10 km · 17 ene 2027), en `src/data/preparationRequest.js`; el contador y la etiqueta "Nueva" cambian al aceptar o rechazar; la asistencia no marca días futuros; quedaban dos `setSelectedWeek(8)` en `PreparationPage.jsx`.
+- [ ] Pendiente: en `initialState.js` la entrenadora de Alex es Lucía Fernández, que en el rol entrenador es atleta de Alex.
 
 ### 1.9 Formato de números mezclado (S)
 - **Visto:** "Media: 7.0" junto a "3,5 km"; "11.5 km" en Entrenamientos y "11,5 km" en Preparaciones; "4.5 km" en el resumen práctico.

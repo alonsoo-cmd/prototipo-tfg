@@ -10,7 +10,7 @@ import Dashboard from '../pages/shared/Dashboard.jsx';
 /** Muestra la página activa (navegación por estado, sin URL). */
 export default function AppRoutes({ state }) {
   const {
-    role, page, week, setWeek, go, openSession, setModal,
+    role, page, week, setWeek, go, openSession, setModal, focusAthleteId, setFocusAthleteId,
     trainingLogs, setTrainingLogs, coachWeeks, setCoachWeeks,
     preparations, setPreparations, athletePreparation,
     workoutTemplates, setWorkoutTemplates, athleteProfile,
@@ -30,9 +30,9 @@ export default function AppRoutes({ state }) {
     case 'Find coach':
       return <FindCoach onRequest={() => setModal('request')} sent={requestSent} setSent={setRequestSent} />;
     case 'Athletes':
-      return <CoachHome go={go} openRequest={() => setModal('request-review')} requestStatus={requestStatus} weeks={coachWeeks} trainingLogs={trainingLogs} />;
+      return <CoachHome go={go} openAthlete={(athleteId) => { go('Preparations'); setFocusAthleteId(athleteId); }} openRequest={() => setModal('request-review')} requestStatus={requestStatus} weeks={coachWeeks} trainingLogs={trainingLogs} />;
     case 'Preparations':
-      return <PreparationPage weeks={coachWeeks} setWeeks={setCoachWeeks} preparations={preparations} setPreparations={setPreparations} trainingLogs={trainingLogs} workoutTemplates={workoutTemplates} onProfile={() => go('Profile')} />;
+      return <PreparationPage key={focusAthleteId || 'default'} initialAthleteId={focusAthleteId} weeks={coachWeeks} setWeeks={setCoachWeeks} preparations={preparations} setPreparations={setPreparations} trainingLogs={trainingLogs} workoutTemplates={workoutTemplates} onProfile={() => go('Profile')} />;
     case 'Workouts':
       return role === 'entrenador' ? <WorkoutsPage templates={workoutTemplates} setTemplates={setWorkoutTemplates} /> : null;
     default:
