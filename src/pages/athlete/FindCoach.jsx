@@ -33,7 +33,7 @@ export default function FindCoach({onRequest,sent,setSent}){return <div classNam
     <span>Presencial y online</span>
     </div>
     </div>
-    <button className="button primary" onClick={onRequest}>{sent?'Solicitud enviada':'Request Preparation'}</button>
+    <button className="button primary" onClick={onRequest}>{sent?'Solicitud enviada':'Solicitar preparación'}</button>
     </article>
     <article className="coach-card">
     <div className="coach-avatar alt">LM</div>

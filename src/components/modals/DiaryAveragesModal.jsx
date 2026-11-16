@@ -1,22 +1,18 @@
 import { useState, useMemo } from 'react';
 import { createTrainingHistory } from '../../data/trainingHistory.js';
-import { getWeekDateRange } from '../../components/ui/WeekTimeline.jsx';
+import { getWeekDateRange } from '../ui/WeekTimeline.jsx';
+import { wellbeingFields } from '../../domain/wellbeing.js';
+import './DiaryAveragesModal.css';
+import InfoTip, { TermLabel } from '../ui/InfoTip.jsx';
 
 const monthFormatter = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-const wellbeingFields = [
-  ['mood', 'Irritabilidad'],
-  ['fatigue', 'Fatiga'],
-  ['soreness', 'Agujetas'],
-  ['sleep', 'Sueño'],
-  ['stress', 'Estrés'],
-];
 
 export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, currentWeek }) {
   const [mode, setMode] = useState('weekly');
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
 
-  const history = useMemo(() => createTrainingHistory(trainingLogs), [trainingLogs]);
+  const history = useMemo(() => createTrainingHistory(trainingLogs, coachWeeks), [trainingLogs, coachWeeks]);
 
   const availableMonths = useMemo(() => {
     return [...new Set(history.map((r) => r.date.slice(0, 7)))].sort();
@@ -137,7 +133,7 @@ export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, 
                 ))}
               </div>
               <div className="averages-wt-total">
-                Media WT total: <strong>{fmt(averages.wellbeingTotalAvg, 1)}</strong> <small>/ 50</small>
+                Media WT total <InfoTip term="wt" />: <strong>{fmt(averages.wellbeingTotalAvg, 1)}</strong> <small>/ 50</small>
               </div>
             </div>
           </div>
@@ -160,7 +156,7 @@ export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, 
 function AvgMetric({ label, value, unit }) {
   return (
     <div className="avg-metric">
-      <span className="avg-metric-label">{label}</span>
+      <span className="avg-metric-label"><TermLabel>{label}</TermLabel></span>
       <strong className="avg-metric-value">{value}<small>{unit ? ` ${unit}` : ''}</small></strong>
     </div>
   );

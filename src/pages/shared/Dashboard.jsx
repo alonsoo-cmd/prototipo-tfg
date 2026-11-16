@@ -1,6 +1,9 @@
 import { sessions as exampleSessions } from '../../data/sessions.js';
 import { useState } from 'react';
-import { JournalModal } from '../athlete/Diary.jsx';
+import { JournalModal, missingWellbeingFields } from '../../components/journal/JournalModal.jsx';
+import { injuryRegions, wellbeingScales } from '../../domain/wellbeing.js';
+import { weekPhase } from '../../data/phases.js';
+import Toast from '../../components/ui/Toast.jsx';
 import './Dashboard.css';
 
 const athleteShortcuts = [
@@ -34,16 +37,6 @@ const coachShortcuts = [
   },
 ];
 
-const injuryRegions = [
-  ['rodilla-derecha', 'Rodilla derecha'], ['rodilla-izquierda', 'Rodilla izquierda'],
-  ['cuadriceps-derecho', 'Cuádriceps derecho'], ['cuadriceps-izquierdo', 'Cuádriceps izquierdo'],
-  ['tibial-anterior-derecho', 'Tibial anterior derecho'], ['tibial-anterior-izquierdo', 'Tibial anterior izquierdo'],
-  ['tibial-posterior-derecho', 'Tibial posterior derecho'], ['tibial-posterior-izquierdo', 'Tibial posterior izquierdo'],
-  ['isquiotibial-izquierdo', 'Isquiotibial izquierdo'], ['isquiotibial-derecho', 'Isquiotibial derecho'],
-  ['gluteo', 'Glúteo'], ['tobillo-izquierdo', 'Tobillo izquierdo'], ['tobillo-derecho', 'Tobillo derecho'],
-  ['aductores-izquierdo', 'Aductores izquierdo'], ['aductores-derecho', 'Aductores derecho'],
-  ['gemelo-izquierdo', 'Gemelo izquierdo'], ['gemelo-derecho', 'Gemelo derecho'], ['otro', 'Otro'],
-];
 
 export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSession, trainingLogs = {}, setTrainingLogs }) {
   const [journalOpen, setJournalOpen] = useState(false);
@@ -61,13 +54,16 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
   const [injuryLevel, setInjuryLevel] = useState(1);
   const [injuryDescription, setInjuryDescription] = useState('');
   const [otherRegion, setOtherRegion] = useState('');
+  const [saveStatus, setSaveStatus] = useState(null);
+  const [toast, setToast] = useState('');
+  const wellbeingMissing = missingWellbeingFields({ ...(todayLog || {}), ...wellbeingDraft });
   const wellbeingLogged = ['mood', 'fatigue', 'soreness', 'sleep', 'stress'].some((key) => todayLog?.[key] !== '' && todayLog?.[key] !== undefined);
-  const activityLogged = ['distance', 'minutes', 'pace', 'averageHr'].some((key) => todayLog?.[key] !== '' && todayLog?.[key] !== undefined);
+  const activityLogged = ['distance', 'minutes', 'pace', 'speed', 'averageHr'].some((key) => todayLog?.[key] !== '' && todayLog?.[key] !== undefined);
 
   return (
     <div className="content dashboard">
       <section className="dashboard-heading">
-        <div className="eyebrow">INICIO · {role === 'atleta' ? 'ATLETA' : 'ENTRENADOR'}</div>
+        <div className="eyebrow">INICIO · {{ atleta: 'ATLETA', grupo: 'GRUPO', entrenador: 'ENTRENADOR' }[role] || 'ATLETA'}</div>
         <h1>Hola, Alex</h1>
         <p>Este es el resumen de tu preparación para esta semana.</p>
       </section>
@@ -96,8 +92,12 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
           </button>
         </div>
         <div className="today-wellbeing-preview">
-          <div className="eyebrow">BIENESTAR DE HOY</div>
-          <div className="today-wellbeing-ranges">{[['mood', 'Irritabilidad'], ['fatigue', 'Fatiga'], ['soreness', 'Agujetas'], ['sleep', 'Sueño'], ['stress', 'Estrés']].map(([key, label]) => {
+          <div className="today-wellbeing-title">
+            <div className="eyebrow">BIENESTAR DE HOY <span className="journal-required-mark" aria-hidden="true">*</span></div>
+            <span className={`wellbeing-progress ${wellbeingMissing.length ? '' : 'complete'}`} aria-live="polite">{5 - wellbeingMissing.length} de 5</span>
+          </div>
+          <p className="today-wellbeing-hint">1 = lo mejor · 10 = lo peor</p>
+          <div className="today-wellbeing-ranges">{wellbeingScales.map(({ key, label, low, high }) => {
             const rawValue = wellbeingDraft[key] ?? todayLog?.[key];
             const numValue = Number(rawValue);
             const hasValue = rawValue !== '' && rawValue !== undefined && rawValue !== null && !Number.isNaN(numValue);
@@ -107,22 +107,31 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
                 <label htmlFor={`today-${key}`}>{label}</label>
                 <input
                   id={`today-${key}`}
-                  className="today-wellbeing-slider"
+                  className={`today-wellbeing-slider ${displayValue === null ? 'is-empty' : ''}`}
+                  aria-required="true"
                   type="range"
                   min="1"
                   max="10"
                   step="1"
                   value={displayValue ?? 1}
-                  aria-label={`${label} de hoy, de 1 a 10`}
+                  aria-label={`${label} de hoy, de 1 (${low.toLocaleLowerCase('es-ES')}) a 10 (${high.toLocaleLowerCase('es-ES')})`}
+                  title={`1 = ${low} · 10 = ${high}`}
                   aria-valuetext={displayValue !== null ? `${displayValue} de 10` : 'Sin registrar'}
                   onPointerDown={() => {
                     if (displayValue === null) {
                       setWellbeingDraft((current) => ({ ...current, [key]: 1 }));
                     }
                   }}
+                  onKeyDown={(event) => {
+                    if (displayValue === null && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) {
+                      setWellbeingDraft((current) => ({ ...current, [key]: 1 }));
+                      setSaveStatus(null);
+                    }
+                  }}
                   onChange={(event) => {
                     const nextValue = Number(event.target.value) || 1;
                     setWellbeingDraft((current) => ({ ...current, [key]: nextValue }));
+                    setSaveStatus(null);
                   }}
                 />
                 <b
@@ -150,13 +159,13 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
             </section>
             <section className="today-injury-section"><div className="eyebrow today-health-heading">MOLESTIAS</div>
               <div className="today-injury-editor">
-                <label>Parte del cuerpo<select value={injuryRegion} onChange={(event) => { setInjuryRegion(event.target.value); setOtherRegion(''); setInjuryDescription(''); setInjuryLevel(1); }}><option value="">Selecciona una zona…</option>{injuryRegions.map(([id, label]) => <option value={id} key={id}>{label}</option>)}</select></label>
+                <label>Parte del cuerpo<select value={injuryRegion} onChange={(event) => { setInjuryRegion(event.target.value); setOtherRegion(''); setInjuryDescription(''); setInjuryLevel(1); }}><option value="">Selecciona una zona…</option>{injuryRegions.map(({ id, label }) => <option value={id} key={id}>{label}</option>)}</select></label>
                 {injuryRegion && <>
                   {injuryRegion === 'otro' && <label>Indica la zona<input value={otherRegion} onChange={(event) => setOtherRegion(event.target.value)} placeholder="Ej. zona lumbar" /></label>}
                   <label>Dolor · {injuryLevel}/10<input className="today-injury-slider" type="range" min="1" max="10" value={injuryLevel} onChange={(event) => setInjuryLevel(Number(event.target.value))} /></label>
                   <label>Descripción<textarea rows="2" value={injuryDescription} onChange={(event) => setInjuryDescription(event.target.value)} placeholder="Opcional" /></label>
                   <button className="button secondary dashboard-injury-add" type="button" disabled={injuryRegion === 'otro' && !otherRegion.trim()} onClick={() => {
-                    const label = injuryRegion === 'otro' ? otherRegion.trim() : injuryRegions.find(([id]) => id === injuryRegion)?.[1];
+                    const label = injuryRegion === 'otro' ? otherRegion.trim() : injuryRegions.find(({ id }) => id === injuryRegion)?.label;
                     const region = injuryRegion === 'otro' ? `otro:${otherRegion.trim().toLocaleLowerCase('es-ES')}` : injuryRegion;
                     const injury = { region, regionId: injuryRegion, regionLabel: label, otherRegion: injuryRegion === 'otro' ? otherRegion.trim() : '', level: injuryLevel, description: injuryDescription.trim() };
                     setWellbeingDraft((current) => ({ ...current, injuries: [...(current.injuries || todayLog?.injuries || []).filter((item) => item.region !== region && item.regionId !== injuryRegion), injury] }));
@@ -168,12 +177,20 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
             </section>
           </div>
           <button className="button primary today-save-button" type="button" onClick={() => {
+            const missing = missingWellbeingFields({ ...(todayLog || {}), ...wellbeingDraft });
+            if (missing.length) {
+              setSaveStatus({ type: 'error', text: `El bienestar es obligatorio. Falta: ${missing.map(([, label]) => label).join(', ')}.` });
+              return;
+            }
             setTrainingLogs((current) => ({
               ...current,
               [todayLogKey]: { ...(current[todayLogKey] || {}), ...wellbeingDraft, injuries: wellbeingDraft.injuries || current[todayLogKey]?.injuries || [] },
             }));
             setWellbeingDraft((current) => ({ injuries: current.injuries || todayLog?.injuries || [] }));
+            setSaveStatus(null);
+            setToast('Bienestar de hoy guardado');
           }}>Guardar</button>
+          {saveStatus && <p className={`today-save-status ${saveStatus.type}`} role="alert">{saveStatus.text}</p>}
           <button className="today-open-link" onClick={() => setJournalOpen(true)}>Registrar entrenamiento <span>→</span></button>
         </div>
       </section>}
@@ -197,11 +214,14 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
 
       {journalOpen && <JournalModal
         session={todaySession}
-        initialValues={todayLog}
+        initialValues={{ ...(todayLog || {}), ...wellbeingDraft }}
         hidePersonalFields
         onClose={() => setJournalOpen(false)}
         onSave={(values) => {
           setTrainingLogs((current) => ({ ...current, [todayLogKey]: values }));
+          setWellbeingDraft({ injuries: values.injuries || [] });
+          setSaveStatus(null);
+          setToast('Diario de hoy guardado');
           setJournalOpen(false);
         }}
       />}
@@ -211,7 +231,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
           <div>
             <div className="eyebrow">PREPARACIÓN ACTIVA</div>
             <h2>Esta semana <span>· Semana {currentWeek?.number || 8}</span></h2>
-            <p>Media Maratón Madrid · BII / Acumulación</p>
+            <p>Media Maratón Madrid · {weekPhase(weeks, currentWeek?.number || weekNumber)}</p>
           </div>
         </div>
         <div className="dashboard-week-layout">
@@ -229,6 +249,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
           <WeeklySummary weekNumber={currentWeek?.number || weekNumber} />
         </div>
       </section>
+      <Toast message={toast} onDone={() => setToast('')} />
     </div>
   );
 }

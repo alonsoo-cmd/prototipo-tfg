@@ -1,0 +1,270 @@
+- generic [ref=f4e3]:
+  - complementary [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - generic [ref=f4e6]: e
+      - generic [ref=f4e7]: edurance.
+    - group "MODO DEMOSTRACIÓN" [ref=f4e8]:
+      - generic [ref=f4e10]:
+        - button "Atleta" [pressed] [ref=f4e11] [cursor=pointer]
+        - button "Grupo" [ref=f4e12] [cursor=pointer]
+        - button "Entrenador" [ref=f4e13] [cursor=pointer]
+      - generic [ref=f4e14]: Cambia de vista para probar el prototipo. En la versión real dependerá de tu cuenta.
+    - navigation "Navegación principal" [ref=f4e15]:
+      - generic [ref=f4e16]:
+        - heading "MENÚ" [level=2] [ref=f4e17]
+        - button "Inicio" [ref=f4e18] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f4e19]: ⌂
+          - text: Inicio
+          - generic [aria-hidden] [ref=f4e20]: ›
+        - button "Diario" [ref=f4e21] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f4e22]: ▦
+          - text: Diario
+          - generic [aria-hidden] [ref=f4e23]: ›
+        - button "Datos" [ref=f4e24] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f4e25]: ◌
+          - text: Datos
+          - generic [aria-hidden] [ref=f4e26]: ›
+        - button "Perfil" [ref=f4e27] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f4e28]: ○
+          - text: Perfil
+          - generic [aria-hidden] [ref=f4e29]: ›
+    - generic [ref=f4e30]:
+      - generic [ref=f4e31]: AM
+      - generic [ref=f4e32]:
+        - generic [ref=f4e33]: Alex Martín
+        - generic [ref=f4e34]: Atleta · Madrid
+      - button "···" [ref=f4e35] [cursor=pointer]
+  - main [ref=f4e36]:
+    - generic [ref=f4e37]:
+      - generic [ref=f4e38]: Área del atleta / Inicio
+      - generic [ref=f4e39]:
+        - generic [ref=f4e40]: Datos de ejemplo
+        - button "Notificaciones" [ref=f4e42] [cursor=pointer]:
+          - text: ♧
+          - emphasis [ref=f4e43]: "2"
+        - generic [ref=f4e44]: AM
+    - generic [ref=f4e45]:
+      - generic [ref=f4e46]:
+        - generic [ref=f4e47]: INICIO · ATLETA
+        - heading "Hola, Alex" [level=1] [ref=f4e48]
+        - paragraph [ref=f4e49]: Este es el resumen de tu preparación para esta semana.
+      - region "Entrenamiento de hoy" [ref=f4e50]:
+        - generic [ref=f4e51]:
+          - 'button "Ver detalles del entrenamiento de hoy: Gym + Rodaje" [ref=f4e52] [cursor=pointer]':
+            - generic [ref=f4e53]: ENTRENO DE HOY
+            - strong [ref=f4e54]: Gym + Rodaje
+            - generic [ref=f4e55]: Plio ext + Gym A · 3×8 + 30′
+            - generic [ref=f4e56]: 30 min · 6 km
+            - generic [ref=f4e57]:
+              - text: Detalles del entreno
+              - generic [ref=f4e58]: ↗
+          - button "Rellenar diario de hoy" [ref=f4e59] [cursor=pointer]: Rellenar diario
+        - generic [ref=f4e60]:
+          - generic [ref=f4e61]:
+            - generic [ref=f4e62]: BIENESTAR DE HOY *
+            - generic [ref=f4e63]: 0 de 5
+          - paragraph [ref=f4e64]: 1 = lo mejor · 10 = lo peor
+          - generic [ref=f4e65]:
+            - generic [ref=f4e66]:
+              - generic [ref=f4e67] [cursor=pointer]: Irritabilidad
+              - slider "Irritabilidad de hoy, de 1 (nada irritable) a 10 (muy irritable)" [ref=f4e68] [cursor=pointer]: "1"
+              - 'generic "Irritabilidad: sin registrar" [ref=f4e69]': —
+            - generic [ref=f4e70]:
+              - generic [ref=f4e71] [cursor=pointer]: Fatiga
+              - slider "Fatiga de hoy, de 1 (sin fatiga) a 10 (agotado)" [ref=f4e72] [cursor=pointer]: "1"
+              - 'generic "Fatiga: sin registrar" [ref=f4e73]': —
+            - generic [ref=f4e74]:
+              - generic [ref=f4e75] [cursor=pointer]: Agujetas
+              - slider "Agujetas de hoy, de 1 (sin agujetas) a 10 (muchas agujetas)" [ref=f4e76] [cursor=pointer]: "1"
+              - 'generic "Agujetas: sin registrar" [ref=f4e77]': —
+            - generic [ref=f4e78]:
+              - generic [ref=f4e79] [cursor=pointer]: Mal descanso
+              - slider "Mal descanso de hoy, de 1 (dormí muy bien) a 10 (dormí fatal)" [ref=f4e80] [cursor=pointer]: "1"
+              - 'generic "Mal descanso: sin registrar" [ref=f4e81]': —
+            - generic [ref=f4e82]:
+              - generic [ref=f4e83] [cursor=pointer]: Estrés
+              - slider "Estrés de hoy, de 1 (sin estrés) a 10 (muy estresado)" [ref=f4e84] [cursor=pointer]: "1"
+              - 'generic "Estrés: sin registrar" [ref=f4e85]': —
+          - generic [ref=f4e86]:
+            - generic [ref=f4e87]:
+              - generic [ref=f4e88]: SALUD
+              - generic [ref=f4e89]:
+                - generic [ref=f4e90]:
+                  - text: FC en reposo
+                  - generic [ref=f4e91]: ppm
+                  - spinbutton "FC en reposo ppm" [ref=f4e92]
+                - generic [ref=f4e93]:
+                  - text: HRV
+                  - generic [ref=f4e94]: ms
+                  - spinbutton "HRV ms" [ref=f4e95]
+            - generic [ref=f4e96]:
+              - generic [ref=f4e97]: MOLESTIAS
+              - generic [ref=f4e99]:
+                - text: Parte del cuerpo
+                - combobox "Parte del cuerpo" [ref=f4e100]:
+                  - option "Selecciona una zona…" [selected]
+                  - option "Rodilla derecha"
+                  - option "Rodilla izquierda"
+                  - option "Cuádriceps derecho"
+                  - option "Cuádriceps izquierdo"
+                  - option "Tibial anterior derecho"
+                  - option "Tibial anterior izquierdo"
+                  - option "Tibial posterior derecho"
+                  - option "Tibial posterior izquierdo"
+                  - option "Isquiotibial izquierdo"
+                  - option "Isquiotibial derecho"
+                  - option "Glúteo"
+                  - option "Tobillo izquierdo"
+                  - option "Tobillo derecho"
+                  - option "Aductores izquierdo"
+                  - option "Aductores derecho"
+                  - option "Gemelo izquierdo"
+                  - option "Gemelo derecho"
+                  - option "Otro"
+          - button "Guardar" [ref=f4e101] [cursor=pointer]
+          - button "Registrar entrenamiento →" [ref=f4e102] [cursor=pointer]
+      - region "Accesos rápidos" [ref=f4e103]:
+        - button "Diario Consulta el calendario y registra cómo te ha ido. Abrir diario →" [ref=f4e104] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f4e105]: ▦
+          - generic [ref=f4e106]:
+            - strong [ref=f4e107]: Diario
+            - generic [ref=f4e108]: Consulta el calendario y registra cómo te ha ido.
+          - generic [ref=f4e109]:
+            - text: Abrir diario
+            - generic [ref=f4e110]: →
+        - button "Datos Revisa tu actividad y la evolución de tu entrenamiento. Ver mis datos →" [ref=f4e111] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f4e112]: ◌
+          - generic [ref=f4e113]:
+            - strong [ref=f4e114]: Datos
+            - generic [ref=f4e115]: Revisa tu actividad y la evolución de tu entrenamiento.
+          - generic [ref=f4e116]:
+            - text: Ver mis datos
+            - generic [ref=f4e117]: →
+      - generic [ref=f4e118]:
+        - generic [ref=f4e120]:
+          - generic [ref=f4e121]: PREPARACIÓN ACTIVA
+          - heading "Esta semana · Semana 8" [level=2] [ref=f4e122]:
+            - text: Esta semana
+            - generic [ref=f4e123]: · Semana 8
+          - paragraph [ref=f4e124]: Media Maratón Madrid · BII · Acumulación
+        - generic [ref=f4e125]:
+          - generic [ref=f4e126]:
+            - button "Lunes 21 oct Gym + Rodaje Plio ext + Gym A · 3×8 + 30′ 30 min 6 km Planificado" [ref=f4e127] [cursor=pointer]:
+              - generic [ref=f4e128]:
+                - generic [ref=f4e129]: Lunes
+                - generic [ref=f4e130]: 21 oct
+              - generic [ref=f4e131]:
+                - text: Gym + Rodaje
+                - generic [aria-hidden] [ref=f4e132]: ⌄
+              - generic [ref=f4e133]: Plio ext + Gym A · 3×8 + 30′
+              - generic [ref=f4e134]:
+                - generic [ref=f4e135]: 30 min
+                - generic [ref=f4e136]: 6 km
+              - generic [ref=f4e137]: Planificado
+            - button "Martes 22 oct Series 6×400 + 4×200 m · rec. 90″ / 60″ 45 min 7 km Planificado" [ref=f4e139] [cursor=pointer]:
+              - generic [ref=f4e140]:
+                - generic [ref=f4e141]: Martes
+                - generic [ref=f4e142]: 22 oct
+              - generic [ref=f4e143]:
+                - text: Series
+                - generic [aria-hidden] [ref=f4e144]: ⌄
+              - generic [ref=f4e145]: 6×400 + 4×200 m · rec. 90″ / 60″
+              - generic [ref=f4e146]:
+                - generic [ref=f4e147]: 45 min
+                - generic [ref=f4e148]: 7 km
+              - generic [ref=f4e149]: Planificado
+            - button "Miércoles 23 oct Test Test Lactato 58 min 9.6 km Planificado" [ref=f4e151] [cursor=pointer]:
+              - generic [ref=f4e152]:
+                - generic [ref=f4e153]: Miércoles
+                - generic [ref=f4e154]: 23 oct
+              - generic [ref=f4e155]:
+                - text: Test
+                - generic [aria-hidden] [ref=f4e156]: ⌄
+              - generic [ref=f4e157]: Test Lactato
+              - generic [ref=f4e158]:
+                - generic [ref=f4e159]: 58 min
+                - generic [ref=f4e160]: 9.6 km
+              - generic [ref=f4e161]: Planificado
+            - button "Jueves 24 oct Descanso Pies y si te encuentras · bien rodar suave/bici — — Descanso" [ref=f4e163] [cursor=pointer]:
+              - generic [ref=f4e164]:
+                - generic [ref=f4e165]: Jueves
+                - generic [ref=f4e166]: 24 oct
+              - generic [ref=f4e167]:
+                - text: Descanso
+                - generic [aria-hidden] [ref=f4e168]: ⌄
+              - generic [ref=f4e169]: Pies y si te encuentras · bien rodar suave/bici
+              - generic [ref=f4e170]:
+                - generic [ref=f4e171]: —
+                - generic [ref=f4e172]: —
+              - generic [ref=f4e173]: Descanso
+            - button "Viernes 25 oct Series Calentamiento + · 6×800 m · rec. 2′ 55 min 10 km Planificado" [ref=f4e175] [cursor=pointer]:
+              - generic [ref=f4e176]:
+                - generic [ref=f4e177]: Viernes
+                - generic [ref=f4e178]: 25 oct
+              - generic [ref=f4e179]:
+                - text: Series
+                - generic [aria-hidden] [ref=f4e180]: ⌄
+              - generic [ref=f4e181]: Calentamiento + · 6×800 m · rec. 2′
+              - generic [ref=f4e182]:
+                - generic [ref=f4e183]: 55 min
+                - generic [ref=f4e184]: 10 km
+              - generic [ref=f4e185]: Planificado
+            - button "Sábado 26 oct Competición Empiezan los · universitarios 49 min 11.8 km Planificado" [ref=f4e187] [cursor=pointer]:
+              - generic [ref=f4e188]:
+                - generic [ref=f4e189]: Sábado
+                - generic [ref=f4e190]: 26 oct
+              - generic [ref=f4e191]:
+                - text: Competición
+                - generic [aria-hidden] [ref=f4e192]: ⌄
+              - generic [ref=f4e193]: Empiezan los · universitarios
+              - generic [ref=f4e194]:
+                - generic [ref=f4e195]: 49 min
+                - generic [ref=f4e196]: 11.8 km
+              - generic [ref=f4e197]: Planificado
+            - button "Domingo 27 oct Long run 60′ suaves 60 min 12 km Planificado" [ref=f4e199] [cursor=pointer]:
+              - generic [ref=f4e200]:
+                - generic [ref=f4e201]: Domingo
+                - generic [ref=f4e202]: 27 oct
+              - generic [ref=f4e203]:
+                - text: Long run
+                - generic [aria-hidden] [ref=f4e204]: ⌄
+              - generic [ref=f4e205]: 60′ suaves
+              - generic [ref=f4e206]:
+                - generic [ref=f4e207]: 60 min
+                - generic [ref=f4e208]: 12 km
+              - generic [ref=f4e209]: Planificado
+          - complementary "Resumen semanal, semana 8" [ref=f4e211]:
+            - generic [ref=f4e212]: Semana 8
+            - table [ref=f4e213]:
+              - rowgroup [ref=f4e214]:
+                - row [ref=f4e215]:
+                  - columnheader [ref=f4e216]
+                  - columnheader "B" [ref=f4e217]
+                  - columnheader "M" [ref=f4e218]
+                  - columnheader "A" [ref=f4e219]
+                  - columnheader "Tot" [ref=f4e220]
+              - rowgroup [ref=f4e221]:
+                - row [ref=f4e222]:
+                  - rowheader "Kms" [ref=f4e223]
+                  - cell "35" [ref=f4e224]
+                  - cell "4" [ref=f4e225]
+                  - cell "8" [ref=f4e226]
+                  - cell "46" [ref=f4e227]
+                - row [ref=f4e228]:
+                  - rowheader "Minutos" [ref=f4e229]
+                  - cell "182" [ref=f4e230]
+                  - cell "16" [ref=f4e231]
+                  - cell "34" [ref=f4e232]
+                  - cell "232" [ref=f4e233]
+                - row [ref=f4e234]:
+                  - rowheader "TRIMPS" [ref=f4e235]
+                  - cell "182" [ref=f4e236]
+                  - cell "32" [ref=f4e237]
+                  - cell "102" [ref=f4e238]
+                  - cell "316" [ref=f4e239]
+                - row [ref=f4e240]:
+                  - rowheader "% mins" [ref=f4e241]
+                  - cell "78" [ref=f4e242]
+                  - cell "7" [ref=f4e243]
+                  - cell "15" [ref=f4e244]
+                  - cell "100" [ref=f4e245]

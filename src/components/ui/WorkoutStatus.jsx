@@ -1,3 +1,6 @@
+// Cada estado lleva símbolo además de color, para quien no distingue colores.
+export const statusGlyphs = { completed: '✓', partial: '½', missed: '✕', unreported: '' };
+
 const statusLabels = {
   completed: 'Completado',
   partial: 'A medias',
@@ -14,6 +17,6 @@ export default function WorkoutStatus({ status, className = '' }) {
       role="img"
       aria-label={label}
       title={label}
-    />
+    ><span aria-hidden="true">{statusGlyphs[normalizedStatus]}</span></span>
   );
 }

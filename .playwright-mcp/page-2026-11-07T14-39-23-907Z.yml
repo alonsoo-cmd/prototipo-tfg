@@ -1,0 +1,579 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - banner [ref=f4e4]:
+      - generic [ref=f4e5]:
+        - link "BBC News World Service" [ref=f4e6] [cursor=pointer]:
+          - /url: /ws/languages
+        - link "Inicia sesión" [ref=f4e12] [cursor=pointer]:
+          - /url: https://session.bbc.com/session?ptrt=https%3A%2F%2Fwww.bbc.com%2Fmundo%2Farticles%2Fc60rldxq8k1ro&lang=es-005&skipAgeBracketScreen=true&userOrigin=WS_NEWS_MUNDO&context=international
+      - generic [ref=f4e16]:
+        - generic [ref=f4e19]:
+          - heading "Déjanos saber si aceptas las cookies" [level=2] [ref=f4e20]
+          - paragraph [ref=f4e21]:
+            - text: Usamos
+            - link "cookies" [ref=f4e22] [cursor=pointer]:
+              - /url: https://www.bbc.com/usingthebbc/cookies/what-do-i-need-to-know-about-cookies/
+            - text: para ofrecerte la mejor experiencia online. Déjanos saber si aceptas todas estas cookies.
+          - list [ref=f4e23]:
+            - listitem [ref=f4e24]:
+              - button "Sí, estoy de acuerdo" [ref=f4e25] [cursor=pointer]
+            - listitem [ref=f4e26]:
+              - link "No, llévame a la configuración" [ref=f4e28] [cursor=pointer]:
+                - /url: https://www.bbc.com/usingthebbc/cookies/how-can-i-change-my-bbc-cookie-settings/
+        - generic [ref=f4e30]:
+          - link "BBC News, Mundo" [ref=f4e31] [cursor=pointer]:
+            - /url: /mundo
+          - link "Ir al contenido" [ref=f4e37] [cursor=pointer]:
+            - /url: "#content"
+      - navigation [ref=f4e39]:
+        - generic [ref=f4e41]:
+          - list [ref=f4e45]:
+            - listitem [ref=f4e46]:
+              - link "Noticias" [ref=f4e47] [cursor=pointer]:
+                - /url: /mundo
+            - listitem [ref=f4e49]:
+              - link "Video" [ref=f4e50] [cursor=pointer]:
+                - /url: /mundo/topics/ck0dg7pe1kgt
+            - listitem [ref=f4e51]:
+              - link "Mis Noticias" [ref=f4e52] [cursor=pointer]:
+                - /url: /mundo/my-news
+          - list [ref=f4e55]:
+            - listitem [ref=f4e56]:
+              - link "América Latina" [ref=f4e57] [cursor=pointer]:
+                - /url: /mundo/topics/c7zp57yyz25t
+            - listitem [ref=f4e58]:
+              - link "Internacional" [ref=f4e59] [cursor=pointer]:
+                - /url: /mundo/topics/c2lej05epw5t
+            - listitem [ref=f4e60]:
+              - link "EE.UU." [ref=f4e61] [cursor=pointer]:
+                - /url: /mundo/topics/cdr5613yzwqt
+            - listitem [ref=f4e62]:
+              - link "Economía" [ref=f4e63] [cursor=pointer]:
+                - /url: /mundo/topics/c06gq9v4xp3t
+            - listitem [ref=f4e64]:
+              - link "Ciencia" [ref=f4e65] [cursor=pointer]:
+                - /url: /mundo/topics/ckdxnw959n7t
+            - listitem [ref=f4e66]:
+              - link "Salud" [ref=f4e67] [cursor=pointer]:
+                - /url: /mundo/topics/cpzd498zkxgt
+            - listitem [ref=f4e68]:
+              - link "Cultura" [ref=f4e69] [cursor=pointer]:
+                - /url: /mundo/topics/c2dwq9zyv4yt
+            - listitem [ref=f4e70]:
+              - link "Tecnología" [ref=f4e71] [cursor=pointer]:
+                - /url: /mundo/topics/cyx5krnw38vt
+            - listitem [ref=f4e72]:
+              - link "Hay Festival" [ref=f4e73] [cursor=pointer]:
+                - /url: /mundo/topics/cr50y7p7qyqt
+            - listitem [ref=f4e74]:
+              - link "Centroamérica Cuenta" [ref=f4e75] [cursor=pointer]:
+                - /url: /mundo/topics/c404v5z1k8wt
+    - generic [ref=f4e77]:
+      - region [aria-hidden] [ref=f4e78]
+      - generic [ref=f4e79]:
+        - generic [ref=f4e80]:
+          - main [ref=f4e81]:
+            - heading "Qué es el \"zeptoverso\", el mundo más pequeño jamás detectado en la naturaleza, y por qué es clave para entender el universo" [level=1] [ref=f4e83]
+            - figure "Pie de foto, Muchas partículas subatómicas se crean al chocar las partes internas de los átomos." [ref=f4e84]:
+              - generic [ref=f4e85]:
+                - img "Un brillante cúmulo estelar resplandece sobre un fondo negro. Finas vetas naranjas y blancas irradian desde su centro densamente centelleante, intercaladas con sinuosos rastros azules y púrpuras. Un rayo amarillo lo atraviesa diagonalmente, desde la parte superior izquierda hasta la inferior derecha." [ref=f4e86]
+                - paragraph [ref=f4e87]:
+                  - generic [ref=f4e88]: Fuente de la imagen,
+                  - text: CERN/Getty Images
+              - generic [ref=f4e90]:
+                - generic [ref=f4e91]: Pie de foto,
+                - text: Muchas partículas subatómicas se crean al chocar las partes internas de los átomos.
+            - region [ref=f4e92]:
+              - strong [aria-hidden] [ref=f4e93]: Información del artículo
+              - list [ref=f4e94]:
+                - listitem [ref=f4e95]:
+                  - list [ref=f4e96]:
+                    - listitem [ref=f4e97]:
+                      - generic [ref=f4e98]:
+                        - generic [ref=f4e99]: Autor,
+                        - generic [ref=f4e100]: Redacción
+                    - listitem [ref=f4e101]:
+                      - generic [ref=f4e102]:
+                        - generic [ref=f4e103]: Título del autor,
+                        - text: BBC News Mundo*
+                - listitem [ref=f4e104]:
+                  - generic [ref=f4e105]:
+                    - generic [ref=f4e106]: Fecha de publicación
+                    - time [ref=f4e107]: 3 noviembre 2026
+                - listitem [ref=f4e108]:
+                  - generic [ref=f4e109]: "Tiempo de lectura: 4 min"
+            - button "Guarda para después" [ref=f4e111] [cursor=pointer]:
+              - generic [ref=f4e115]: Guarda para después
+            - paragraph [ref=f4e118]: "Científicos detectaron señales procedentes de la escala más pequeña de la naturaleza jamás explorada: 100 mil millones de veces menor que un átomo."
+            - paragraph [ref=f4e120]: Un mundo tan pequeño que algunos físicos lo han apodado el zeptoverso.
+            - paragraph [ref=f4e122]: La investigación, liderada por científicos basados en Cambridge, se obtuvo a partir de un experimento realizado en el Gran Colisionador de Hadrones (LHC).
+            - paragraph [ref=f4e124]: Esta enorme máquina, ubicada en el Laboratorio Europeo de Física de Partículas (CERN), en la frontera suizo-francesa, cerca de Ginebra, hace colisionar átomos para separarlos y descubrir qué hay en su interior.
+            - paragraph [ref=f4e126]: El hallazgo, que se produce tras más de 40 años de búsqueda, podría ayudar a los investigadores a explorar un mundo misterioso miles de millones de veces más pequeño que un átomo, y a desarrollar una teoría nueva y más completa sobre cómo funciona el universo.
+            - region [aria-hidden] [ref=f4e127]
+            - heading "\"Llamando a la puerta\" del zeptoverso" [level=2] [ref=f4e129]
+            - paragraph [ref=f4e131]: La materia oscura constituye una gran parte de nuestro cosmos, y sin embargo, los investigadores han tenido dificultades para detectarla.
+            - paragraph [ref=f4e133]: Los científicos saben que está ahí porque su fuerza gravitatoria influye en la materia ordinaria, pero en todos los demás aspectos ha permanecido completamente invisible.
+            - paragraph [ref=f4e135]: "En este experimento se hicieron colisionar partículas a alta energía y los científicos estudiaron el material que se expulsó: los fragmentos resultantes de las colisiones."
+            - region "Más leídas" [ref=f4e136]:
+              - generic [ref=f4e137]:
+                - link "Saltar Más leídas y continuar leyendo" [ref=f4e138] [cursor=pointer]:
+                  - /url: "#end-of-recommendations"
+                - strong [ref=f4e140]:
+                  - generic [ref=f4e141]: Más leídas
+                - list [ref=f4e144]:
+                  - listitem [ref=f4e145]:
+                    - generic [ref=f4e146]:
+                      - img "Julio Rojas mira a la cámara con una playa en el fondo" [ref=f4e149]
+                      - link "\"Cuando hablamos del fin del mundo, todos piensan en meteoritos, virus o un supertsunami, pero pocos imaginan un choque ontológico\"" [ref=f4e152] [cursor=pointer]:
+                        - /url: https://www.bbc.com/mundo/articles/cr3wvvlp9vx1o
+                  - listitem [ref=f4e153]:
+                    - generic [ref=f4e154]:
+                      - img "Miguel Vázquez" [ref=f4e157]
+                      - link "Quién es Miguel Vázquez, el banquero milenial y atleta en el centro de la crisis de Paraguay" [ref=f4e160] [cursor=pointer]:
+                        - /url: https://www.bbc.com/mundo/articles/cwzd6684mgv5o
+                  - listitem [ref=f4e161]:
+                    - generic [ref=f4e162]:
+                      - img "Gonzalo Moratorio en el laboratorio." [ref=f4e165]
+                      - link "Muere Gonzalo Moratorio, el científico que \"blindó\" a Uruguay del covid-19 y luchaba por pagarse un costoso tratamiento contra el cáncer" [ref=f4e168] [cursor=pointer]:
+                        - /url: https://www.bbc.com/mundo/articles/c674ppz944jxo
+                  - listitem [ref=f4e169]:
+                    - generic [ref=f4e170]:
+                      - img "Stephen Miller y Donald Trump en el despacho oval." [ref=f4e173]
+                      - link "Trump nombra a Stephen Miller, el \"arquitecto\" de su dura política migratoria, como nuevo jefe de gabinete de la Casa Blanca" [ref=f4e176] [cursor=pointer]:
+                        - /url: https://www.bbc.com/mundo/articles/c90k001drxxko
+                - paragraph [ref=f4e177]: Final de Más leídas
+            - paragraph [ref=f4e179]: Una de ellas es una partícula subatómica, más pequeña que un átomo, llamada quark fondo o quark inferior (o también quark "belleza").
+            - paragraph [ref=f4e181]: La partícula es inestable y existe durante tan solo una billonésima y media de segundo antes de descomponerse en otras formas, es decir, desintegrarse.
+            - paragraph [ref=f4e183]: A pesar de su corta vida útil, los investigadores lograron detectar su interacción con otras partículas diminutas a una escala de una billonésima de metro.
+            - paragraph [ref=f4e185]: Algunas teorías sugieren que, a estas escalas, las partículas son más sensibles a la materia oscura, lo que podría influir en la interacción y la desintegración de los quarks.
+            - paragraph [ref=f4e187]: Por lo tanto, detectar actividad en este diminuto universo podría ayudar a los científicos a detectar la materia oscura.
+            - figure "Pie de foto, El Dr. Harry Cliff es uno de los científicos británicos que participan en la investigación." [ref=f4e188]:
+              - generic [ref=f4e189]:
+                - img "Harry Cliff escribiendo en una pizarra blanca. Viste una camisa azul marino oscuro y levanta el brazo derecho, sosteniendo un rotulador cerca del borde superior de la pizarra." [ref=f4e190]
+                - paragraph [ref=f4e191]:
+                  - generic [ref=f4e192]: Fuente de la imagen,
+                  - text: Joshua Falcon/BBC
+              - generic [ref=f4e194]:
+                - generic [ref=f4e195]: Pie de foto,
+                - text: El Dr. Harry Cliff es uno de los científicos británicos que participan en la investigación.
+            - paragraph [ref=f4e197]: "\"Los físicos han estado buscando este tipo poco común de desintegración desde 1984, es decir, antes de que yo naciera\", comentó el Dr. Harry Cliff, de la Universidad de Cambridge, quien dirigió el análisis de los datos."
+            - paragraph [ref=f4e199]: Según explicó, esta danza subatómica proporcionó a los investigadores una perspectiva privilegiada del comportamiento de posibles nuevas partículas.
+            - paragraph [ref=f4e201]: "\"Estamos llamando a la puerta de este zeptoverso\", le dijo a BBC News."
+            - paragraph [ref=f4e203]: "\"Lo que queremos hacer ahora es entrar, explorar y descubrir qué nuevas partículas nos esperan. Y para ello, necesitamos más datos\", añadió Cliff."
+            - paragraph [ref=f4e205]: El profesor Brian Cox, reconocido divulgador científico e investigador de física de partículas en la Universidad de Manchester, que no forma parte del equipo de investigación, describió el resultado como "importante".
+            - paragraph [ref=f4e207]: Los hallazgos, que aún no han sido sometidos a revisión por pares, se presentan este lunes en el CERN.
+            - heading "Participación británica" [level=2] [ref=f4e209]
+            - region "Tenemos una nueva app" [ref=f4e211]:
+              - generic [ref=f4e212]:
+                - link "Saltar Anuncio app y continuar leyendo" [ref=f4e213] [cursor=pointer]:
+                  - /url: "#end-of-podcasts"
+                - generic [ref=f4e214]:
+                  - img "Imagen de un teléfono celular con la nueva app de BBC Mundo" [ref=f4e217]
+                  - generic [ref=f4e221]:
+                    - strong [ref=f4e222]:
+                      - link "Tenemos una nueva app" [ref=f4e223] [cursor=pointer]:
+                        - /url: https://bbcwsuniversal.onelink.me/s6ot/8sfpme8y
+                    - paragraph [ref=f4e224]: Todas las noticias que necesitas están en BBC World Service
+                    - paragraph [ref=f4e225]: Descárgala aquí
+                - paragraph [ref=f4e230]: Fin de Anuncio app
+            - paragraph [ref=f4e232]: Los 28 países que participan en el proyecto han acordado contribuir con US$200 millones para modernizar este detector en el Gran Colisionador de Hadrones (LHCb), lo que aumentaría la frecuencia de estas desintegraciones diez veces.
+            - paragraph [ref=f4e234]: Los científicos esperan que nuevas mejoras en el equipamiento del colisionador, previstas para la década de 2030, les permitan examinar estos sucesos poco frecuentes con mucho mayor detalle.
+            - paragraph [ref=f4e236]: "\"Con eso podemos indagar en el zeptoverso y ver qué nos espera\", dijo Cliff."
+            - paragraph [ref=f4e238]: Sin embargo, el año pasado, la agencia UK Research and Innovation (UKRI), el organismo gubernamental encargado de la financiación de la investigación, anunció que retiraba su parte del dinero destinado a la mejora prevista.
+            - paragraph [ref=f4e240]: Aunque esta investigación fue dirigida por científicos basados en Cambridge, debido a los recortes, el profesor Tim Gershon, quien conduce la colaboración internacional LHCb, declaró a BBC News que la plena participación de Reino Unido en la investigación estaría en duda.
+            - paragraph [ref=f4e242]: "\"Reino Unido corre el riesgo de no participar y de no realizar descubrimientos realmente importantes\", declaró a BBC News."
+            - paragraph [ref=f4e244]: "*Con información del corresponsal de Ciencia de BBC News Pallab Gosh y el reportero de Ciencia Josh Falcon."
+            - list [ref=f4e246]:
+              - listitem [ref=f4e247]:
+                - link "Descarga la nueva app del BBC World Service, externo" [ref=f4e248] [cursor=pointer]:
+                  - /url: https://bbcwsuniversal.onelink.me/s6ot/8sfpme8y
+                  - text: Descarga la nueva app del BBC World Service
+                - text: ". Elige BBC News Mundo y recibe alertas de noticias, documentales y análisis, todo en un solo lugar. Importante: la nueva aplicación no está disponible en Reino Unido ni Estados Unidos."
+              - listitem [ref=f4e249]:
+                - text: También puedes seguirnos en
+                - link "YouTube, externo" [ref=f4e250] [cursor=pointer]:
+                  - /url: https://www.youtube.com/user/BBCMundo?sub_confirmation=1
+                  - text: YouTube
+                - text: ","
+                - link "Instagram, externo" [ref=f4e251] [cursor=pointer]:
+                  - /url: https://www.instagram.com/bbcmundo
+                  - text: Instagram
+                - text: ","
+                - link "TikTok, externo" [ref=f4e252] [cursor=pointer]:
+                  - /url: https://www.tiktok.com/@bbcnewsmundo
+                  - text: TikTok
+                - text: ","
+                - link "Facebook, externo" [ref=f4e253] [cursor=pointer]:
+                  - /url: https://www.facebook.com/BBCnewsMundo
+                  - text: Facebook
+                - text: ","
+                - link "X, externo" [ref=f4e254] [cursor=pointer]:
+                  - /url: https://twitter.com/bbcmundo
+                  - text: X
+                - text: y en nuestro
+                - link "canal de WhatsApp, externo" [ref=f4e255] [cursor=pointer]:
+                  - /url: https://www.whatsapp.com/channel/0029VaUm1Ss3WHTbgIXrjw3D
+                  - text: canal de WhatsApp
+                - text: .
+              - listitem [ref=f4e256]:
+                - text: Y no olvides
+                - link "suscribirte aquí a nuestro newsletter" [ref=f4e257] [cursor=pointer]:
+                  - /url: /mundo/send/u184973209
+                - text: para recibir cada viernes una selección especial de nuestro mejor contenido.
+          - region [ref=f4e258]:
+            - heading "Descubre más" [level=2] [ref=f4e259]
+            - tablist "Descubre más" [ref=f4e261]:
+              - tab "Física" [selected] [ref=f4e262] [cursor=pointer]
+              - tab "Astronomía" [ref=f4e263] [cursor=pointer]
+              - tab "Ciencia" [ref=f4e264] [cursor=pointer]
+            - tabpanel "Física" [ref=f4e265]
+          - region "Video" [ref=f4e293]:
+            - generic [ref=f4e294]:
+              - link "Omitir Video y continuar" [ref=f4e295] [cursor=pointer]:
+                - /url: "#end-of-portrait-video-carousel"
+              - heading "Video" [level=2] [ref=f4e296]
+              - generic [ref=f4e297]:
+                - generic [ref=f4e299]:
+                  - button [disabled] [ref=f4e300]
+                  - button [ref=f4e303] [cursor=pointer]
+                - list [ref=f4e306]:
+                  - listitem [ref=f4e307]:
+                    - img "El presidente del Congreso de Paraguay anuncia la destitución de Peña" [ref=f4e309]
+                    - button "Video, El Congreso de Paraguay destituye al presidente Santiago Peña , Duración 0,29" [ref=f4e310] [cursor=pointer]:
+                      - generic [ref=f4e312]:
+                        - time [ref=f4e316]: 00:29
+                        - generic [ref=f4e317]:
+                          - generic [ref=f4e318]: Video,
+                          - text: El Congreso de Paraguay destituye al presidente Santiago Peña
+                          - generic [ref=f4e319]: ", Duración 0,29"
+                  - listitem [ref=f4e320]:
+                    - img "Koala" [ref=f4e322]
+                    - button "Video, Una mujer salva a un bebé koala de una serpiente , Duración 0,28" [ref=f4e323] [cursor=pointer]:
+                      - generic [ref=f4e325]:
+                        - time [ref=f4e329]: 00:28
+                        - generic [ref=f4e330]:
+                          - generic [ref=f4e331]: Video,
+                          - text: Una mujer salva a un bebé koala de una serpiente
+                          - generic [ref=f4e332]: ", Duración 0,28"
+                  - listitem [ref=f4e333]:
+                    - img "Sevda junto a su madre Samira" [ref=f4e335]
+                    - button "Video, La madre que escapó de Irán para buscar justicia por su hija , Duración 1,44" [ref=f4e336] [cursor=pointer]:
+                      - generic [ref=f4e338]:
+                        - time [ref=f4e342]: 01:44
+                        - generic [ref=f4e343]:
+                          - generic [ref=f4e344]: Video,
+                          - text: La madre que escapó de Irán para buscar justicia por su hija
+                          - generic [ref=f4e345]: ", Duración 1,44"
+                  - listitem [ref=f4e346]:
+                    - img "Santiago Peña superpuesto sobre una imagen con el logo de Ueno Bank" [ref=f4e348]
+                    - 'button "Video, Crisis de Ueno Bank: las claves de la renuncia de Peña en Paraguay , Duración 2,35" [ref=f4e349] [cursor=pointer]':
+                      - generic [ref=f4e351]:
+                        - time [ref=f4e355]: 02:35
+                        - generic [ref=f4e356]:
+                          - generic [ref=f4e357]: Video,
+                          - text: "Crisis de Ueno Bank: las claves de la renuncia de Peña en Paraguay"
+                          - generic [ref=f4e358]: ", Duración 2,35"
+                  - listitem [ref=f4e359]:
+                    - img "Santiago Peña" [ref=f4e361]
+                    - button "Video, La renuncia de Santiago Peña como presidente de Paraguay , Duración 1,09" [ref=f4e362] [cursor=pointer]:
+                      - generic [ref=f4e364]:
+                        - time [ref=f4e368]: 01:09
+                        - generic [ref=f4e369]:
+                          - generic [ref=f4e370]: Video,
+                          - text: La renuncia de Santiago Peña como presidente de Paraguay
+                          - generic [ref=f4e371]: ", Duración 1,09"
+                  - listitem [ref=f4e372]:
+                    - img "El periodista John North y Christa Pike." [ref=f4e374]
+                    - button "Video, “Vi cómo la ejecución de Christa Pike salía mal” , Duración 2,08" [ref=f4e375] [cursor=pointer]:
+                      - generic [ref=f4e377]:
+                        - time [ref=f4e381]: 02:08
+                        - generic [ref=f4e382]:
+                          - generic [ref=f4e383]: Video,
+                          - text: “Vi cómo la ejecución de Christa Pike salía mal”
+                          - generic [ref=f4e384]: ", Duración 2,08"
+                  - listitem [ref=f4e385]:
+                    - img "Benjamin Shrader" [ref=f4e387]
+                    - button "Video, Del optimismo a la conmoción entre jóvenes republicanos , Duración 1,00" [ref=f4e388] [cursor=pointer]:
+                      - generic [ref=f4e390]:
+                        - time [ref=f4e394]: 01:00
+                        - generic [ref=f4e395]:
+                          - generic [ref=f4e396]: Video,
+                          - text: Del optimismo a la conmoción entre jóvenes republicanos
+                          - generic [ref=f4e397]: ", Duración 1,00"
+                  - listitem [ref=f4e398]:
+                    - img "Abdul El-Sayed con camisa blanca sonriendo" [ref=f4e400]
+                    - button "Video, Abdul El-Sayed será el primer senador musulmán en EE.UU. , Duración 2,46" [ref=f4e401] [cursor=pointer]:
+                      - generic [ref=f4e403]:
+                        - time [ref=f4e407]: 02:46
+                        - generic [ref=f4e408]:
+                          - generic [ref=f4e409]: Video,
+                          - text: Abdul El-Sayed será el primer senador musulmán en EE.UU.
+                          - generic [ref=f4e410]: ", Duración 2,46"
+                  - listitem [ref=f4e411]:
+                    - img "Gina Hinojosa y James Talarico" [ref=f4e413]
+                    - button "Video, El terremoto electoral texano de Hinojosa y Talarico , Duración 2,18" [ref=f4e414] [cursor=pointer]:
+                      - generic [ref=f4e416]:
+                        - time [ref=f4e420]: 02:18
+                        - generic [ref=f4e421]:
+                          - generic [ref=f4e422]: Video,
+                          - text: El terremoto electoral texano de Hinojosa y Talarico
+                          - generic [ref=f4e423]: ", Duración 2,18"
+                  - listitem [ref=f4e424]:
+                    - img "Una mujer con gafas y el pelo blanco celebrando" [ref=f4e426]
+                    - button "Video, Claves de la \"ola azul\" en EE.UU. y qué supone para Trump , Duración 2,42" [ref=f4e427] [cursor=pointer]:
+                      - generic [ref=f4e429]:
+                        - time [ref=f4e433]: 02:42
+                        - generic [ref=f4e434]:
+                          - generic [ref=f4e435]: Video,
+                          - text: Claves de la "ola azul" en EE.UU. y qué supone para Trump
+                          - generic [ref=f4e436]: ", Duración 2,42"
+                  - listitem [ref=f4e437]:
+                    - img "Donald Trump" [ref=f4e439]
+                    - 'button "Video, Trump: \"Los demócratas hicieron un buen trabajo\" , Duración 0,43" [ref=f4e440] [cursor=pointer]':
+                      - generic [ref=f4e442]:
+                        - time [ref=f4e446]: 00:43
+                        - generic [ref=f4e447]:
+                          - generic [ref=f4e448]: Video,
+                          - text: "Trump: \"Los demócratas hicieron un buen trabajo\""
+                          - generic [ref=f4e449]: ", Duración 0,43"
+                  - listitem [ref=f4e450]:
+                    - img "Un hombre con una gorra celebra" [ref=f4e452]
+                    - button "Video, 4 datos de la triunfal noche demócrata en EE.UU. , Duración 2,14" [ref=f4e453] [cursor=pointer]:
+                      - generic [ref=f4e455]:
+                        - time [ref=f4e459]: 02:14
+                        - generic [ref=f4e460]:
+                          - generic [ref=f4e461]: Video,
+                          - text: 4 datos de la triunfal noche demócrata en EE.UU.
+                          - generic [ref=f4e462]: ", Duración 2,14"
+                  - listitem [ref=f4e463]:
+                    - img "Mujer con uniforme de piloto delante de una avioneta." [ref=f4e465]
+                    - button "Video, Qué se sabe del accidente de avión en Florida y sus víctimas , Duración 2,27" [ref=f4e466] [cursor=pointer]:
+                      - generic [ref=f4e468]:
+                        - time [ref=f4e472]: 02:27
+                        - generic [ref=f4e473]:
+                          - generic [ref=f4e474]: Video,
+                          - text: Qué se sabe del accidente de avión en Florida y sus víctimas
+                          - generic [ref=f4e475]: ", Duración 2,27"
+                  - listitem [ref=f4e476]:
+                    - img "Periodista de BBC Mundo" [ref=f4e478]
+                    - 'button "Video, ''Zeptoverso'': el mundo más pequeño jamás detectado , Duración 2,09" [ref=f4e479] [cursor=pointer]':
+                      - generic [ref=f4e481]:
+                        - time [ref=f4e485]: 02:09
+                        - generic [ref=f4e486]:
+                          - generic [ref=f4e487]: Video,
+                          - text: "'Zeptoverso': el mundo más pequeño jamás detectado"
+                          - generic [ref=f4e488]: ", Duración 2,09"
+                  - listitem [ref=f4e489]:
+                    - img "Una mujer mayor abraza a su hijo" [ref=f4e491]
+                    - button "Video, Un aventurero vuelve a casa tras 28 años recorriendo el mundo a pie , Duración 0,53" [ref=f4e492] [cursor=pointer]:
+                      - generic [ref=f4e494]:
+                        - time [ref=f4e498]: 00:53
+                        - generic [ref=f4e499]:
+                          - generic [ref=f4e500]: Video,
+                          - text: Un aventurero vuelve a casa tras 28 años recorriendo el mundo a pie
+                          - generic [ref=f4e501]: ", Duración 0,53"
+              - paragraph [ref=f4e502]: Fin de Video
+          - region [ref=f4e503]:
+            - heading "Contenido relacionado" [level=2] [ref=f4e505]
+            - list [ref=f4e509]:
+              - listitem [ref=f4e510]:
+                - generic [ref=f4e512]:
+                  - img "Ilustración conceptual de los neutrinos" [ref=f4e514]
+                  - generic [ref=f4e515]:
+                    - heading "El \"ingenioso\" experimento del CERN que buscará las misteriosas \"partículas fantasma\"" [level=3] [ref=f4e516]:
+                      - link "El \"ingenioso\" experimento del CERN que buscará las misteriosas \"partículas fantasma\"" [ref=f4e517] [cursor=pointer]:
+                        - /url: /mundo/articles/crgv55qp7vpo
+                    - time [ref=f4e518]: 26 marzo 2024
+              - listitem [ref=f4e519]:
+                - generic [ref=f4e521]:
+                  - img "Ilustración de una colisión de partículas." [ref=f4e523]
+                  - generic [ref=f4e524]:
+                    - heading "Qué es el Futuro Colisionador Circular, el acelerador de partículas que promete ser 3 veces más grande que el actual y revolucionar la física" [level=3] [ref=f4e525]:
+                      - link "Qué es el Futuro Colisionador Circular, el acelerador de partículas que promete ser 3 veces más grande que el actual y revolucionar la física" [ref=f4e526] [cursor=pointer]:
+                        - /url: /mundo/articles/c51vpnywel9o
+                    - time [ref=f4e527]: 6 febrero 2024
+        - generic [ref=f4e528]:
+          - region [ref=f4e530]:
+            - heading "Principales noticias" [level=2] [ref=f4e532]
+            - list [ref=f4e536]:
+              - listitem [ref=f4e537]:
+                - generic [ref=f4e540]:
+                  - heading "El expresidente de Paraguay Santiago Peña pasa la noche bajo arresto en un cuartel militar en medio de protestas en Asunción" [level=3] [ref=f4e541]:
+                    - link "El expresidente de Paraguay Santiago Peña pasa la noche bajo arresto en un cuartel militar en medio de protestas en Asunción" [ref=f4e542] [cursor=pointer]:
+                      - /url: /mundo/articles/c64g1nd9qvn0o
+                  - time [ref=f4e543]: 14 minutos
+              - listitem [ref=f4e544]:
+                - generic [ref=f4e547]:
+                  - heading "El escándalo de Ueno Bank en Paraguay se salda con la detención de Santiago Peña y con Pedro Alliana como nuevo presidente del país" [level=3] [ref=f4e548]:
+                    - link "El escándalo de Ueno Bank en Paraguay se salda con la detención de Santiago Peña y con Pedro Alliana como nuevo presidente del país" [ref=f4e549] [cursor=pointer]:
+                      - /url: /mundo/articles/cwkg55edm8r7o
+                  - time [ref=f4e550]: 6 noviembre 2026
+              - listitem [ref=f4e551]:
+                - generic [ref=f4e554]:
+                  - heading "Quién es Miguel Vázquez, el banquero milenial y atleta en el centro de la crisis de Paraguay" [level=3] [ref=f4e555]:
+                    - link "Quién es Miguel Vázquez, el banquero milenial y atleta en el centro de la crisis de Paraguay" [ref=f4e556] [cursor=pointer]:
+                      - /url: /mundo/articles/cwzd6684mgv5o
+                  - time [ref=f4e557]: 6 noviembre 2026
+          - region [ref=f4e559]:
+            - heading "No te lo pierdas" [level=2] [ref=f4e561]
+            - list [ref=f4e565]:
+              - listitem [ref=f4e566]
+              - listitem [ref=f4e567]:
+                - generic [ref=f4e568]:
+                  - link [aria-hidden] [ref=f4e569] [cursor=pointer]:
+                    - /url: /mundo/articles/cwe9le9yyzrzo
+                  - img "Santiago Peña" [ref=f4e571]
+                  - generic [ref=f4e573]:
+                    - heading [level=3] [ref=f4e574]:
+                      - link "Quién es Santiago Peña, el economista a quien el poderoso Horacio Cartes encumbró a la presidencia de Paraguay (y al que ahora dejó caer)" [ref=f4e575] [cursor=pointer]:
+                        - /url: /mundo/articles/cwe9le9yyzrzo
+                    - time [ref=f4e576]: 7 noviembre 2026
+              - listitem [ref=f4e577]:
+                - generic [ref=f4e578]:
+                  - link [aria-hidden] [ref=f4e579] [cursor=pointer]:
+                    - /url: /mundo/articles/cxly4497lvg7o
+                  - 'img "Una mujer participa en una protesta contra el presidente Santiago Peña. Lleva una pancarta que dice: \"Se busca ladrón\"." [ref=f4e581]'
+                  - generic [ref=f4e583]:
+                    - heading [level=3] [ref=f4e584]:
+                      - link "De qué se acusa a Santiago Peña, el presidente de Paraguay que fue destituido por el Congreso en juicio político tras la crisis de Ueno Bank" [ref=f4e585] [cursor=pointer]:
+                        - /url: /mundo/articles/cxly4497lvg7o
+                    - time [ref=f4e586]: 7 noviembre 2026
+              - listitem [ref=f4e587]:
+                - generic [ref=f4e588]:
+                  - link [aria-hidden] [ref=f4e589] [cursor=pointer]:
+                    - /url: /mundo/articles/cqx28zrgd0yxo
+                  - img "Mujer espera en el banco a poder retirar sus fondos" [ref=f4e591]
+                  - generic [ref=f4e593]:
+                    - heading [level=3] [ref=f4e594]:
+                      - link "Qué es Ueno Bank y qué provocó la crisis por la que Santiago Peña fue destituido como presidente de Paraguay" [ref=f4e595] [cursor=pointer]:
+                        - /url: /mundo/articles/cqx28zrgd0yxo
+                    - time [ref=f4e596]: 6 noviembre 2026
+              - listitem [ref=f4e597]:
+                - generic [ref=f4e598]:
+                  - link [aria-hidden] [ref=f4e599] [cursor=pointer]:
+                    - /url: /mundo/articles/cq203vjl5ym8o
+                  - img "El senador electo de Texas, James Talarico, y la gobernadora electa, Gina Hinojosa, celebran con bebidas mientras están rodeados de seguidores en un Whataburger en Austin, Texas, EE. UU., en esta foto publicada el 4 de noviembre de 2026. James Talarico vía X/Handout vía REUTERS" [ref=f4e601]
+                  - generic [ref=f4e603]:
+                    - heading [level=3] [ref=f4e604]:
+                      - link "4 datos que muestran el peso del voto latino en la \"ola azul\" que llevó a los demócratas a arrasar en las elecciones de medio mandato en EE.UU." [ref=f4e605] [cursor=pointer]:
+                        - /url: /mundo/articles/cq203vjl5ym8o
+                    - time [ref=f4e606]: 5 noviembre 2026
+      - region [ref=f4e607]:
+        - heading "Lecturas más populares" [level=2] [ref=f4e609]
+        - list [ref=f4e613]:
+          - listitem [ref=f4e614]:
+            - generic [ref=f4e615]:
+              - generic [ref=f4e616]: "1"
+              - link "\"Cuando hablamos del fin del mundo, todos piensan en meteoritos, virus o un supertsunami, pero pocos imaginan un choque ontológico\"" [ref=f4e618] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/cr3wvvlp9vx1o
+          - listitem [ref=f4e619]:
+            - generic [ref=f4e620]:
+              - generic [ref=f4e621]: "2"
+              - link "Quién es Miguel Vázquez, el banquero milenial y atleta en el centro de la crisis de Paraguay" [ref=f4e623] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/cwzd6684mgv5o
+          - listitem [ref=f4e624]:
+            - generic [ref=f4e625]:
+              - generic [ref=f4e626]: "3"
+              - link "Muere Gonzalo Moratorio, el científico que \"blindó\" a Uruguay del covid-19 y luchaba por pagarse un costoso tratamiento contra el cáncer" [ref=f4e628] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/c674ppz944jxo
+          - listitem [ref=f4e629]:
+            - generic [ref=f4e630]:
+              - generic [ref=f4e631]: "4"
+              - link "Trump nombra a Stephen Miller, el \"arquitecto\" de su dura política migratoria, como nuevo jefe de gabinete de la Casa Blanca" [ref=f4e633] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/c90k001drxxko
+          - listitem [ref=f4e634]:
+            - generic [ref=f4e635]:
+              - generic [ref=f4e636]: "5"
+              - link "El escándalo de Ueno Bank en Paraguay se salda con la detención de Santiago Peña y con Pedro Alliana como nuevo presidente del país" [ref=f4e638] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/cwkg55edm8r7o
+          - listitem [ref=f4e639]:
+            - generic [ref=f4e640]:
+              - generic [ref=f4e641]: "6"
+              - link "Quién es Pedro Alliana, el nuevo presidente de Paraguay con el que busca rearmarse el poderoso Partido Colorado" [ref=f4e643] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/cmqjnn8jrqq0o
+          - listitem [ref=f4e644]:
+            - generic [ref=f4e645]:
+              - generic [ref=f4e646]: "7"
+              - link "Qué pasó en la isla noruega que quiso abolir el tiempo" [ref=f4e648] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/cmx2dxe1513jo
+          - listitem [ref=f4e649]:
+            - generic [ref=f4e650]:
+              - generic [ref=f4e651]: "8"
+              - link "Qué es Ueno Bank y qué provocó la crisis por la que Santiago Peña fue destituido como presidente de Paraguay" [ref=f4e653] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/cqx28zrgd0yxo
+          - listitem [ref=f4e654]:
+            - generic [ref=f4e655]:
+              - generic [ref=f4e656]: "9"
+              - link "De qué se acusa a Santiago Peña, el presidente de Paraguay que fue destituido por el Congreso en juicio político tras la crisis de Ueno Bank" [ref=f4e658] [cursor=pointer]:
+                - /url: https://www.bbc.com/mundo/articles/cxly4497lvg7o
+          - listitem [ref=f4e659]:
+            - generic [ref=f4e660]:
+              - generic [ref=f4e661]: "10"
+              - 'link "Crisis en Paraguay: Santiago Peña, en arresto domiciliario tras ser destituido por el Congreso en juicio político" [ref=f4e663] [cursor=pointer]':
+                - /url: /mundo/live/c54g11vvvemkt
+    - contentinfo [ref=f4e664]:
+      - link "BBC News, Mundo" [ref=f4e667] [cursor=pointer]:
+        - /url: /mundo
+      - generic [ref=f4e674]:
+        - list [ref=f4e675]:
+          - listitem [ref=f4e676]:
+            - link "Por qué puedes confiar en la BBC" [ref=f4e677] [cursor=pointer]:
+              - /url: https://www.bbc.com/mundo/institucional-51359666
+          - listitem [ref=f4e678]:
+            - link "Términos de uso" [ref=f4e679] [cursor=pointer]:
+              - /url: https://www.bbc.com/mundo/institucional-36400005
+          - listitem [ref=f4e680]:
+            - link "Sobre la BBC" [ref=f4e681] [cursor=pointer]:
+              - /url: https://www.bbc.com/mundo/institucional-36400007
+          - listitem [ref=f4e682]:
+            - link "Política de privacidad" [ref=f4e683] [cursor=pointer]:
+              - /url: https://www.bbc.com/mundo/institucional-36400009
+          - listitem [ref=f4e684]:
+            - link "Cookies" [ref=f4e685] [cursor=pointer]:
+              - /url: https://www.bbc.com/usingthebbc/cookies/
+          - listitem [ref=f4e686]:
+            - link "Escribe a BBC Mundo" [ref=f4e687] [cursor=pointer]:
+              - /url: https://www.bbc.co.uk/mundo/send/u50853489
+          - listitem [ref=f4e688]:
+            - link "Otros idiomas" [ref=f4e689] [cursor=pointer]:
+              - /url: https://www.bbc.com/ws/languages
+          - listitem [ref=f4e690]:
+            - link "Do not share or sell my info" [ref=f4e691] [cursor=pointer]:
+              - /url: "#"
+        - paragraph [ref=f4e692]:
+          - generic [ref=f4e693]: ©
+          - text: 2026 BBC. La BBC no se hace responsable del contenido de sitios externos.
+          - link "Lee sobre nuestra postura acerca de enlaces externos." [ref=f4e694] [cursor=pointer]:
+            - /url: https://www.bbc.com/editorialguidelines/guidance/links-and-feeds
+  - alert [ref=f4e695]
+  - dialog [ref=f4e696]:
+    - iframe [active] [ref=f4e697]:
+      - generic [ref=f7e6]:
+        - generic [ref=f7e8]:
+          - img "BBC Logo" [ref=f7e9]
+          - paragraph [ref=f7e10]: Let us know you agree to advertising cookies
+          - paragraph [ref=f7e11]:
+            - text: We and our 54 partners use cookies and similar technologies to collect and process personal data from your device, such as your IP address and the pages you visit.
+            - paragraph
+            - paragraph [ref=f7e12]
+            - paragraph [ref=f7e13]: We use this data to help us to better understand our audiences and to improve and personalise your experience. We also use this data to manage the advertising shown on our services. We make money from these ads, which in turn helps to fund our services and the creation of more BBC content.
+            - paragraph [ref=f7e14]
+            - paragraph [ref=f7e15]:
+              - strong [ref=f7e16]: "Please let us know if you agree to:"
+          - generic [ref=f7e18]:
+            - button "Store and/or access information on a device" [ref=f7e20] [cursor=pointer]
+            - button "Personalised advertising and content, advertising and content measurement, audience research and services development" [ref=f7e23] [cursor=pointer]
+          - paragraph [ref=f7e25]:
+            - text: Click “Manage Options” to set your choice for specific purposes and to view the list of our
+            - link "partners" [ref=f7e26] [cursor=pointer]:
+              - /url: "#"
+            - text: . You can find out more on advertising cookies in our
+            - link "privacy policy" [ref=f7e27] [cursor=pointer]:
+              - /url: https://www.bbc.com/pages/privacy-policy
+            - text: . To change your preferences at any other time (including to withdraw consent or opt out of legitimate interest processing) by clicking on
+            - strong [ref=f7e28]: ‘Do not share or sell my info‘
+            - text: at the bottom of any page. Your choice only applies to BBC.com.
+        - generic [ref=f7e29]:
+          - button "I do not agree" [ref=f7e31] [cursor=pointer]
+          - button "I agree" [ref=f7e33] [cursor=pointer]
+        - button "Manage options" [ref=f7e36] [cursor=pointer]

@@ -1,0 +1,304 @@
+- generic [ref=f10e3]:
+  - complementary [ref=f10e4]:
+    - generic [ref=f10e5]:
+      - generic [ref=f10e6]: e
+      - generic [ref=f10e7]: edurance.
+    - group "MODO DEMOSTRACIÓN" [ref=f10e8]:
+      - generic [ref=f10e10]:
+        - button "Atleta" [ref=f10e11] [cursor=pointer]
+        - button "Grupo" [ref=f10e12] [cursor=pointer]
+        - button "Entrenador" [pressed] [ref=f10e13] [cursor=pointer]
+      - generic [ref=f10e14]: Cambia de vista para probar el prototipo. En la versión real dependerá de tu cuenta.
+    - navigation "Navegación principal" [ref=f10e15]:
+      - generic [ref=f10e16]:
+        - heading "MI ENTRENAMIENTO" [level=2] [ref=f10e246]
+        - button "Diario" [ref=f10e21] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f10e22]: ▦
+          - text: Diario
+          - generic [aria-hidden] [ref=f10e23]: ›
+        - button "Datos" [ref=f10e24] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f10e25]: ◌
+          - text: Datos
+          - generic [aria-hidden] [ref=f10e26]: ›
+      - generic [ref=f10e247]:
+        - heading "ENTRENADOR" [level=2] [ref=f10e248]
+        - button "Atletas" [ref=f10e249] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f10e250]: ♧
+          - text: Atletas
+          - generic [aria-hidden] [ref=f10e251]: ›
+        - button "Preparaciones" [ref=f10e252] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f10e253]: ▤
+          - text: Preparaciones
+          - generic [aria-hidden] [ref=f10e254]: ›
+        - button "Entrenamientos" [ref=f10e255] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f10e256]: ▣
+          - text: Entrenamientos
+          - generic [aria-hidden] [ref=f10e257]: ›
+      - generic [ref=f10e258]:
+        - heading "CUENTA" [level=2] [ref=f10e259]
+        - button "Perfil" [ref=f10e260] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f10e261]: ○
+          - text: Perfil
+          - generic [aria-hidden] [ref=f10e262]: ›
+    - generic [ref=f10e30]:
+      - generic [ref=f10e31]: AM
+      - generic [ref=f10e32]:
+        - generic [ref=f10e33]: Alex Martín
+        - generic [ref=f10e34]: Entrenador
+      - button "···" [ref=f10e35] [cursor=pointer]
+  - main [ref=f10e36]:
+    - generic [ref=f10e37]:
+      - generic [ref=f10e38]: Área del entrenador / Perfil
+      - generic [ref=f10e39]:
+        - generic [ref=f10e40]: Datos de ejemplo
+        - button "Notificaciones" [ref=f10e42] [cursor=pointer]:
+          - text: ♧
+          - emphasis [ref=f10e43]: "2"
+        - generic [ref=f10e44]: AM
+    - generic [ref=f10e263]:
+      - generic [ref=f10e264]:
+        - generic [ref=f10e265]:
+          - generic [ref=f10e266]: CUENTA
+          - heading "Perfil del entrenador" [level=1] [ref=f10e267]
+          - paragraph [ref=f10e268]: Información personal, preparación y referencias de rendimiento
+        - button "Guardar cambios" [ref=f10e269] [cursor=pointer]
+      - generic [ref=f10e270]:
+        - generic [ref=f10e271]:
+          - generic [ref=f10e272]:
+            - generic [ref=f10e273]:
+              - generic "Cambiar foto de perfil" [ref=f10e274] [cursor=pointer]:
+                - generic [ref=f10e275]: AM
+                - button "Subir foto de perfil" [ref=f10e276]
+              - generic [ref=f10e277]:
+                - heading "Alex Martín - Entrenador" [level=2] [ref=f10e278]
+                - paragraph [ref=f10e279]: Madrid, España
+            - generic [ref=f10e280]: EJEMPLO
+          - generic [ref=f10e281]:
+            - generic [ref=f10e282]:
+              - generic [ref=f10e283]:
+                - generic [ref=f10e284]: Nombre
+                - generic "El nombre está vinculado a tu cuenta y no se puede modificar" [ref=f10e285]: No editable
+              - textbox "Nombre No editable" [disabled] [ref=f10e286]: Alex Martín
+            - generic [ref=f10e287]:
+              - generic [ref=f10e288]:
+                - generic [ref=f10e289]: Correo electrónico
+                - generic "El correo electrónico está vinculado a tu cuenta y no se puede modificar" [ref=f10e290]: No editable
+              - textbox "Correo electrónico No editable" [disabled] [ref=f10e291]: alex.martin@example.com
+            - generic [ref=f10e292]:
+              - generic [ref=f10e293]:
+                - generic [ref=f10e294]: Fecha de nacimiento
+                - generic "La fecha de nacimiento está vinculada a tu cuenta y no se puede modificar" [ref=f10e295]: No editable
+              - textbox "Fecha de nacimiento No editable" [disabled] [ref=f10e296]: 12 de abril de 1998
+            - generic [ref=f10e297]:
+              - generic [ref=f10e298]:
+                - generic [ref=f10e299]: Género
+                - generic "El género está vinculado a tu cuenta y no se puede modificar" [ref=f10e300]: No editable
+              - textbox "Género No editable" [disabled] [ref=f10e301]: No especificado
+            - generic [ref=f10e302]:
+              - text: Club
+              - textbox "Club" [ref=f10e303]:
+                - /placeholder: Añadir club
+            - generic [ref=f10e304]:
+              - text: Especialidad
+              - textbox "Especialidad" [ref=f10e305]: Carrera de fondo
+          - generic [ref=f10e306]:
+            - text: Sobre mí como atleta
+            - textbox "Sobre mí como atleta" [ref=f10e307]:
+              - /placeholder: Detalles sobre lesiones previas, disponibilidad material, volumen semanal máximo o experiencia deportiva
+              - text: Corredor amateur. Entrenamiento de fondo y pista.
+        - generic [ref=f10e308]:
+          - generic [ref=f10e309]:
+            - generic [ref=f10e310]:
+              - heading "Preparación" [level=2] [ref=f10e311]
+              - paragraph [ref=f10e312]: 1 objetivo · una preparación activa
+            - generic [ref=f10e313]: ACTIVA
+          - generic [ref=f10e314]:
+            - strong [ref=f10e315]: Preparación de otoño
+            - generic [ref=f10e316]: "12 semanas · Entrenador: Lucía Fernández"
+          - article [ref=f10e318]:
+            - generic [ref=f10e319]:
+              - strong [ref=f10e320]: Media Maratón Madrid
+              - generic [ref=f10e321]: Media maratón
+            - generic [ref=f10e322]: Fecha objetivo · 6 de diciembre de 2026
+        - region "Experiencia como entrenador" [ref=f10e323]:
+          - generic [ref=f10e324]:
+            - heading "Experiencia como entrenador" [level=2] [ref=f10e326]
+            - status [ref=f10e327]: Cambios sin guardar
+          - generic [ref=f10e328]:
+            - generic [ref=f10e329]:
+              - generic [ref=f10e330]:
+                - text: Estilo de entrenamiento
+                - textbox "Estilo de entrenamiento" [ref=f10e331]:
+                  - /placeholder: Describe cómo planificas y con qué tipo de atletas trabajas
+                  - text: Entreno por bloques con foco en fuerza.
+              - paragraph [ref=f10e332]: 39/500 caracteres
+            - group "Títulos" [ref=f10e333]:
+              - generic [ref=f10e334]:
+                - generic [ref=f10e335]: Títulos
+                - generic [ref=f10e336]: 5/5
+              - list [ref=f10e337]:
+                - listitem [ref=f10e338]:
+                  - generic [ref=f10e339]:
+                    - strong [ref=f10e340]: Grado en Ciencias de la Actividad Física y del Deporte
+                    - generic [ref=f10e341]: "2020"
+                  - generic [ref=f10e342]:
+                    - button "Editar título Grado en Ciencias de la Actividad Física y del Deporte" [ref=f10e343] [cursor=pointer]: Editar
+                    - button "Eliminar título Grado en Ciencias de la Actividad Física y del Deporte" [ref=f10e344] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f10e345]: ×
+                      - text: Eliminar
+                - listitem [ref=f10e346]:
+                  - generic [ref=f10e347]:
+                    - strong [ref=f10e348]: Entrenador Nacional de Atletismo
+                    - generic [ref=f10e349]: "2022"
+                  - generic [ref=f10e350]:
+                    - button "Editar título Entrenador Nacional de Atletismo" [ref=f10e351] [cursor=pointer]: Editar
+                    - button "Eliminar título Entrenador Nacional de Atletismo" [ref=f10e352] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f10e353]: ×
+                      - text: Eliminar
+                - listitem [ref=f10e354]:
+                  - generic [ref=f10e355]:
+                    - strong [ref=f10e356]: Monitor Nacional de Atletismo
+                    - generic [ref=f10e357]: "2019"
+                  - generic [ref=f10e358]:
+                    - button "Editar título Monitor Nacional de Atletismo" [ref=f10e359] [cursor=pointer]: Editar
+                    - button "Eliminar título Monitor Nacional de Atletismo" [ref=f10e360] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f10e361]: ×
+                      - text: Eliminar
+                - listitem [ref=f10e362]:
+                  - generic [ref=f10e363]:
+                    - strong [ref=f10e364]: Especialista en Fuerza
+                    - generic [ref=f10e365]: "2024"
+                  - generic [ref=f10e366]:
+                    - button "Editar título Especialista en Fuerza" [ref=f10e367] [cursor=pointer]: Editar
+                    - button "Eliminar título Especialista en Fuerza" [ref=f10e368] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f10e369]: ×
+                      - text: Eliminar
+                - listitem [ref=f10e370]:
+                  - generic [ref=f10e371]:
+                    - strong [ref=f10e372]: Curso de Trail Running
+                    - generic [ref=f10e373]: "2021"
+                  - generic [ref=f10e374]:
+                    - button "Editar título Curso de Trail Running" [ref=f10e375] [cursor=pointer]: Editar
+                    - button "Eliminar título Curso de Trail Running" [ref=f10e376] [cursor=pointer]:
+                      - generic [aria-hidden] [ref=f10e377]: ×
+                      - text: Eliminar
+              - generic [ref=f10e378]:
+                - generic [ref=f10e379]:
+                  - text: Nombre del título
+                  - textbox "Nombre del título" [disabled] [ref=f10e380]:
+                    - /placeholder: Ej. Entrenador Nacional de Atletismo
+                - generic [ref=f10e381]:
+                  - text: Año
+                  - textbox "Año" [disabled] [ref=f10e382]:
+                    - /placeholder: "2026"
+                - button "＋ Añadir título" [disabled] [ref=f10e383]
+              - status [ref=f10e384]: Has alcanzado el máximo de 5 títulos. Elimina uno para poder añadir otro.
+        - generic [ref=f10e385]:
+          - heading "Parámetros fisiológicos" [level=2] [ref=f10e388]
+          - generic [ref=f10e389]:
+            - article [ref=f10e390]:
+              - generic [ref=f10e391]:
+                - generic [ref=f10e392]: LT1
+                - generic [ref=f10e393]: Umbral de lactato 1
+              - generic [ref=f10e394]:
+                - text: 4′00″
+                - generic [ref=f10e395]: /km
+              - generic [ref=f10e396]:
+                - generic [ref=f10e397]: 180 ppm
+                - generic [ref=f10e398]: 90 % de la FC máx.
+            - article [ref=f10e399]:
+              - generic [ref=f10e400]:
+                - generic [ref=f10e401]: LT2
+                - generic [ref=f10e402]: Umbral de lactato 2
+              - generic [ref=f10e403]:
+                - text: 3′45″
+                - generic [ref=f10e404]: /km
+              - generic [ref=f10e405]:
+                - generic [ref=f10e406]: 190 ppm
+                - generic [ref=f10e407]: 95 % de la FC máx.
+            - article [ref=f10e408]:
+              - generic [ref=f10e409]:
+                - generic [ref=f10e410]: VAM
+                - generic [ref=f10e411]: Velocidad aeróbica máxima
+              - generic [ref=f10e412]:
+                - text: 3′00″
+                - generic [ref=f10e413]: /km
+              - generic [ref=f10e414]:
+                - generic [ref=f10e415]: 200 ppm
+                - generic [ref=f10e416]: FC máxima
+          - heading "Repetición máxima (RM)" [level=3] [ref=f10e417]
+          - generic [ref=f10e418]:
+            - article [ref=f10e419]:
+              - generic [ref=f10e420]:
+                - generic [ref=f10e421]: RM
+                - generic [ref=f10e422]: Media sentadilla
+              - generic [ref=f10e423]:
+                - text: "150"
+                - generic [ref=f10e424]: kg
+                - button "Ver los pesos del 10 % al 90 % de la RM de media sentadilla" [ref=f10e426]: i
+            - article [ref=f10e427]:
+              - generic [ref=f10e428]:
+                - generic [ref=f10e429]: RM
+                - generic [ref=f10e430]: Sentadilla búlgara
+              - generic [ref=f10e431]:
+                - text: "95"
+                - generic [ref=f10e432]: kg
+                - button "Ver los pesos del 10 % al 90 % de la RM de sentadilla búlgara" [ref=f10e434]: i
+        - generic [ref=f10e435]:
+          - heading "Marcas personales" [level=2] [ref=f10e438]
+          - generic [ref=f10e439]:
+            - generic [ref=f10e440]:
+              - text: Prueba
+              - combobox "Prueba" [ref=f10e441]:
+                - option "Selecciona una prueba" [selected]
+                - option "400 m"
+                - option "800 m"
+                - option "1.500 m"
+                - option "3.000 m"
+                - option "5.000 m / 5K"
+                - option "10.000 m / 10K"
+                - option "Media maratón"
+                - option "Maratón"
+            - button "Añadir prueba" [disabled] [ref=f10e442]
+        - generic [ref=f10e443]:
+          - heading "Perfiles deportivos" [level=2] [ref=f10e446]
+          - generic [ref=f10e447]:
+            - text: Perfil de Strava
+            - textbox "Perfil de Strava" [ref=f10e448]:
+              - /placeholder: https://www.strava.com/athletes/…
+          - generic [ref=f10e449]:
+            - text: Perfil de Garmin
+            - textbox "Perfil de Garmin" [ref=f10e450]:
+              - /placeholder: https://connect.garmin.com/…
+        - region "Glosario" [ref=f10e451]:
+          - generic [ref=f10e453]:
+            - heading "Glosario" [level=2] [ref=f10e454]
+            - paragraph [ref=f10e455]: Qué significa cada término que verás en la app
+          - generic [ref=f10e456]:
+            - generic [ref=f10e457]:
+              - term [ref=f10e458]: TRIMP (TR)
+              - definition [ref=f10e459]: "Carga del entrenamiento. Combina lo que ha durado la sesión y lo altas que han ido tus pulsaciones: cuanto más alto, más exigente. En las tarjetas aparece abreviado como TR."
+            - generic [ref=f10e460]:
+              - term [ref=f10e461]: WT · Bienestar total
+              - definition [ref=f10e462]: "Suma de los cinco indicadores de bienestar del día (irritabilidad, fatiga, agujetas, mal descanso y estrés). Va de 5 a 50: cuanto más bajo, mejor estás."
+            - generic [ref=f10e463]:
+              - term [ref=f10e464]: RPE · Esfuerzo percibido
+              - definition [ref=f10e465]: Lo duro que te ha parecido el entrenamiento, del 1 (muy suave) al 10 (esfuerzo máximo).
+            - generic [ref=f10e466]:
+              - term [ref=f10e467]: FC media
+              - definition [ref=f10e468]: Pulsaciones medias durante el entrenamiento. Junto con la duración, sirve para calcular el TRIMP.
+            - generic [ref=f10e469]:
+              - term [ref=f10e470]: FC en reposo
+              - definition [ref=f10e471]: Tus pulsaciones en reposo, mejor medidas al despertar. Si suben varios días seguidos, puede ser señal de cansancio o de que estás incubando algo.
+            - generic [ref=f10e472]:
+              - term [ref=f10e473]: HRV · Variabilidad cardiaca
+              - definition [ref=f10e474]: Pequeñas variaciones de tiempo entre latidos, en milisegundos. Suele medirla el reloj por la noche. Si baja mucho respecto a lo habitual, puede indicar cansancio.
+            - generic [ref=f10e475]:
+              - term [ref=f10e476]: Ritmo (min/km)
+              - definition [ref=f10e477]: Minutos que tardas en recorrer un kilómetro. Cuanto más bajo, más rápido vas.
+            - generic [ref=f10e478]:
+              - term [ref=f10e479]: Umbrales LT1 y LT2
+              - definition [ref=f10e480]: "Marcan las zonas de intensidad. Hasta LT1: ritmo cómodo, puedes hablar. Entre LT1 y LT2: exigente pero sostenible. Por encima de LT2: muy intenso, solo se aguanta poco tiempo."
+            - generic [ref=f10e481]:
+              - term [ref=f10e482]: Fases (BI, BII, BIII)
+              - definition [ref=f10e483]: "La preparación se divide en bloques: BI Base (volumen suave), BII Acumulación y Transformación (más carga y calidad), BIII Realización (afinar para la carrera) y Competición."

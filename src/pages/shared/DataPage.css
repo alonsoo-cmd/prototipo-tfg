@@ -16,8 +16,8 @@
   border: 0;
   border-bottom: 2px solid transparent;
   background: transparent;
-  color: #8793a0;
-  font-size: 11px;
+  color: #636f7d;
+  font-size: var(--text-sm);
   font-weight: 600;
 }
 
@@ -33,7 +33,7 @@
 }
 
 .data-filters label { display: grid; gap: 4px; }
-.data-filters label > span { color: #8d98a3; font-size: 8px; }
+.data-filters label > span { color: #64707c; font-size: var(--text-xs); }
 
 .data-filters select {
   min-width: 150px;
@@ -42,18 +42,18 @@
   border-radius: 5px;
   background: #fff;
   color: #526173;
-  font-size: 10px;
+  font-size: var(--text-sm);
 }
 
 .data-section { display: grid; gap: 14px; }
 .data-table-panel { min-width: 0; padding: 15px 17px; }
 .data-panel-title { margin-bottom: 11px; }
-.data-panel-title h2 { font-size: 13px; }
+.data-panel-title h2 { font-size: var(--text-base); }
 .data-panel-title p { line-height: 1.45; }
 .training-calendar { display: grid; gap: 22px; }
 .training-calendar-month-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
-.training-calendar-month-header h3 { margin: 0; color: #405164; font: 700 13px Manrope, sans-serif; text-transform: capitalize; }
-.training-calendar-status-legend { display: flex; align-items: center; gap: 12px; color: #6d7b8b; font-size: 8.5px; font-weight: 500; }
+.training-calendar-month-header h3 { margin: 0; color: #405164; font: 700 var(--text-base) Manrope, sans-serif; text-transform: capitalize; }
+.training-calendar-status-legend { display: flex; align-items: center; gap: 12px; color: #63707e; font-size: var(--text-xs); font-weight: 500; }
 .training-calendar-status-legend > span { display: inline-flex; align-items: center; gap: 5px; }
 
 .calendar-status-dot { display: inline-block; width: 10px; height: 10px; flex: 0 0 10px; border-radius: 2.5px; box-sizing: border-box; transition: transform .12s ease; }
@@ -65,20 +65,22 @@
 .training-calendar-session .calendar-status-dot:hover { transform: scale(1.22); }
 
 .training-calendar-grid { display: grid; grid-template-columns: minmax(88px, .62fr) repeat(7, minmax(0, 1fr)); border-top: 1px solid #e8edf1; border-left: 1px solid #e8edf1; }
-.training-calendar-weekday { padding: 8px 5px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #f8fafb; color: #8793a0; font-size: 9px; font-weight: 600; text-align: center; }
+.training-calendar-weekday { padding: 8px 5px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #f8fafb; color: #636f7d; font-size: var(--text-xs); font-weight: 600; text-align: center; }
 .training-calendar-day { min-height: 96px; min-width: 0; padding: 6px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #fff; }
 .training-calendar-day.outside { background: #fafbfc; }
-.training-calendar-date { display: block; margin-bottom: 5px; color: #718092; font-size: 9px; font-weight: 600; }
+.training-calendar-date { display: block; margin-bottom: 5px; color: #627080; font-size: var(--text-xs); font-weight: 600; }
 .training-calendar-sessions { display: grid; gap: 4px; }
 .training-calendar-session { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 5px 6px; border: 1px solid #dbe9f4; border-left: 3px solid #6892ad; border-radius: 5px; background: #edf5fb; color: #3e586d; text-align: left; transition: transform .12s ease, box-shadow .12s ease; box-sizing: border-box; }
 .training-calendar-session:hover,.training-calendar-session:focus-visible { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.07); outline: none; }
 .training-calendar-session-header { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
-.training-calendar-session b { overflow: hidden; font-size: 8px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
-.training-calendar-session-meta { color: inherit; opacity: .82; font-size: 7px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.training-calendar-session b { overflow: hidden; font-size: var(--text-xs); font-weight: 700; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.training-calendar-session-meta { color: inherit; opacity: .82; font-size: var(--text-xs); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* Colores de entrenamientos en el calendario */
 .training-calendar-session.workout-color-easy { border-color: #cbdccb; border-left-color: #5e9668; background: #f0f7ef; color: #2e4d36; }
 .training-calendar-session.workout-color-easy:hover { border-color: #b5ceb6; background: #e6f3e5; }
+.training-calendar-session.workout-color-bike { border-color: #b6e3d4; border-left-color: #319785; background: #eef8f5; color: #1a4f45; }
+.training-calendar-session.workout-color-bike:hover { border-color: #9cd4c2; background: #e2f4ee; }
 .training-calendar-session.workout-color-long { border-color: #cfe0e1; border-left-color: #55949b; background: #edf6f6; color: #274b50; }
 .training-calendar-session.workout-color-long:hover { border-color: #bad3d5; background: #e2f1f1; }
 .training-calendar-session.workout-color-series { border-color: #ddd5ed; border-left-color: #927ca9; background: #f4f0f8; color: #4b395d; }
@@ -102,9 +104,9 @@
 .training-calendar-session.workout-color-default { border-color: #dbe9f4; border-left-color: #6892ad; background: #edf5fb; color: #405f76; }
 .training-calendar-session.workout-color-default:hover { border-color: #8fb4ca; background: #e3f0f7; }
 
-.training-calendar-week-summary { grid-column: 8; display: flex; flex-direction: column; justify-content: center; gap: 5px; min-width: 0; padding: 8px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #f3f7f9; color: #718092; font-size: 8px; }
+.training-calendar-week-summary { grid-column: 8; display: flex; flex-direction: column; justify-content: center; gap: 5px; min-width: 0; padding: 8px; border-right: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; background: #f3f7f9; color: #627080; font-size: var(--text-xs); }
 .training-calendar-week-summary span { font-weight: 600; }
-.training-calendar-week-summary b { color: #405f76; font-size: 9px; }
+.training-calendar-week-summary b { color: #405f76; font-size: var(--text-xs); }
 .training-calendar-summary-heading { grid-column: 8; background: #f3f7f9; }
 .table-scroll { overflow-x: auto; }
 
@@ -113,14 +115,14 @@
   min-width: 790px;
   border-collapse: collapse;
   text-align: left;
-  font-size: 9px;
+  font-size: var(--text-xs);
 }
 
 .analytics-table th {
   padding: 9px 8px;
   background: #f8fafb;
-  color: #8793a0;
-  font-size: 8px;
+  color: #636f7d;
+  font-size: var(--text-xs);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -138,8 +140,8 @@
 .training-record-row:focus td { background: #f2f7fa; }
 .training-record-row:focus { outline: 2px solid #91b5cb; outline-offset: -2px; }
 .analytics-table td:nth-child(4) { min-width: 190px; white-space: normal; }
-.phase-chip { color: #6b8293; font-size: 8px; }
-.status-chip.complete { background: #edf5f0; color: #568068; }
+.phase-chip { color: #5d7180; font-size: var(--text-xs); }
+.status-chip.complete { background: #edf5f0; color: #507761; }
 
 .summary-analytics-table { min-width: 540px; }
 .summary-analytics-table th:not(:first-child),
@@ -148,7 +150,7 @@
 
 .empty-table-cell {
   padding: 20px !important;
-  color: #98a2ac !important;
+  color: #64707c !important;
   text-align: center;
 }
 
@@ -158,8 +160,8 @@
 .two-charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .chart-card { min-width: 0; padding: 15px 16px 13px; overflow: hidden; }
 .chart-card .panel-title { align-items: flex-start; min-height: 39px; }
-.chart-card .panel-title h2 { font-size: 12px; }
-.chart-card .panel-title p { font-size: 9px; }
+.chart-card .panel-title h2 { font-size: var(--text-md); }
+.chart-card .panel-title p { font-size: var(--text-xs); }
 .chart-scroll { overflow-x: auto; }
 
 .line-chart {
@@ -179,8 +181,8 @@
   flex-wrap: wrap;
   gap: 7px 14px;
   padding-top: 7px;
-  color: #687688;
-  font-size: 8px;
+  color: #627081;
+  font-size: var(--text-xs);
 }
 
 .chart-legend span { display: inline-flex; align-items: center; gap: 5px; }
@@ -190,24 +192,24 @@
 
 .type-breakdown { display: grid; gap: 13px; padding: 6px 0 4px; }
 .type-row { display: grid; gap: 6px; }
-.type-row-label { display: flex; justify-content: space-between; gap: 10px; color: #617080; font-size: 9px; }
+.type-row-label { display: flex; justify-content: space-between; gap: 10px; color: #617080; font-size: var(--text-xs); }
 .type-row-label span { display: flex; align-items: center; gap: 6px; }
-.type-row-label b { color: #516071; font-size: 9px; }
+.type-row-label b { color: #516071; font-size: var(--text-xs); }
 .type-track { height: 6px; overflow: hidden; border-radius: 5px; background: #f0f2f4; }
 .type-track span { display: block; height: 100%; border-radius: inherit; }
-.empty-chart { color: #98a2ac; font-size: 10px; }
+.empty-chart { color: #64707c; font-size: var(--text-sm); }
 
 .zone-stack { display: flex; height: 18px; overflow: hidden; margin: 14px 0 17px; border-radius: 5px; background: #f0f2f4; }
 .zone-stack span { min-width: 2px; }
 .zone-legend { display: grid; gap: 12px; }
 .zone-legend-head,
 .zone-legend > div { display: grid; grid-template-columns: minmax(0, 1fr) 54px 58px; align-items: center; gap: 8px; }
-.zone-legend-head { margin-bottom: 7px; color: #9aa4ae; font-size: 8px; text-align: right; }
-.zone-legend > div { color: #617080; font-size: 9px; }
+.zone-legend-head { margin-bottom: 7px; color: #63707c; font-size: var(--text-xs); text-align: right; }
+.zone-legend > div { color: #617080; font-size: var(--text-xs); }
 .zone-legend > div > span { display: flex; align-items: center; }
 .zone-legend > div > span { gap: 7px; }
 .zone-legend b,
-.zone-legend strong { color: #516071; font-size: 9px; font-weight: 600; text-align: right; }
+.zone-legend strong { color: #516071; font-size: var(--text-xs); font-weight: 600; text-align: right; }
 .zone-legend strong { color: #3e667f; }
 
 @media (max-width: 1120px) {
@@ -225,14 +227,14 @@
 
 @media (max-width: 620px) {
   .training-calendar-grid { grid-template-columns: minmax(65px, .58fr) repeat(7, minmax(0, 1fr)); }
-  .training-calendar-week-summary { padding: 4px; font-size: 7px; }
-  .training-calendar-week-summary b { font-size: 7px; }
+  .training-calendar-week-summary { padding: 4px; font-size: var(--text-xs); }
+  .training-calendar-week-summary b { font-size: var(--text-xs); }
   .training-calendar-day { min-height: 75px; padding: 4px; }
   .training-calendar-session { padding: 4px; }
-  .training-calendar-session b { font-size: 7px; }
-  .training-calendar-session span { font-size: 6px; }
+  .training-calendar-session b { font-size: var(--text-xs); }
+  .training-calendar-session span { font-size: var(--text-xs); }
   .calendar-status-dot { width: 8px; height: 8px; flex: 0 0 8px; }
-  .training-calendar-status-legend { font-size: 7.5px; gap: 8px; }
+  .training-calendar-status-legend { font-size: var(--text-xs); gap: 8px; }
 }
 
 /* ── Panel Header Actions & View Mode Toggle ── */
@@ -267,8 +269,8 @@
   border: 0;
   border-radius: 5px;
   background: transparent;
-  color: #637587;
-  font: 600 10px 'DM Sans', sans-serif;
+  color: #5f7081;
+  font: 600 var(--text-sm) 'DM Sans', sans-serif;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -300,8 +302,8 @@
   padding: 10px 9px;
   background: #f7fafc;
   border-bottom: 1px solid #e1e8ed;
-  color: #768696;
-  font: 700 8.5px Manrope, sans-serif;
+  color: #61707f;
+  font: 700 var(--text-xs) Manrope, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -309,7 +311,7 @@
 .detailed-analytics-table td {
   padding: 8px 9px;
   border-top: 1px solid #edf1f4;
-  font-size: 9.5px;
+  font-size: var(--text-xs);
   color: #495a6b;
   min-width: 0 !important;
   white-space: nowrap;
@@ -325,8 +327,8 @@
 }
 
 .detailed-analytics-table td .unit {
-  color: #8c9ba8;
-  font-size: 8px;
+  color: #5f707e;
+  font-size: var(--text-xs);
 }
 
 .table-week-header-row td {
@@ -345,7 +347,7 @@
 
 .table-week-header-badge strong {
   color: #1e364a;
-  font: 700 12px Manrope, sans-serif;
+  font: 700 var(--text-md) Manrope, sans-serif;
 }
 
 .table-week-header-badge .phase-chip {
@@ -353,13 +355,13 @@
   border-radius: 12px;
   background: #e5edf3;
   color: #43627d;
-  font-size: 8.5px;
+  font-size: var(--text-xs);
   font-weight: 600;
 }
 
 .table-week-header-badge .week-range-text {
-  color: #7b8d9e;
-  font-size: 9px;
+  color: #5e7080;
+  font-size: var(--text-xs);
 }
 
 .table-week-header-badge .week-completion-pill {
@@ -369,7 +371,7 @@
   background: #eef6ef;
   color: #2e6939;
   border: 1px solid #cae3ce;
-  font-size: 8.5px;
+  font-size: var(--text-xs);
   font-weight: 700;
 }
 
@@ -377,12 +379,12 @@
   display: block;
   color: #273b4d;
   font-weight: 700;
-  font-size: 9.5px;
+  font-size: var(--text-xs);
 }
 
 .date-col small {
-  color: #8899a7;
-  font-size: 8px;
+  color: #5e707f;
+  font-size: var(--text-xs);
 }
 
 /* ── Status Semaphor Pill ── */
@@ -393,7 +395,7 @@
   padding: 3px 8px;
   border-radius: 12px;
   border: 1px solid transparent;
-  font-size: 8.5px;
+  font-size: var(--text-xs);
   font-weight: 600;
   background: transparent;
   text-align: left;
@@ -424,7 +426,7 @@
 
 .status-semaphor-pill.status-unreported {
   background: #f1f5f9;
-  color: #64748b;
+  color: #606f85;
   border-color: #cbd5e1;
 }
 
@@ -434,7 +436,7 @@
   padding: 3px 7px;
   border-radius: 4px;
   border: 1px solid transparent;
-  font-size: 8.5px;
+  font-size: var(--text-xs);
   font-weight: 700;
   white-space: nowrap;
 }
@@ -459,7 +461,7 @@
   gap: 1px;
   padding: 2px 5px;
   border-radius: 4px;
-  font-size: 9px;
+  font-size: var(--text-xs);
   font-weight: 700;
 }
 
@@ -479,7 +481,7 @@
 }
 
 .rpe-badge small {
-  font-size: 7.5px;
+  font-size: var(--text-xs);
   opacity: 0.8;
 }
 
@@ -493,7 +495,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #5d6f80;
-  font-size: 8.5px;
+  font-size: var(--text-xs);
 }
 
 /* ── Weekly Summary Total Row ── */
@@ -511,17 +513,17 @@
 .weekly-summary-title {
   display: block;
   color: #1e3549;
-  font: 700 10.5px Manrope, sans-serif;
+  font: 700 var(--text-sm) Manrope, sans-serif;
 }
 
 .weekly-summary-subtitle {
-  color: #8898a7;
-  font-size: 8px;
+  color: #5e6f7f;
+  font-size: var(--text-xs);
 }
 
 .table-week-summary-row .summary-val {
   color: #1a3246;
-  font-size: 10px;
+  font-size: var(--text-sm);
 }
 
 /* ── 7-Day Consolidated Row ── */

@@ -1,0 +1,216 @@
+.diary-averages-modal {
+  width: min(560px, calc(100vw - 40px));
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.averages-mode-toggle {
+  display: flex;
+  gap: 0;
+  margin: 0 0 16px;
+  padding: 3px;
+  border: 1px solid #e1e7eb;
+  border-radius: 8px;
+  background: #f5f7f9;
+}
+
+.averages-mode-toggle button {
+  flex: 1;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #5f7083;
+  font: 600 var(--text-sm) 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.averages-mode-toggle button:hover {
+  color: #3b5468;
+}
+
+.averages-mode-toggle button.active {
+  background: #fff;
+  color: #2d4155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.averages-period-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 0 0 6px;
+}
+
+.averages-period-nav > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 200px;
+}
+
+.averages-period-nav strong {
+  color: #2d4155;
+  font: 700 var(--text-lg) Manrope, sans-serif;
+}
+
+.averages-period-nav small {
+  color: #636f7d;
+  font-size: var(--text-sm);
+}
+
+.averages-days-count {
+  text-align: center;
+  margin: 0 0 18px;
+  color: #64707c;
+  font-size: var(--text-sm);
+}
+
+.averages-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.averages-block {
+  padding: 14px;
+  border: 1px solid #e8edf0;
+  border-radius: 8px;
+}
+
+.averages-block-title {
+  margin: 0 0 12px;
+  color: #536578;
+  font: 700 var(--text-sm) Manrope, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.averages-block-title small {
+  color: #64707c;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 6px;
+}
+
+.averages-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.averages-metrics-grid.two-cols {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.avg-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 11px;
+  border: 1px solid #edf0f2;
+  border-radius: 6px;
+  background: #fafbfc;
+}
+
+.avg-metric-label {
+  color: #636f7d;
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.avg-metric-value {
+  color: #2d4155;
+  font: 700 18px Manrope, sans-serif;
+}
+
+.avg-metric-value small {
+  color: #64707c;
+  font: 500 var(--text-xs) 'DM Sans', sans-serif;
+}
+
+.averages-totals {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #edf0f2;
+  color: #5f7083;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.averages-wellbeing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avg-wellbeing-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+}
+
+.avg-wellbeing-label {
+  color: #536578;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.avg-wellbeing-track {
+  height: 8px;
+  background: #edf0f2;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.avg-wellbeing-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.avg-wellbeing-value {
+  font: 700 var(--text-md) Manrope, sans-serif;
+  text-align: right;
+}
+
+.averages-wt-total {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #edf0f2;
+  color: #536578;
+  font-size: var(--text-sm);
+}
+
+.averages-wt-total strong {
+  color: #2d4155;
+  font: 700 var(--text-xl) Manrope, sans-serif;
+}
+
+.averages-wt-total small {
+  color: #64707c;
+  font-size: var(--text-sm);
+}
+
+.averages-empty {
+  padding: 30px 20px;
+  text-align: center;
+  color: #636f7d;
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 540px) {
+  .averages-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .avg-metric-value {
+    font-size: var(--text-xl);
+  }
+}

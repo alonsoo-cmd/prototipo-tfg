@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import './WeekTimeline.css';
 
 export function getWeekStatus(weekNumber, currentWeek = 8) {
@@ -42,9 +43,23 @@ export default function WeekTimeline({
   showReturnButton = true,
   title = 'Histórico de la preparación',
   subtitle = 'Navegar por semanas',
+  showArrows = true,
 }) {
   const isViewingDifferentWeek = selectedWeek !== currentWeek;
   const selectedStatus = getWeekStatus(selectedWeek, currentWeek);
+  const stripRef = useRef(null);
+  const weekNumbers = weeks.map((item) => item.number);
+  const firstWeek = Math.min(...weekNumbers);
+  const lastWeek = Math.max(...weekNumbers);
+
+  // Mantiene visible la semana elegida (solo desplaza la tira en horizontal, nunca la página).
+  useEffect(() => {
+    const strip = stripRef.current;
+    const card = strip?.querySelector('.week-timeline-card.selected');
+    if (!strip || !card) return;
+    const target = card.offsetLeft - strip.offsetLeft - (strip.clientWidth - card.offsetWidth) / 2;
+    strip.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+  }, [selectedWeek]);
 
   return (
     <div className="week-timeline-container" aria-label="Histórico de semanas de la preparación">
@@ -53,6 +68,7 @@ export default function WeekTimeline({
           <span className="eyebrow">{title.toUpperCase()}</span>
           <strong>{subtitle}</strong>
         </div>
+        <div className="week-timeline-actions">
         {showReturnButton && isViewingDifferentWeek && (
           <button
             type="button"
@@ -63,9 +79,15 @@ export default function WeekTimeline({
             Volver a semana actual ({currentWeek}) →
           </button>
         )}
+        {showArrows && weeks.length > 0 && <div className="week-timeline-arrows">
+          <button type="button" className="bare-arrow" onClick={() => onSelectWeek(Math.max(firstWeek, selectedWeek - 1))} disabled={selectedWeek <= firstWeek} aria-label="Semana anterior">‹</button>
+          <span aria-live="polite">Semana {selectedWeek}</span>
+          <button type="button" className="bare-arrow" onClick={() => onSelectWeek(Math.min(lastWeek, selectedWeek + 1))} disabled={selectedWeek >= lastWeek} aria-label="Semana siguiente">›</button>
+        </div>}
+        </div>
       </div>
 
-      <div className="week-timeline-strip" role="tablist" aria-label="Lista de semanas">
+      <div ref={stripRef} className="week-timeline-strip" role="tablist" aria-label="Lista de semanas">
         {weeks.map((item) => {
           const weekNum = item.number;
           const status = getWeekStatus(weekNum, currentWeek);

@@ -30,7 +30,7 @@ class ErrorBoundary extends Component {
       return (
         <div style={{ padding: '40px 20px', maxWidth: '500px', margin: '40px auto', textAlign: 'center', fontFamily: 'Manrope, sans-serif' }}>
           <h2 style={{ color: '#2d5134' }}>Ha ocurrido un error inesperado</h2>
-          <p style={{ color: '#55695a', fontSize: '14px', marginBottom: '20px' }}>{this.state.error?.message || 'Error al renderizar la aplicación.'}</p>
+          <p style={{ color: '#55695a', fontSize: 'var(--text-lg)', marginBottom: '20px' }}>{this.state.error?.message || 'Error al renderizar la aplicación.'}</p>
           <button
             type="button"
             className="button primary"

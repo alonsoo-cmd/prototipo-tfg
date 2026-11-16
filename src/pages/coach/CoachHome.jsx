@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { coachAthletes } from '../../data/coachAthletes.js';
 import { createInjuryAlerts } from '../../data/injuryAlerts.js';
 
+const attendanceLabels = { green: 'Completado', yellow: 'A medias', red: 'No realizado', gray: 'Pendiente' };
+const attendanceGlyphs = { green: '✓', yellow: '½', red: '✕', gray: '—' };
+
 export default function CoachHome({go,openRequest,requestStatus,weeks,trainingLogs={}}){
   const injuryAlerts = createInjuryAlerts(weeks, trainingLogs, 'Alex Martín');
   const [selectedWeek, setSelectedWeek] = useState(8);
@@ -126,7 +129,7 @@ function GroupAttendancePanel({ currentWeek, trainingLogs, selectedWeek, setSele
         <div>
           <div className="eyebrow">CONTROL GRUPAL</div>
           <h2 style={{ margin: '4px 0 0' }}>Asistencia de la Semana {currentWeek?.number || 8}</h2>
-          <p style={{ margin: '4px 0 0', color: 'var(--muted-color)' }}>Verde: completado · Amarillo: a medias · Rojo: no realizado.</p>
+          <p style={{ margin: '4px 0 0', color: 'var(--muted-color)' }}>✓ Completado · ½ A medias · ✕ No realizado · — Pendiente</p>
         </div>
         {setSelectedWeek && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -140,7 +143,7 @@ function GroupAttendancePanel({ currentWeek, trainingLogs, selectedWeek, setSele
             >
               ‹
             </button>
-            <span style={{ fontSize: '13px', fontWeight: '600' }}>Semana {selectedWeek}</span>
+            <span style={{ fontSize: 'var(--text-base)', fontWeight: '600' }}>Semana {selectedWeek}</span>
             <button
               type="button"
               className="button secondary"
@@ -160,23 +163,21 @@ function GroupAttendancePanel({ currentWeek, trainingLogs, selectedWeek, setSele
           <thead>
             <tr>
               <th style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', width: '200px' }}>Entrenamiento</th>
-              {members.map(m => <th key={m.id} style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', fontSize: '13px', fontWeight: '600' }}>{m.name}</th>)}
+              {members.map(m => <th key={m.id} style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', fontSize: 'var(--text-base)', fontWeight: '600' }}>{m.name}</th>)}
             </tr>
           </thead>
           <tbody>
             {daysWithWorkouts.length === 0 && <tr><td colSpan={members.length + 1} style={{ padding: '16px', textAlign: 'center', color: 'var(--muted-color)' }}>No hay entrenamientos planificados esta semana.</td></tr>}
             {daysWithWorkouts.map(day => (
               <tr key={day.day}>
-                <td style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', fontSize: '14px' }}><b>{day.day}</b><br/><small style={{ color: 'var(--muted-color)' }}>{day.type}</small></td>
+                <td style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)', fontSize: 'var(--text-lg)' }}><b>{day.day}</b><br/><small style={{ color: 'var(--muted-color)' }}>{day.type}</small></td>
                 {members.map(m => {
                   const status = getStatus(m.id, day);
                   return (
                     <td key={m.id} style={{ padding: '12px 8px', borderBottom: '1px solid var(--border-color)' }}>
-                      <div style={{
-                        width: '24px', height: '24px', borderRadius: '4px',
-                        background: status === 'green' ? '#22c55e' : status === 'yellow' ? '#eab308' : status === 'red' ? '#ef4444' : '#e5e7eb',
-                        border: '1px solid rgba(0,0,0,0.1)'
-                      }} title={status === 'green' ? 'Completado' : status === 'yellow' ? 'A medias' : status === 'red' ? 'No completado' : 'Pendiente'} />
+                      <div className={`attendance-cell ${status}`} role="img" aria-label={`${m.name}, ${day.day}: ${attendanceLabels[status]}`} title={attendanceLabels[status]}>
+                        <span aria-hidden="true">{attendanceGlyphs[status]}</span>
+                      </div>
                     </td>
                   );
                 })}

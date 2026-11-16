@@ -8,7 +8,7 @@ export const coachAthletes = [
 ];
 
 export const workoutTypes = [
-  'Rodaje', 'Long run / tirada larga', 'Cambios', 'Cuestas',
+  'Rodaje', 'Bicicleta', 'Long run / tirada larga', 'Cambios', 'Cuestas',
   'Series largas', 'Series cortas', 'Competición', 'Gimnasio', 'Acondicionamiento físico', 'Test',
   'Core', 'Movilidad', 'Pliometría', 'Descanso',
 ];
@@ -20,10 +20,17 @@ export const gymExercises = [
   'Bird dog', 'Bicho muerto', 'Personalizado',
 ];
 
+export function isCyclingWorkout(type) {
+  if (!type) return false;
+  const t = String(type).toLowerCase();
+  return t.includes('bicicleta') || t.includes('bici') || t.includes('ciclismo');
+}
+
 export function workoutColor(type) {
   if (!type) return 'default';
   if (type === 'Descanso') return 'rest';
   if (type === 'Rodaje') return 'easy';
+  if (type === 'Bicicleta' || type === 'Rodaje en bicicleta') return 'bike';
   if (type === 'Long run / tirada larga' || type === 'Long run') return 'long';
   if (type === 'Cambios') return 'changes';
   if (type === 'Umbral') return 'threshold';
@@ -36,6 +43,7 @@ export function workoutColor(type) {
 
   const t = String(type).toLowerCase();
   if (t.includes('descanso')) return 'rest';
+  if (t.includes('bicicleta') || t.includes('bici') || t.includes('ciclismo')) return 'bike';
   if (t.includes('competición') || t.includes('competicion')) return 'race';
   if (t.includes('cuesta')) return 'hills';
   if (t.includes('cambio')) return 'changes';

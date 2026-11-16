@@ -1,0 +1,152 @@
+- generic [ref=f8e1]:
+  - main [ref=f8e4]:
+    - generic [ref=f8e6]:
+      - link [ref=f8e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f8e10]: Gemini
+      - text: side_nav_expand
+    - generic [ref=f8e12]:
+      - navigation [ref=f8e13]:
+        - generic [ref=f8e15]:
+          - button [expanded] [ref=f8e18] [cursor=pointer]:
+            - img [aria-hidden] [ref=f8e20]: side_nav
+          - generic [ref=f8e22]:
+            - navigation [ref=f8e24]:
+              - generic [ref=f8e25]:
+                - link [disabled]:
+                  - /url: /app
+                  - generic:
+                    - generic:
+                      - img [aria-hidden]: gemini_chat
+                  - generic: New chat
+            - generic [ref=f8e29]:
+              - img [aria-hidden] [ref=f8e31]: info
+              - generic [ref=f8e33]:
+                - link [ref=f8e34] [cursor=pointer]:
+                  - /url: "#"
+                  - text: Sign in
+                - text: to save activity
+            - group [ref=f8e35]:
+              - listitem [ref=f8e36]:
+                - button [ref=f8e38] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f8e41]: settings
+                  - generic [ref=f8e42]: Settings
+              - generic [ref=f8e47]:
+                - img [aria-hidden] [ref=f8e49]: fiber_manual_record
+                - generic [ref=f8e50]:
+                  - button [ref=f8e51]: Móstoles, Spain
+                  - generic [ref=f8e52]: From your IP address
+                - button [ref=f8e54] [cursor=pointer]:
+                  - img [aria-hidden] [ref=f8e56]: autorenew
+              - generic [ref=f8e60]:
+                - button [ref=f8e62]:
+                  - generic [ref=f8e63]: Sign in
+                - button [ref=f8e68]:
+                  - generic [ref=f8e70]:
+                    - img [aria-hidden] [ref=f8e73]: download
+                    - generic [ref=f8e74]: Get App
+      - generic [ref=f8e82]:
+        - heading [level=1] [ref=f8e97]:
+          - generic [ref=f8e98]: Hi, I'm Gemini. Where should we start?
+        - generic [ref=f8e100]:
+          - status [ref=f8e101]
+          - generic:
+            - button [aria-hidden]:
+              - generic:
+                - img [aria-hidden]: arrow_downward
+          - generic [ref=f8e105]:
+            - button [ref=f8e111] [cursor=pointer]:
+              - img [aria-hidden] [ref=f8e113]: plus
+            - textbox [ref=f8e120]:
+              - text: Type @ for connectors, skills and more
+              - paragraph [ref=f8e121]
+            - generic [ref=f8e122]:
+              - group [ref=f8e125]:
+                - button [ref=f8e126]:
+                  - generic [ref=f8e128]:
+                    - generic [ref=f8e129]: Flash-Lite
+                    - img [aria-hidden] [ref=f8e131]: keyboard_arrow_down
+              - button [ref=f8e139] [cursor=pointer]:
+                - img [aria-hidden] [ref=f8e141]: mic
+          - paragraph [ref=f8e145]:
+            - link [ref=f8e146] [cursor=pointer]:
+              - /url: https://policies.google.com/terms
+              - text: Google Terms
+              - generic [ref=f8e147]: Opens in a new window
+            - text: and the
+            - link [ref=f8e148] [cursor=pointer]:
+              - /url: https://policies.google.com/privacy
+              - text: Privacy Policy
+              - generic [ref=f8e149]: Opens in a new window
+            - text: apply. Gemini is AI and can make mistakes, including about people.
+            - link [ref=f8e150] [cursor=pointer]:
+              - /url: https://support.google.com/gemini/answer/13594961#signed_out&zippy=%2Chow-does-google-handle-my-data-when-i-use-gemini-apps-while-signed-out
+              - text: Your privacy & Gemini
+              - generic [ref=f8e151]: Opens in a new window
+    - generic [ref=f8e155]:
+      - text: play_arrow
+      - generic [ref=f8e156]:
+        - link [ref=f8e157] [cursor=pointer]:
+          - /url: https://gemini.google/about/?utm_source=gemini&utm_medium=web&utm_campaign=gemini_zero_state_link_to_marketing_microsite
+          - generic [ref=f8e158]: About Gemini
+        - link [ref=f8e161] [cursor=pointer]:
+          - /url: https://one.google.com/ai
+          - generic [ref=f8e162]: Subscriptions
+        - link [ref=f8e165] [cursor=pointer]:
+          - /url: http://g.co/cloud/gemini-for-business
+          - generic [ref=f8e166]: For Business
+        - button [ref=f8e170]:
+          - generic [ref=f8e172]:
+            - img [aria-hidden] [ref=f8e175]: download
+            - generic [ref=f8e176]: Get App
+        - button [ref=f8e179]:
+          - generic [ref=f8e180]: Sign in
+  - dialog [active] [ref=f8e188]:
+    - generic "Before you continue to Google" [ref=f8e192]:
+      - generic [ref=f8e195]:
+        - button "Change language" [ref=f8e196] [cursor=pointer]:
+          - generic [ref=f8e201]: en-US
+        - button "Sign in" [ref=f8e202]
+      - generic [ref=f8e206]:
+        - generic [ref=f8e207]: Before you continue to Google
+        - generic [ref=f8e208]:
+          - text: We use
+          - link "cookies" [ref=f8e209] [cursor=pointer]:
+            - /url: https://policies.google.com/technologies/cookies?hl=en-US&utm_source=ucbs
+          - text: and data, including IP addresses, to
+        - list [ref=f8e210]:
+          - listitem [ref=f8e211]:
+            - generic [ref=f8e216]: Deliver and maintain Google services
+          - listitem [ref=f8e217]:
+            - img [aria-hidden] [ref=f8e219]: warning
+            - generic [ref=f8e220]: Track outages and protect against spam, fraud, and abuse
+          - listitem [ref=f8e221]:
+            - img [aria-hidden] [ref=f8e223]: bar_chart
+            - generic [ref=f8e224]: Measure audience engagement and site statistics to understand how our services are used and enhance the quality of those services
+        - generic [ref=f8e225]: If you choose to “Accept all,” we will also use cookies and data, including IP addresses, to
+        - list [ref=f8e226]:
+          - listitem [ref=f8e227]:
+            - generic [ref=f8e232]: Develop and improve new services
+          - listitem [ref=f8e233]:
+            - img [aria-hidden] [ref=f8e235]: bar_chart
+            - generic [ref=f8e236]: Deliver and measure the effectiveness of ads
+          - listitem [ref=f8e237]:
+            - generic [ref=f8e242]: Show personalized content, depending on your settings
+          - listitem [ref=f8e243]:
+            - generic [ref=f8e248]: Show personalized ads, depending on your settings
+        - generic [ref=f8e249]: If you choose to “Reject all,” we will not use cookies or IP addresses for these additional purposes.
+        - generic [ref=f8e250]: Non-personalized content is influenced by things like the content you’re currently viewing, activity in your active Search session, and your location. Non-personalized ads are influenced by the content you’re currently viewing and your general location. Personalized content and ads can also include more relevant results, recommendations, and tailored ads based on past activity from this browser, like previous Google searches. We also use cookies and data to tailor the experience to be age-appropriate, if relevant.
+        - generic [ref=f8e251]: Select “More options” to see additional information, including details about managing your privacy settings. You can also visit g.co/privacytools at any time.
+        - generic [ref=f8e252]:
+          - generic [ref=f8e253]:
+            - button "Accept all" [ref=f8e254]
+            - button "Reject all" [ref=f8e258]
+          - button "More options" [ref=f8e262] [cursor=pointer]
+        - generic [ref=f8e263]:
+          - link "Privacy" [ref=f8e264] [cursor=pointer]:
+            - /url: https://policies.google.com/privacy?hl=en-US&utm_source=ucbs
+          - generic [ref=f8e265]: •
+          - link "Terms" [ref=f8e266] [cursor=pointer]:
+            - /url: https://policies.google.com/terms?hl=en-US&utm_source=ucbs
+      - button "Read more" [ref=f8e267] [cursor=pointer]:
+        - img [aria-hidden] [ref=f8e270]: keyboard_arrow_down

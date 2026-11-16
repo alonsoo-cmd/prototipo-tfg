@@ -1,3 +1,5 @@
+import { weekPhase } from './phases.js';
+
 const weekdays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const weeklyKilometers = [37, 41, 44, 48, 52, 47, 55, 50, 58, 54, 43, 32];
 const dayWeights = [0.11, 0.19, 0.12, 0.19, 0.09, 0.16, 0.14];
@@ -12,19 +14,14 @@ const workoutDescriptions = [
   'Carrera continua larga',
 ];
 
-const phases = [
-  { from: 1, to: 3, name: 'BI · Base' },
-  { from: 4, to: 8, name: 'BII · Acumulación' },
-  { from: 9, to: 11, name: 'BIII · Competición' },
-  { from: 12, to: 12, name: 'Competición' },
-];
-
-export const preparationPhases = phases.map((phase) => phase.name);
-
-export function createTrainingHistory(trainingLogs = {}) {
+/**
+ * Genera el historial de 12 semanas. Los registros reales de `trainingLogs`
+ * sustituyen a los valores de ejemplo y la fase sale del plan (`weeks`) si se pasa.
+ */
+export function createTrainingHistory(trainingLogs = {}, weeks = []) {
   return weeklyKilometers.flatMap((weeklyTotal, weekIndex) => {
     const preparationWeek = weekIndex + 1;
-    const phase = phases.find(({ from, to }) => preparationWeek >= from && preparationWeek <= to).name;
+    const phase = weekPhase(weeks, preparationWeek);
 
     return weekdays.map((day, dayIndex) => {
       const date = dateFor(preparationWeek, dayIndex);
@@ -36,10 +33,10 @@ export function createTrainingHistory(trainingLogs = {}) {
       const distance = valueOrDemo(demoLog?.distance, plannedDistance);
       const minutes = valueOrDemo(demoLog?.minutes, plannedMinutes);
       const trimps = valueOrDemo(demoLog?.trimps, Math.round(minutes * effortFactor(type)));
-      const mood = demoLog?.mood === '' || demoLog?.mood === undefined ? 6 + ((preparationWeek + dayIndex) % 4) : Number(demoLog.mood);
+      const mood = demoLog?.mood === '' || demoLog?.mood === undefined ? 2 + ((preparationWeek + dayIndex) % 4) : Number(demoLog.mood);
       const fatigue = demoLog?.fatigue === '' || demoLog?.fatigue === undefined ? 3 + ((preparationWeek + dayIndex * 2) % 5) : Number(demoLog.fatigue);
       const soreness = demoLog?.soreness === '' || demoLog?.soreness === undefined ? 2 + ((preparationWeek + dayIndex) % 5) : Number(demoLog.soreness);
-      const sleep = demoLog?.sleep === '' || demoLog?.sleep === undefined ? 6 + ((preparationWeek + dayIndex * 3) % 4) : Number(demoLog.sleep);
+      const sleep = demoLog?.sleep === '' || demoLog?.sleep === undefined ? 2 + ((preparationWeek + dayIndex * 3) % 4) : Number(demoLog.sleep);
       const stress = demoLog?.stress === '' || demoLog?.stress === undefined ? 2 + ((preparationWeek * 2 + dayIndex) % 5) : Number(demoLog.stress);
       const wellbeingTotal = mood + fatigue + soreness + sleep + stress;
       const intensity = type === 'Umbral' || type === 'Series' || type === 'Competición';
@@ -84,6 +81,8 @@ export function createTrainingHistory(trainingLogs = {}) {
       const rpe = demoLog?.rpe ? Number(demoLog.rpe) : defaultRpes[dayIndex % defaultRpes.length];
       const notes = demoLog?.notes || demoLog?.sensaciones || defaultSensaciones[dayIndex % defaultSensaciones.length];
 
+      const isCycling = type === 'Bicicleta' || /bicicleta|bici|ciclismo/i.test(type);
+
       return {
         id: `${preparationWeek}-${day}`,
         preparationWeek,
@@ -95,7 +94,8 @@ export function createTrainingHistory(trainingLogs = {}) {
         distance: numberValue(distance),
         minutes: numberValue(minutes),
         trimps: numberValue(trimps),
-        pace: demoLog?.pace || formatPace(plannedMinutes, plannedDistance),
+        speed: demoLog?.speed || (isCycling ? (demoLog?.pace || formatSpeed(minutes, distance)) : ''),
+        pace: isCycling ? '' : (demoLog?.pace || formatPace(plannedMinutes, plannedDistance)),
         averageHr: numberValue(demoLog?.averageHr || 145 + ((preparationWeek * 3 + dayIndex * 5) % 22)),
         restingHr: numberValue(demoLog?.restingHr || 48 + ((preparationWeek + dayIndex) % 8)),
         hrv: numberValue(demoLog?.hrv || 52 + ((preparationWeek * 4 + dayIndex * 3) % 24)),
@@ -135,6 +135,7 @@ function round(value) {
 }
 
 function paceFactor(type) {
+  if (type === 'Bicicleta' || /bicicleta|bici|ciclismo/i.test(type)) return 2.2;
   return type === 'Gym + Rodaje' ? 6 : type === 'Umbral' || type === 'Series' ? 5 : 5.5;
 }
 
@@ -146,4 +147,11 @@ function formatPace(minutes, distance) {
   if (!distance) return '—';
   const totalSeconds = Math.round((minutes / distance) * 60);
   return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`;
+}
+
+function formatSpeed(minutes, distance) {
+  const m = Number(minutes);
+  const d = Number(distance);
+  if (!d || !m) return '—';
+  return String(Math.round((d / (m / 60)) * 10) / 10);
 }

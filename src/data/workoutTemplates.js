@@ -2,6 +2,7 @@ import { workoutTypes } from './coachAthletes.js';
 
 const descriptions = {
   'Rodaje': ['Rodaje cómodo en terreno llano', 'Rodaje progresivo con final controlado', 'Rodaje aeróbico por caminos'],
+  'Bicicleta': ['Rodaje suave en bicicleta', 'Sesión de ciclismo aeróbico regenerativo', 'Rodaje en bicicleta a velocidad constante'],
   'Long run / tirada larga': ['Tirada continua a ritmo cómodo', 'Tirada larga con final progresivo', 'Fondo aeróbico estable'],
   'Cambios': ['Cambios de ritmo controlados', 'Fartlek con tramos vivos', 'Alternancia de ritmos en circuito'],
   'Cuestas': ['Repeticiones en cuesta con recuperación bajando', 'Trabajo de fuerza en cuesta', 'Cuestas cortas con técnica cuidada'],
@@ -25,12 +26,19 @@ export function createSampleWorkoutTemplates() {
     if (type === 'Descanso') zones.splice(0, 3, 0, 0, 0);
     const mins = zones.reduce((sum, value) => sum + value, 0) || 0;
     const km = type === 'Gimnasio' || type === 'Core' || type === 'Movilidad' || type === 'Pliometría' || type === 'Descanso'
-      ? 0 : Math.round((3 + ((seed * 17) % 145) / 10) * 10) / 10;
+      ? 0
+      : type === 'Bicicleta'
+        ? Math.round((16 + ((seed * 19) % 200) / 10) * 10) / 10
+        : Math.round((3 + ((seed * 17) % 145) / 10) * 10) / 10;
     const description = descriptions[type]?.[seed % 3] || `${type}: sesión de ejemplo ${index + 1}`;
     const details = {};
     if (!['Descanso', 'Acondicionamiento físico'].includes(type)) {
       details.rpeMin = String(3 + (seed % 4));
       details.rpeMax = String(5 + (seed % 5));
+    }
+    if (type === 'Bicicleta') {
+      details.speedFrom = '22';
+      details.speedTo = '28';
     }
     if (type === 'Series largas' || type === 'Series cortas' || type === 'Cambios' || type === 'Cuestas') {
       details.groups = [{ repetitions: String(4 + seed % 5), interval: type.includes('Series') ? `${400 + seed % 4 * 200} m` : '2 min', guide: 'RPE', target: `RPE ${6 + seed % 3}`, recovery: '90 s', comment: 'Mantener la técnica', withSled: false }];

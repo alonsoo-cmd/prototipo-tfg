@@ -1,0 +1,459 @@
+.workout-detail-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid #dfe9df;
+  border-radius: 7px;
+  background: #f7faf6;
+  color: #526b55;
+  cursor: pointer;
+}
+
+.workout-detail-toggle input { width: 17px; height: 17px; margin: 0; accent-color: #39854b; }
+.workout-detail-toggle span { flex: 1; font-size: var(--text-sm); font-weight: 600; }
+.workout-detail-toggle b { color: #5c745f; font-size: var(--text-xs); }
+.workout-detail-list { padding: 13px 0 2px; }
+.workout-detail-row { margin: 15px 0; padding: 12px 12px 7px; border: 1px solid #e7ece6; border-radius: 7px; background: #fcfdfb; }
+.workout-detail-row-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 2px; }
+.workout-detail-row-heading b { color: #4e6952; font-size: var(--text-sm); }
+.workout-detail-fields { display: grid; grid-template-columns: minmax(130px, .7fr) minmax(200px, 1.8fr); gap: 0 10px; }
+.workout-detail-fields .field-label,
+.workout-detail-time-field { min-width: 0; }
+.workout-detail-time-error { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; margin: -6px 0 9px; padding: 4px 7px; border: 1px solid #f0cfca; border-radius: 5px; background: #fff6f4; color: #93463e; }
+.workout-detail-time-error>span { display: grid; flex: 0 0 13px; width: 13px; height: 13px; place-items: center; border-radius: 50%; background: #bd594f; color: #fff; font-size: var(--text-xs); font-weight: 800; }
+.workout-detail-time-error small { min-width: 0; color: #93463e; font-size: var(--text-xs); line-height: 1.25; overflow-wrap: anywhere; }
+.workout-detail-field-error { display: block; margin-top: 4px; color: #a44940; font-size: var(--text-xs); line-height: 1.35; }
+.workout-detail-check { display: flex; align-items: center; gap: 7px; margin: 0 0 12px; color: #596e5b; font-size: var(--text-xs); }
+.workout-detail-check input { accent-color: #39854b; }
+.gym-detail-fields { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.gym-detail-fields .wide-detail-field { grid-column: 1 / -1; }
+.workout-detail-comment textarea { display: block; width: 100%; min-height: 38px; margin-top: 6px; padding: 9px 10px; border: 1px solid #e1e6eb; border-radius: 5px; background: #fff; color: #38485a; font: inherit; font-size: var(--text-sm); resize: vertical; }
+.workout-detail-section { margin-top: 15px; }
+.workout-detail-section h3 { margin: 0 0 6px; color: #536b56; font: 700 var(--text-sm) Manrope, sans-serif; }
+.workout-detail-note { margin: 0 0 11px; padding: 9px 11px; border: 1px solid #dce8df; border-radius: 6px; background: #f4f8f4; color: #5f7462; font-size: var(--text-xs); line-height: 1.5; }
+.workout-completion-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.workout-completion-option { position: relative; display: flex; min-width: 0; align-items: center; gap: 8px; padding: 10px 11px; border: 1px solid #e3e8e5; border-radius: 7px; background: #fff; color: #596a5e; cursor: pointer; transition: background .15s, border-color .15s, box-shadow .15s; }
+.workout-completion-option input { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); opacity: 0; }
+.workout-completion-icon { display: grid; flex: 0 0 22px; width: 22px; height: 22px; place-items: center; border-radius: 50%; background: #eef1ee; color: #667169; font-size: var(--text-base); font-weight: 800; }
+.workout-completion-option b { overflow: hidden; font-size: var(--text-xs); text-overflow: ellipsis; white-space: nowrap; }
+.workout-completion-option.completed.selected { border-color: #8fbd98; background: #eff8ef; color: #347342; box-shadow: 0 0 0 1px #8fbd9840; }
+.workout-completion-option.completed.selected .workout-completion-icon { background: #3e9854; color: #fff; }
+.workout-completion-option.partial.selected { border-color: #e7c56f; background: #fff9e8; color: #8a691c; box-shadow: 0 0 0 1px #e7c56f40; }
+.workout-completion-option.partial.selected .workout-completion-icon { background: #e0ae36; color: #fff; }
+.workout-completion-option.missed.selected { border-color: #e2a19c; background: #fff2f1; color: #a33f38; box-shadow: 0 0 0 1px #e2a19c40; }
+.workout-completion-option.missed.selected .workout-completion-icon { background: #c84e45; color: #fff; }
+.workout-completion-option:focus-within { outline: 2px solid #7896a5; outline-offset: 2px; }
+.workout-completion-fieldset { padding-bottom: 12px; }
+.workout-detail-row-status { display: inline-flex; align-items: center; gap: 12px; }
+.workout-detail-row-status small { color: #5f7360; font-size: var(--text-xs); }
+.workout-detail-row-status label { display: inline-flex; align-items: center; gap: 5px; color: #5f7462; font-size: var(--text-xs); font-weight: 600; cursor: pointer; }
+.workout-detail-row-status input { accent-color: #39854b; }
+.workout-detail-row.performed { border-color: #a6cdaa; background: #f4faf3; }
+
+.journal-modal {
+  width: min(680px, calc(100vw - 40px));
+}
+
+.journal-modal > .muted { margin: 0 0 17px; }
+
+.journal-fieldset {
+  min-width: 0;
+  margin: 0 0 15px;
+  padding: 13px 13px 3px;
+  border: 1px solid #e8edf0;
+  border-radius: 7px;
+}
+
+.journal-fieldset legend {
+  padding: 0 6px;
+  color: #536578;
+  font: 700 var(--text-sm) Manrope, sans-serif;
+}
+
+.journal-input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 12px;
+}
+
+.journal-unit,
+.journal-scale-label {
+  margin-left: 4px;
+  color: #64707b;
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+
+.journal-modal > .field-label { margin-bottom: 0; }
+
+.wellbeing-fieldset { padding-bottom: 14px; }
+
+.wellbeing-help {
+  margin: 0 0 14px;
+  color: #63707e;
+  font-size: var(--text-sm);
+}
+
+.wellbeing-ranges {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 22px;
+}
+
+.wellbeing-range-field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  color: #637080;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.wellbeing-range-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wellbeing-range-heading strong {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--text-xl);
+  font-weight: 800;
+}
+
+.wellbeing-range-heading small {
+  color: #636f7d;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.wellbeing-range {
+  width: 100%;
+  height: 11px;
+  margin: 3px 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 999px;
+  outline: none;
+  background: linear-gradient(to right, #39a96b 0%, #8bcf67 25%, #d8d85b 50%, #f0a04c 75%, #db5148 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.wellbeing-range::-webkit-slider-thumb {
+  width: 20px;
+  height: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #354e61;
+  box-shadow: 0 2px 6px #1b2c3a55;
+  cursor: pointer;
+  transition: transform .12s ease;
+}
+
+.wellbeing-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #354e61;
+  box-shadow: 0 2px 6px #1b2c3a55;
+  cursor: pointer;
+  transition: transform .12s ease;
+}
+
+.wellbeing-range:hover::-webkit-slider-thumb, .wellbeing-range:hover::-moz-range-thumb {
+  transform: scale(1.1);
+}
+
+.wellbeing-range:focus-visible::-webkit-slider-thumb, .wellbeing-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(68, 111, 139, 0.35), 0 2px 6px #1b2c3a55;
+}
+
+.wellbeing-range-ends {
+  display: flex;
+  justify-content: space-between;
+  color: #63707e;
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.wellbeing-range-ends span:first-child { color: #347c4f; }
+.wellbeing-range-ends span:last-child { color: #c44138; }
+
+@media (max-width: 620px) {
+  .journal-input-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wellbeing-ranges { grid-template-columns: 1fr; }
+  .workout-detail-fields { grid-template-columns: minmax(95px, .65fr) minmax(0, 1.35fr); }
+  .gym-detail-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workout-completion-options { grid-template-columns: 1fr; }
+  .workout-completion-option { padding: 8px 10px; }
+}
+
+.journal-trimp-card {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e2eaef;
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.journal-trimp-card.has-value {
+  border-color: #cbdbe6;
+  background: linear-gradient(135deg, #f3f8fb 0%, #ffffff 100%);
+  box-shadow: 0 1px 3px rgba(35, 60, 80, 0.04);
+}
+
+.journal-trimp-card.empty {
+  border-style: dashed;
+  background: #fbfcfd;
+}
+
+.journal-trimp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.journal-trimp-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.journal-trimp-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #ebf3f8;
+  color: #3b6b8c;
+  font-size: var(--text-base);
+  flex-shrink: 0;
+}
+
+.journal-trimp-label-group b {
+  display: block;
+  color: #34485b;
+  font: 700 var(--text-sm) Manrope, sans-serif;
+}
+
+.journal-trimp-label-group small {
+  display: block;
+  color: #5f6f7d;
+  font-size: var(--text-xs);
+}
+
+.trimp-impact-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.trimp-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.trimp-impact-badge.green {
+  background: #eef7ee;
+  color: #2e693b;
+  border: 1px solid #c2e2c6;
+}
+.trimp-impact-badge.green .trimp-badge-dot {
+  background: #3fa654;
+}
+
+.trimp-impact-badge.blue {
+  background: #eef4f9;
+  color: #2b597c;
+  border: 1px solid #c3d9eb;
+}
+.trimp-impact-badge.blue .trimp-badge-dot {
+  background: #3780b8;
+}
+
+.trimp-impact-badge.amber {
+  background: #fff7eb;
+  color: #925c19;
+  border: 1px solid #fae0b8;
+}
+.trimp-impact-badge.amber .trimp-badge-dot {
+  background: #d98820;
+}
+
+.trimp-impact-badge.red {
+  background: #fdf0f0;
+  color: #9e3333;
+  border: 1px solid #f6c8c8;
+}
+.trimp-impact-badge.red .trimp-badge-dot {
+  background: #d84545;
+}
+
+.journal-trimp-card-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eef2f5;
+}
+
+.journal-trimp-value-display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.journal-trimp-value-display strong {
+  color: #1e3347;
+  font: 800 24px Manrope, sans-serif;
+  line-height: 1;
+}
+
+.journal-trimp-value-display span {
+  color: #60707f;
+  font: 700 var(--text-xs) 'DM Sans', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.journal-trimp-info {
+  flex: 1;
+}
+
+.journal-trimp-category-desc {
+  margin: 0;
+  color: #516474;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.journal-trimp-tip {
+  display: block;
+  margin-top: 4px;
+  color: #5f7180;
+  font-size: var(--text-xs);
+}
+
+.journal-trimp-empty-guide {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: #5e7080;
+  font-size: var(--text-xs);
+  line-height: 1.35;
+}
+
+.journal-trimp-empty-guide p {
+  margin: 0;
+}
+
+/* ── Registro diario: bienestar obligatorio, secciones opcionales y cierre seguro ── */
+
+.journal-required-mark { color: #b23b33; font-weight: 700; }
+
+.journal-core { border-color: #d5e3d7; background: #fbfdfb; }
+
+.wellbeing-fieldset.has-errors { border-color: #e2a19c; background: #fffafa; }
+
+.wellbeing-heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.wellbeing-heading-row .wellbeing-help { flex: 1; }
+
+.wellbeing-progress {
+  flex: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #fff4e0;
+  color: #7a5a14;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.wellbeing-progress.complete { background: #e6f4e8; color: #2f6b3d; }
+
+/* Sin valor: el control se ve apagado para no confundirlo con un 1 registrado. */
+.wellbeing-range.is-empty { filter: grayscale(1); opacity: .45; }
+.wellbeing-range.is-empty::-webkit-slider-thumb { background: #fff; border-color: #8a96a3; border-style: dashed; }
+.wellbeing-range.is-empty::-moz-range-thumb { background: #fff; border-color: #8a96a3; border-style: dashed; }
+
+.wellbeing-range-field.is-missing .wellbeing-range-heading b { color: #a33a32; }
+.wellbeing-range-error { display: block; margin-top: 4px; color: #a33a32; font-size: var(--text-xs); font-weight: 600; }
+
+.journal-notes { margin: 6px 0 18px; }
+
+.journal-optional-group { display: grid; gap: 8px; margin: 4px 0 16px; }
+.journal-optional-group > .eyebrow { margin-bottom: 2px; }
+
+.journal-optional { border: 1px solid #e8edf0; border-radius: 7px; background: #fff; }
+.journal-optional > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 11px 13px;
+  cursor: pointer;
+  list-style: none;
+}
+.journal-optional > summary::-webkit-details-marker { display: none; }
+.journal-optional > summary::before { content: '›'; color: #63707e; font-weight: 700; transition: transform .15s; }
+.journal-optional[open] > summary::before { transform: rotate(90deg); }
+.journal-optional > summary span { color: #2d3b4d; font: 700 var(--text-sm) Manrope, sans-serif; }
+.journal-optional > summary small { margin-left: auto; color: #63707e; font-size: var(--text-xs); text-align: right; }
+.journal-optional > summary:focus-visible { outline: 2px solid #7896a5; outline-offset: 2px; border-radius: 7px; }
+.journal-optional-body { padding: 0 13px 12px; }
+.journal-interval-capture { margin-top: 12px; }
+
+.journal-error-summary {
+  display: grid;
+  gap: 3px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #e2a19c;
+  border-radius: 7px;
+  background: #fff2f1;
+  color: #8c3530;
+  font-size: var(--text-sm);
+}
+
+.journal-discard-bar {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid #e7c56f;
+  border-radius: 7px;
+  background: #fff9e8;
+  color: #6b5216;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.journal-discard-bar .inline-actions { margin-top: 10px; }
+
+.button.danger { border-color: #b23b33; background: #b23b33; color: #fff; }
+.button.danger:hover { filter: brightness(.95); }
+
+@media (max-width: 620px) {
+  .wellbeing-heading-row { flex-direction: column; gap: 0; }
+  .journal-optional > summary { flex-wrap: wrap; }
+  .journal-optional > summary small { margin-left: 0; text-align: left; flex-basis: 100%; }
+}

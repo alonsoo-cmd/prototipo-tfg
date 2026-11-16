@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { workoutColor, workoutTypes } from '../../data/coachAthletes.js';
-import { WorkoutEditor } from './PreparationPage.jsx';
+import { WorkoutEditor } from '../../components/workouts/WorkoutEditor.jsx';
+import Toast from '../../components/ui/Toast.jsx';
 
 export default function WorkoutsPage({ templates = [], setTemplates }) {
   const [editing, setEditing] = useState(null);
   const [notice, setNotice] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(0);
+  const [deleted, setDeleted] = useState(null);
   const pageSize = 9;
   const filteredTemplates = templates.filter((template) => typeFilter === 'all' || template.type === typeFilter);
   const pageCount = Math.max(1, Math.ceil(filteredTemplates.length / pageSize));
@@ -29,6 +31,24 @@ export default function WorkoutsPage({ templates = [], setTemplates }) {
     setEditing(null);
   };
 
+  // Borrar no pide confirmación: se puede deshacer desde el aviso durante unos segundos.
+  const deleteTemplate = (template) => {
+    const index = templates.findIndex((item) => item.id === template.id);
+    if (visibleTemplates.length === 1 && visiblePage > 0) setCurrentPage((page) => page - 1);
+    setTemplates((all) => all.filter((item) => item.id !== template.id));
+    setNotice('');
+    setDeleted({ template, index });
+  };
+  const restoreDeleted = () => {
+    if (!deleted) return;
+    setTemplates((all) => {
+      if (all.some((item) => item.id === deleted.template.id)) return all;
+      const next = [...all];
+      next.splice(Math.min(deleted.index, next.length), 0, deleted.template);
+      return next;
+    });
+  };
+
   return <div className="content coach-workouts-page">
     <div className="page-heading">
       <div><div className="eyebrow">ENTRENADOR · BIBLIOTECA</div><h1>Entrenamientos</h1><p>Crea y consulta entrenamientos prefabricados para tus planificaciones.</p></div>
@@ -44,10 +64,11 @@ export default function WorkoutsPage({ templates = [], setTemplates }) {
         <span className="workout-template-description">{template.desc || template.blocks || 'Sin descripción añadida.'}</span>
         <span className="workout-template-metrics">{template.mins || 0} min · {template.km || 0} km · {template.tr || 0} TR</span>
       </button>
-      <button className="workout-template-delete" type="button" aria-label={`Eliminar ${template.type}`} onClick={() => { if (visibleTemplates.length === 1 && visiblePage > 0) setCurrentPage((page) => page - 1); setTemplates((all) => all.filter((item) => item.id !== template.id)); }}>Eliminar</button>
+      <button className="workout-template-delete" type="button" aria-label={`Eliminar ${template.type}`} onClick={() => deleteTemplate(template)}>Eliminar</button>
     </article>)}</div> : <section className="panel workout-template-empty"><div className="empty-graphic small">＋</div><h2>{templates.length ? 'No hay entrenamientos de este tipo' : 'No se ha creado ningún entrenamiento todavía'}</h2><p>{templates.length ? 'Prueba a seleccionar otro tipo de entrenamiento.' : 'Cuando guardes un entrenamiento prefabricado, aparecerá aquí.'}</p></section>}
     {templates.length > 0 && pageCount > 1 && <nav className="workout-template-pagination" aria-label="Páginas de entrenamientos"><button className="button secondary" type="button" disabled={visiblePage === 0} onClick={() => setCurrentPage((page) => Math.max(0, page - 1))}>← Anterior</button><span>Página {visiblePage + 1} de {pageCount}</span><button className="button secondary" type="button" disabled={visiblePage >= pageCount - 1} onClick={() => setCurrentPage((page) => Math.min(pageCount - 1, page + 1))}>Siguiente →</button></nav>}
 
+    <Toast message={deleted ? `«${deleted.template.type}» eliminado` : ''} onDone={() => setDeleted(null)} action={{ label: 'Deshacer', onClick: restoreDeleted }} />
     {editing && <WorkoutEditor key={`${editing.id || 'new'}-${editing.mode}`} day={editing.day || editing} mode={editing.mode === 'view' ? 'template-view' : editing.mode} onClose={() => setEditing(null)} onSave={saveTemplate} />}
   </div>;
 }

@@ -1,37 +1,24 @@
 import { useMemo, useRef, useState } from 'react';
-import { coachAthletes, gymExercises, workoutColor, workoutTypes } from '../../data/coachAthletes.js';
+import { coachAthletes, isCyclingWorkout, workoutColor, workoutTypes } from '../../data/coachAthletes.js';
 import { athleteDirectory } from '../../data/athleteDirectory.js';
 import { createTrainingHistory } from '../../data/trainingHistory.js';
-import DatePicker from '../../components/ui/DatePicker.jsx';
 import WorkoutStatus from '../../components/ui/WorkoutStatus.jsx';
 import WeekTimeline, { getWeekStatus } from '../../components/ui/WeekTimeline.jsx';
+import { blankWeek, calculatePace, calculateSpeed, copyWeeks, dayDate, formatRecentDateRange, formatShortDate, sumDays } from './preparation/preparationUtils.js';
+import { NewPreparationModal, OverviewModal, TemplatePickerModal } from './preparation/PreparationModals.jsx';
+import { WorkoutEditor } from '../../components/workouts/WorkoutEditor.jsx';
+import { format, formatLongDate } from '../../utils/format.js';
+import InfoTip, { TermLabel } from '../../components/ui/InfoTip.jsx';
+import Toast from '../../components/ui/Toast.jsx';
+import DatePicker from '../../components/ui/DatePicker.jsx';
 
-const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-const phaseOptions = ['BI · Base', 'BII · Acumulación', 'BII · Transformación', 'BIII · Realización', 'Competición', 'Descarga'];
-const effortZones = ['Suave · hasta LT1', 'Umbral · LT1–LT2', 'Fuerte · sobre LT2'];
-const conditioningTypes = ['Core', 'Ejercicios para lesión', 'Pliometría', 'Técnica de carrera y movilidad'];
-const shoeTypes = ['Rodadoras', 'Voladoras', 'Clavos'];
+// En el prototipo, Lucía (primer atleta del entrenador) es la persona de la vista «Atleta»:
+// comparten el plan semanal (`weeks`) y también la preparación con sus objetivos.
+const SHARED_PREPARATION = { coachAthleteId: 'lucia', ownerId: 'alex' };
+const preparationOwnerId = (athleteId) => (athleteId === SHARED_PREPARATION.coachAthleteId ? SHARED_PREPARATION.ownerId : athleteId);
 
-function blankWeek(number) {
-  const firstDate = new Date(Date.UTC(2026, 9, 21 + (number - 8) * 7));
-  return {
-    number,
-    phase: 'BII · Acumulación',
-    days: daysOfWeek.map((day, index) => {
-      const date = new Date(firstDate);
-      date.setUTCDate(firstDate.getUTCDate() + index);
-      return {
-      day, date: date.getUTCDate(), month: new Intl.DateTimeFormat('es-ES', { month: 'short', timeZone: 'UTC' }).format(date).replace('.', ''), type: '', tone: 'rest', desc: '', mins: 0, km: 0,
-      tr: '0', state: 'Planificado', time: '—', blocks: '', wt: [38, 35, 41, 36, 42, 39, 40][index],
-      zones: [0, 0, 0], warmup: '', cooldown: '', details: {},
-      };
-    }),
-  };
-}
-
-function copyWeeks(weeks = []) {
-  return weeks.map((week) => ({ ...week, days: week.days.map((day) => ({ ...day })) }));
-}
+const objectiveDistances = ['400 m', '800 m', '1.500 m', '3.000 m', '5 km', '10 km', 'Media maratón', 'Maratón'];
+const emptyObjective = { name: '', distance: 'Media maratón', eventDate: '' };
 
 export default function PreparationPage({ weeks, setWeeks, preparations = [], setPreparations = () => {}, trainingLogs = {}, workoutTemplates = [], onProfile }) {
   const [athlete, setAthlete] = useState(coachAthletes[0]);
@@ -46,7 +33,11 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
   const [dropTarget, setDropTarget] = useState('');
   const [templateTypeFilter, setTemplateTypeFilter] = useState('all');
   const [clipboard, setClipboard] = useState(null);
+  const [templatePickerDay, setTemplatePickerDay] = useState(null);
+  const [toast, setToast] = useState('');
   const [history, setHistory] = useState([]);
+  const [newObjective, setNewObjective] = useState(emptyObjective);
+  const [objectiveToast, setObjectiveToast] = useState(null);
   const skipDayClick = useRef(false);
 
   const planWeeks = athlete.id === 'lucia' ? weeks : otherPlans[athlete.id] || copyWeeks(weeks);
@@ -81,7 +72,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
         return { ...copiedDay, day: targetDay.day, date: targetDay.date, month: targetDay.month };
       })
     } : week));
-    setNotice(`Semana copiada pegada en la semana ${current.number}.`);
+    setToast(`Semana pegada en la semana ${current.number}`);
   };
 
   const copyDay = (day, event) => {
@@ -100,9 +91,11 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       month: targetDay.month
     };
     saveDay(updatedDay);
+    setNotice('');
+    setToast(`${clipboard.day.day} pegado en ${targetDay.day}`);
   };
   const totals = useMemo(() => sumDays(current.days), [current.days]);
-  const recordedHistory = useMemo(() => createTrainingHistory(trainingLogs), [trainingLogs]);
+  const recordedHistory = useMemo(() => createTrainingHistory(trainingLogs, weeks), [trainingLogs, weeks]);
   const completedHistory = useMemo(() => {
     return recordedHistory.filter((item) => ['completed', 'partial', 'missed'].includes(item.completionStatus));
   }, [recordedHistory]);
@@ -126,8 +119,10 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
     const avgPace = calculatePace(mins, km);
     return { km, mins, tr, completed, partial, missed, avgWt, avgHr, avgPace };
   }, [last7Workouts]);
-  const athletePreparation = preparations.find((item) => item.athleteId === athlete.id) || null;
+  const preparationOwner = preparationOwnerId(athlete.id);
+  const athletePreparation = preparations.find((item) => item.athleteId === preparationOwner) || null;
   const athleteObjectives = athletePreparation?.objectives || [];
+  const preparationTitle = athletePreparation?.name || athlete.goal.split(' · ')[1] || athlete.goal;
   const visibleWorkoutTemplates = workoutTemplates.filter((template) => templateTypeFilter === 'all' || template.type === templateTypeFilter);
   const assignedAthleteIds = new Set(athleteList.map((item) => item.id));
   const availableAthletes = athleteDirectory.filter((item) => !assignedAthleteIds.has(item.id)
@@ -154,18 +149,49 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
   const placeTemplate = (day, event) => {
     event.preventDefault();
     event.stopPropagation();
-    const templateId = event.dataTransfer.getData('application/x-stride-template');
+    const templateId = event.dataTransfer.getData('application/x-edurance-template');
     const template = workoutTemplates.find((item) => String(item.id) === templateId);
     setDropTarget('');
     if (!template) return;
     skipDayClick.current = true;
     window.setTimeout(() => { skipDayClick.current = false; }, 500);
     saveDay({ ...template, day: day.day, date: day.date, month: day.month });
+    setNotice('');
+    setToast(`${day.day}: plantilla «${template.type}» aplicada`);
   };
   const chooseAthlete = (next) => {
     setAthlete(next);
     setSelectedWeek(8);
     setNotice('');
+    setNewObjective(emptyObjective);
+  };
+  // Los objetivos los gestiona el entrenador; el atleta solo los consulta en su perfil.
+  const addObjective = (event) => {
+    event.preventDefault();
+    const name = newObjective.name.trim();
+    if (!name) return;
+    const objective = { ...newObjective, name, id: Date.now() };
+    setPreparations((all) => (all.some((item) => item.athleteId === preparationOwner)
+      ? all.map((item) => (item.athleteId === preparationOwner ? { ...item, objectives: [...item.objectives, objective] } : item))
+      : [...all, { id: Date.now() + 1, athleteId: preparationOwner, athleteName: athlete.name, name: preparationTitle, duration: athlete.duration, coach: 'Alex Martín', objectives: [objective] }]));
+    setNewObjective(emptyObjective);
+    setToast('');
+    setObjectiveToast({ message: `Objetivo «${name}» añadido a ${athlete.name}` });
+  };
+  const removeObjective = (objective) => {
+    const owner = preparationOwner;
+    const position = athleteObjectives.findIndex((entry) => entry.id === objective.id);
+    setPreparations((all) => all.map((item) => (item.athleteId === owner ? { ...item, objectives: item.objectives.filter((entry) => entry.id !== objective.id) } : item)));
+    setToast('');
+    setObjectiveToast({
+      message: `Objetivo «${objective.name}» quitado`,
+      undo: () => setPreparations((all) => all.map((item) => {
+        if (item.athleteId !== owner || item.objectives.some((entry) => entry.id === objective.id)) return item;
+        const objectives = [...item.objectives];
+        objectives.splice(position, 0, objective);
+        return { ...item, objectives };
+      })),
+    });
   };
   const startPreparation = ({ athlete: candidate, preparationName, duration, objectiveName, distance, eventDate, noSpecificGoal }) => {
     const stillAvailable = !athleteList.some((item) => item.id === candidate.id)
@@ -201,14 +227,28 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
     <section className="panel coach-athlete-picker">
       <div className="panel-title"><div><h2>Atletas y preparación propia</h2><p>{Math.min(athleteList.filter((item) => !item.isCoach).length, 30)} de 30 plazas para atletas</p></div></div>
       <div className="coach-athlete-strip">{athleteList.map((item) => <button key={item.id} className={`coach-athlete-chip ${athlete.id === item.id ? 'selected' : ''}`} onClick={() => chooseAthlete(item)}>
-        <span className="mini-avatar">{item.initials}</span><span><b>{item.isCoach ? 'Mi preparación' : item.name}</b><small>{item.isCoach ? `${item.name} · entrenador` : item.goal} · {item.isCoach ? 'Preparación propia' : preparations.some((preparation) => preparation.athleteId === item.id) ? 'Con preparación activa' : 'A tu cargo'}</small></span>
+        <span className="mini-avatar">{item.initials}</span><span><b>{item.isCoach ? 'Mi preparación' : item.name}</b><small>{item.isCoach ? `${item.name} · entrenador` : item.goal} · {item.isCoach ? 'Preparación propia' : preparations.some((preparation) => preparation.athleteId === preparationOwnerId(item.id)) ? 'Con preparación activa' : 'A tu cargo'}</small></span>
       </button>)}</div>
     </section>
 
     <div className="active-prep-card">
-      <div className="active-prep-icon">↗</div><div className="active-prep-info"><div className="eyebrow">PREPARACIÓN ACTIVA · {planWeeks.length} SEMANAS · {athleteObjectives.length} OBJETIVOS</div><h2>{athletePreparation?.name || athlete.goal.split(' · ')[1] || athlete.goal}</h2><p>{athlete.name} · {athletePreparation?.duration || athlete.duration} · {athleteObjectives.map((item) => item.name).join(' · ') || 'Sin objetivos asociados'}</p></div>
+      <div className="active-prep-icon">↗</div><div className="active-prep-info"><div className="eyebrow">PREPARACIÓN ACTIVA · {planWeeks.length} SEMANAS · {athleteObjectives.length} {athleteObjectives.length === 1 ? 'OBJETIVO' : 'OBJETIVOS'}</div><h2>{preparationTitle}</h2><p>{athlete.name} · {athletePreparation?.duration || athlete.duration} · {athleteObjectives.map((item) => item.name).join(' · ') || 'Sin objetivos asociados'}</p></div>
       <button className="button secondary" onClick={onProfile}>Perfil ↗</button>
     </div>
+
+    <section className="panel coach-objectives-panel" aria-labelledby="coach-objectives-title">
+      <div className="panel-title"><div><h2 id="coach-objectives-title">Objetivos de la preparación</h2><p>{athlete.name} · {athleteObjectives.length} {athleteObjectives.length === 1 ? 'objetivo' : 'objetivos'}</p></div></div>
+      {athleteObjectives.length ? <ul className="coach-objective-list">{athleteObjectives.map((objective) => <li className="coach-objective" key={objective.id}>
+        <div><strong>{objective.name}</strong><small>{objective.distance}{objective.eventDate ? ` · ${formatLongDate(objective.eventDate)}` : ''}</small></div>
+        <button className="remove-pill" type="button" aria-label={`Quitar objetivo ${objective.name}`} onClick={() => removeObjective(objective)}><span aria-hidden="true">×</span>Quitar</button>
+      </li>)}</ul> : <p className="coach-objective-empty">Esta preparación todavía no tiene objetivos.</p>}
+      <form className="coach-objective-form" onSubmit={addObjective}>
+        <label className="field-label">Nombre del objetivo<input value={newObjective.name} onChange={(event) => setNewObjective((draft) => ({ ...draft, name: event.target.value }))} placeholder="Ej. 10K de otoño" /></label>
+        <label className="field-label">Distancia<select value={newObjective.distance} onChange={(event) => setNewObjective((draft) => ({ ...draft, distance: event.target.value }))}>{objectiveDistances.map((distance) => <option key={distance}>{distance}</option>)}</select></label>
+        <label className="field-label">Fecha objetivo<DatePicker value={newObjective.eventDate} onChange={(eventDate) => setNewObjective((draft) => ({ ...draft, eventDate }))} allowClear placeholder="Opcional" ariaLabel="Elegir fecha objetivo" /></label>
+        <button className="button secondary" type="submit" disabled={!newObjective.name.trim()}>＋ Añadir objetivo</button>
+      </form>
+    </section>
 
     <section className="panel coach-practical-section">
       <div className="schedule-heading">
@@ -239,12 +279,12 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
                 <b>{item.day}</b>
                 <span>{formatShortDate(item.date)}</span>
-                <small style={{ color: 'var(--muted-color)', fontSize: '10px' }}>Semana {item.preparationWeek}</small>
+                <small style={{ color: 'var(--muted-color)', fontSize: 'var(--text-sm)' }}>Semana {item.preparationWeek}</small>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  padding: '2px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: '600',
+                  padding: '2px 8px', borderRadius: '10px', fontSize: 'var(--text-sm)', fontWeight: '600',
                   background: isCompleted ? '#dcfce7' : isPartial ? '#fef9c3' : '#fee2e2',
                   color: isCompleted ? '#15803d' : isPartial ? '#854d0e' : '#b91c1c'
                 }}>
@@ -254,27 +294,31 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
                   }} />
                   {item.status}
                 </span>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#1f2937' }}>{item.type}</span>
+                <span style={{ fontSize: 'var(--text-md)', fontWeight: '700', color: '#1f2937' }}>{item.type}</span>
               </div>
             </header>
             <div className="practical-log-activity">
               <LogValue label="Distancia" value={item.distance} unit="km" />
               <LogValue label="Duración" value={item.minutes} unit="min" />
               <LogValue label="TRIMPS" value={item.trimps} />
-              <LogValue label="Ritmo medio" value={item.pace} unit="min/km" />
+              {isCyclingWorkout(item.type) ? (
+                <LogValue label="Velocidad media" value={item.speed || calculateSpeed(item.minutes, item.distance)} unit="km/h" />
+              ) : (
+                <LogValue label="Ritmo medio" value={item.pace} unit="min/km" />
+              )}
               <LogValue label="FC media" value={item.averageHr} unit="ppm" />
               <LogValue label="Esfuerzo" value={`RPE ${item.rpe}/10`} />
             </div>
             <div className="practical-log-wellbeing">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <b>Bienestar · escala 1–10</b>
-                <span style={{ fontSize: '11px', fontWeight: '700', color: '#3f7048' }}>WT {item.wellbeingTotal}/50</span>
+                <b>Bienestar · 1 mejor – 10 peor <InfoTip term="wt" /></b>
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: '700', color: '#3f7048' }}>WT {item.wellbeingTotal}/50</span>
               </div>
               <div>
                 <LogValue label="Fatiga" value={item.fatigue} />
                 <LogValue label="Irritabilidad" value={item.mood} />
                 <LogValue label="Agujetas" value={item.soreness} />
-                <LogValue label="Sueño" value={item.sleep} />
+                <LogValue label="Mal descanso" value={item.sleep} />
                 <LogValue label="Estrés" value={item.stress} />
               </div>
             </div>
@@ -298,18 +342,27 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       />
       <div className="selected-week-heading"><div><div className="eyebrow">SEMANA {current.number} · {current.phase.toUpperCase()}</div><h3>Semana {current.number} · planificación</h3></div><div className="week-actions" style={{ display: 'flex', gap: '8px' }}><button className="button secondary" type="button" onClick={undo} disabled={history.length === 0}>Deshacer</button><button className="button secondary" type="button" onClick={copyCurrentWeek}>Copiar semana</button><button className="button primary" type="button" onClick={pasteWeek} disabled={!clipboard}>Pegar semana</button></div></div>
       {workoutTemplates.length > 0 ? <section className="workout-template-library">
-        <div className="workout-template-library-heading"><div><b>Entrenamientos predefinidos</b><span>Arrastra un bloque sobre el día que quieras planificar.</span></div><label>Tipo<select value={templateTypeFilter} onChange={(event) => setTemplateTypeFilter(event.target.value)}><option value="all">Todos</option>{workoutTypes.map((type) => <option key={type}>{type}</option>)}</select></label><span>{visibleWorkoutTemplates.length} disponibles</span></div>
-        {visibleWorkoutTemplates.length ? <div className="workout-template-blocks">{visibleWorkoutTemplates.map((template) => <button type="button" draggable key={template.id} className={`workout-template-block workout-color-${workoutColor(template.type)}`} onDragStart={(event) => { event.dataTransfer.setData('application/x-stride-template', String(template.id)); event.dataTransfer.effectAllowed = 'copy'; }} onDragEnd={() => setDropTarget('')}>
+        <div className="workout-template-library-heading"><div><b>Entrenamientos predefinidos</b><span>Pulsa «Usar plantilla…» en un día o arrastra un bloque sobre él.</span></div><label>Tipo<select value={templateTypeFilter} onChange={(event) => setTemplateTypeFilter(event.target.value)}><option value="all">Todos</option>{workoutTypes.map((type) => <option key={type}>{type}</option>)}</select></label><span>{visibleWorkoutTemplates.length} disponibles</span></div>
+        {visibleWorkoutTemplates.length ? <div className="workout-template-blocks">{visibleWorkoutTemplates.map((template) => <button type="button" draggable key={template.id} className={`workout-template-block workout-color-${workoutColor(template.type)}`} onDragStart={(event) => { event.dataTransfer.setData('application/x-edurance-template', String(template.id)); event.dataTransfer.effectAllowed = 'copy'; }} onDragEnd={() => setDropTarget('')}>
           <b>{template.type}</b><span>{template.desc || template.blocks || 'Sin descripción'}</span><small>{template.mins || 0} min · {format(template.km)} km · {template.tr || 0} TR</small>
         </button>)}</div> : <p className="workout-template-filter-empty">No hay entrenamientos predefinidos de este tipo.</p>}
       </section> : <section className="workout-template-library workout-template-library-empty"><b>Entrenamientos predefinidos</b><span>No hay entrenamientos guardados. Puedes seguir planificando cada día manualmente.</span></section>}
-      <div className="coach-week-grid">{current.days.map((day) => <button style={{ position: 'relative' }} key={day.day} onDragOver={(event) => { event.preventDefault(); setDropTarget(day.day); }} onDragLeave={() => setDropTarget((currentTarget) => currentTarget === day.day ? '' : currentTarget)} onDrop={(event) => placeTemplate(day, event)} className={`coach-workout-card ${day.type ? `workout-color-${workoutColor(day.type)}` : 'empty'} ${dropTarget === day.day ? 'drop-target' : ''}`} onClick={() => { if (skipDayClick.current) return; setEditingDay({ day, mode: 'edit' }); }}>
-        <div className="day-actions" style={{ position: 'absolute', top: '8px', right: '8px', display: 'flex', gap: '8px', zIndex: 2 }}>
-          <span role="button" aria-label="Copiar día" onClick={(e) => copyDay(day, e)} style={{ background: 'var(--surface-color)', borderRadius: '4px', padding: '2px 6px', fontSize: '12px', border: '1px solid var(--border-color)' }}>Copiar</span>
-          {clipboard?.type === 'day' && <span role="button" aria-label="Pegar día" onClick={(e) => pasteDay(day, e)} style={{ background: 'var(--primary-color)', color: 'white', borderRadius: '4px', padding: '2px 6px', fontSize: '12px', border: '1px solid var(--primary-color)' }}>Pegar</span>}
-        </div>
+      <div className="coach-week-grid">{current.days.map((day) => <div
+        key={day.day}
+        className={`coach-day-cell ${dropTarget === day.day ? 'drop-target' : ''}`}
+        onDragOver={(event) => { event.preventDefault(); setDropTarget(day.day); }}
+        onDragLeave={() => setDropTarget((currentTarget) => currentTarget === day.day ? '' : currentTarget)}
+        onDrop={(event) => placeTemplate(day, event)}
+      >
+        <button type="button" className={`coach-workout-card ${day.type ? `workout-color-${workoutColor(day.type)}` : 'empty'}`} aria-label={`${day.day}: ${day.type || 'sin entrenamiento'}. Editar`} onClick={() => { if (skipDayClick.current) return; setEditingDay({ day, mode: 'edit' }); }}>
         <span className="coach-workout-day">{day.day}<small>{dayDate(day)}</small></span><b>{day.type || '+ Añadir entrenamiento'}</b><span className="coach-workout-description">{day.desc || day.blocks || (day.type ? 'Sin descripción' : 'Día en blanco')}</span>{day.shoes && <span className="coach-workout-description">👟 {day.shoes}</span>}<span className="coach-workout-metrics">{day.mins || 0} min · {format(day.km)} km · {day.tr || 0} TR</span><WorkoutStatus status={trainingLogs[`${current.number}-${day.day}`]?.completionStatus || (trainingLogs[`${current.number}-${day.day}`] ? 'completed' : null)} className="coach-workout-status" />
-      </button>)}</div>
+        </button>
+        <div className="coach-day-actions">
+          {workoutTemplates.length > 0 && <button type="button" className="coach-day-action primary" onClick={() => setTemplatePickerDay(day)} aria-label={`Usar plantilla para el ${day.day}`}>Usar plantilla…</button>}
+          <button type="button" className="coach-day-action" onClick={(event) => copyDay(day, event)} aria-label={`Copiar ${day.day}`}>Copiar</button>
+          {clipboard?.type === 'day' && <button type="button" className="coach-day-action" onClick={(event) => pasteDay(day, event)} aria-label={`Pegar en ${day.day}`}>Pegar</button>}
+        </div>
+      </div>)}</div>
       <div className="coach-total-strip weekly-totals"><Stat label={`Km · semana ${current.number}`} value={`${format(totals.km)} km`} /><Stat label="Minutos" value={`${totals.mins} min`} /><Stat label="TRIMPS" value={totals.tr} /><button className="text-button" onClick={() => setShowAllWeeks(true)}>Ver desglose BX · BI · BII →</button></div>
     </section>
 
@@ -323,14 +376,27 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       </article>)}</div> : <p className="practical-empty-state">No hay atletas disponibles que cumplan estos requisitos.</p>}
     </section>
     {notice && <p className="coach-save-notice" role="status">{notice}</p>}
+    <Toast message={objectiveToast?.message || ''} onDone={() => setObjectiveToast(null)} action={objectiveToast?.undo ? { label: 'Deshacer', onClick: objectiveToast.undo } : null} />
+    <Toast message={toast} onDone={() => setToast('')} action={{ label: 'Deshacer', onClick: undo }} />
 
+    {templatePickerDay && <TemplatePickerModal
+      day={templatePickerDay}
+      templates={workoutTemplates}
+      onClose={() => setTemplatePickerDay(null)}
+      onPick={(template) => {
+        saveDay({ ...template, day: templatePickerDay.day, date: templatePickerDay.date, month: templatePickerDay.month });
+        setNotice('');
+        setToast(`${templatePickerDay.day}: plantilla «${template.type}» aplicada`);
+        setTemplatePickerDay(null);
+      }}
+    />}
     {editingDay && <WorkoutEditor key={`${athlete.id}-${current.number}-${editingDay.day.day}-${editingDay.mode}`} day={editingDay.day} mode={editingDay.mode} onClose={() => setEditingDay(null)} onSave={saveDay} />}
     {startingAthlete && <NewPreparationModal athlete={startingAthlete} onClose={() => setStartingAthlete(null)} onCreate={startPreparation} />}
     {showAllDays && <OverviewModal title={`Todos los entrenamientos · ${athlete.name}`} onClose={() => setShowAllDays(false)}>
       {completedHistory.slice().reverse().map((day) => <div className="overview-row" key={day.id}>
         <b>Semana {day.preparationWeek} · {day.day} ({formatShortDate(day.date)}) · {day.type}</b>
-        <span>{day.distance || '—'} km · {day.minutes || '—'} min · {day.trimps || '—'} TR · Ritmo {day.pace || '—'} min/km · FC {day.averageHr || '—'} ppm · {day.status}</span>
-        <span>Fatiga {day.fatigue || '—'} · Irritabilidad {day.mood || '—'} · Agujetas {day.soreness || '—'} · Sueño {day.sleep || '—'} · Estrés {day.stress || '—'} · WT {day.wellbeingTotal || '—'}/50</span>
+        <span>{day.distance || '—'} km · {day.minutes || '—'} min · {day.trimps || '—'} TR · {isCyclingWorkout(day.type) ? `Velocidad ${day.speed || calculateSpeed(day.minutes, day.distance) || '—'} km/h` : `Ritmo ${day.pace || '—'} min/km`} · FC {day.averageHr || '—'} ppm · {day.status}</span>
+        <span>Fatiga {day.fatigue || '—'} · Irritabilidad {day.mood || '—'} · Agujetas {day.soreness || '—'} · Mal descanso {day.sleep || '—'} · Estrés {day.stress || '—'} · WT {day.wellbeingTotal || '—'}/50</span>
         {day.notes && <span style={{ color: 'var(--muted-color)', fontStyle: 'italic' }}>“{day.notes}”</span>}
       </div>)}
       {!completedHistory.length && <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos.</p>}
@@ -354,187 +420,8 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
   </div>;
 }
 
-function NewPreparationModal({ athlete, onClose, onCreate }) {
-  const [eventDate, setEventDate] = useState('');
-  const [noSpecificGoal, setNoSpecificGoal] = useState(false);
-  const [preparationName, setPreparationName] = useState('');
-  return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-    <form className="modal wide-modal new-preparation-modal" onSubmit={(event) => {
-      event.preventDefault();
-      const data = new FormData(event.currentTarget);
-      onCreate({ athlete, preparationName: data.get('preparationName'), duration: data.get('duration'), objectiveName: data.get('objectiveName'), distance: data.get('distance'), eventDate, noSpecificGoal: data.has('noSpecificGoal') });
-    }}>
-      <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button>
-      <div className="eyebrow">NUEVA PREPARACIÓN</div><h2>{athlete.name}</h2>
-      <p className="muted">Este atleta está disponible: no tiene entrenador ni otra preparación activa.</p>
-      <div className="workout-editor-grid">
-        <label className="field-label">Nombre de preparación<input name="preparationName" required={!noSpecificGoal} disabled={noSpecificGoal} value={noSpecificGoal ? 'Entrenamiento para estar en forma' : preparationName} onChange={(event) => setPreparationName(event.target.value)} placeholder="Ej. Plan de otoño" /></label>
-        <label className="field-label">Duración<select name="duration" defaultValue={athlete.duration}><option>8 semanas</option><option>10 semanas</option><option>12 semanas</option><option>16 semanas</option></select></label>
-      </div>
-      <label className="no-specific-goal-toggle"><input type="checkbox" name="noSpecificGoal" checked={noSpecificGoal} onChange={(event) => setNoSpecificGoal(event.target.checked)} /><span><b>Sin objetivo específico</b><small>Preparación general para entrenar y estar en forma.</small></span></label>
-      <fieldset className="workout-editor-grid preparation-goal-fields" disabled={noSpecificGoal}>
-        <label className="field-label">Objetivo<input name="objectiveName" required={!noSpecificGoal} placeholder="Ej. Media Maratón Madrid" /></label>
-        <label className="field-label">Distancia objetivo<select name="distance" defaultValue={athlete.distance}><option>400 m</option><option>800 m</option><option>1.500 m</option><option>3.000 m</option><option>5 km</option><option>10 km</option><option>Media maratón</option><option>Maratón</option></select></label>
-        <label className="field-label">Fecha objetivo<DatePicker name="eventDate" value={eventDate} onChange={setEventDate} allowClear placeholder="Opcional" ariaLabel="Elegir fecha objetivo" /></label>
-      </fieldset>
-      {noSpecificGoal && <p className="no-specific-goal-note">La preparación se creará para estar en forma y no tendrá objetivos ni pruebas asociadas.</p>}
-      <div className="inline-actions"><button className="button secondary" type="button" onClick={onClose}>Cancelar</button><button className="button primary" type="submit">Iniciar preparación</button></div>
-    </form>
-  </div>;
-}
-
-export function WorkoutEditor({ day, mode, onClose, onSave }) {
-  const [values, setValues] = useState(() => ({ ...day, details: day.details || {}, zones: day.zones || [0, 0, 0] }));
-  const [exerciseRows, setExerciseRows] = useState(values.details.exercises || []);
-  const [conditioningBlocks, setConditioningBlocks] = useState(values.details.conditioningBlocks || [{ type: 'Core', exercises: '', volume: '', comment: '' }]);
-  const [workoutGroups, setWorkoutGroups] = useState(() => (values.details.groups || [{ repetitions: '', interval: '', guide: 'Sin objetivo', target: '', recovery: '', comment: '', withSled: false }]).map((group) => ({ recovery: '', ...group })));
-  const [isReadOnly, setIsReadOnly] = useState(mode === 'view' || mode === 'template-view');
-  const update = (key, value) => setValues((current) => ({ ...current, [key]: value }));
-  const updateDetail = (key, value) => setValues((current) => ({ ...current, details: { ...current.details, [key]: value } }));
-  const type = values.type || '';
-  const intervalType = ['Cambios', 'Cuestas', 'Series largas', 'Series cortas'].includes(type);
-  const intervalLimit = type === 'Cambios' ? 25 : type === 'Cuestas' ? 30 : 50;
-
-  const submit = (event) => {
-    event.preventDefault();
-    const blockSummary = conditioningBlocks.map((block) => `${block.type}${block.exercises ? `: ${block.exercises}` : ''}${block.volume ? ` (${block.volume})` : ''}`).join(' · ');
-    const description = values.desc || (type === 'Acondicionamiento físico' ? blockSummary : '');
-    const details = { ...values.details, exercises: exerciseRows, groups: workoutGroups, conditioningBlocks };
-    if (type === 'Descanso' || type === 'Acondicionamiento físico') {
-      delete details.rpeMin; delete details.rpeMax; delete details.paceFrom; delete details.paceTo; delete details.hrMin; delete details.hrMax;
-    }
-    delete details.paceFrom; delete details.paceTo;
-    const trimps = calculateWorkoutTrimps(values.zones);
-    onSave({ ...values, desc: description, blocks: description, details, tone: type === 'Descanso' ? 'rest' : 'blue', tr: String(trimps) });
-  };
-
-  return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}><form className="modal wide-modal workout-editor-modal" onSubmit={submit}>
-    <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button><div className="eyebrow">{isReadOnly ? 'ENTRENAMIENTO · DETALLE' : mode.startsWith('template') ? 'ENTRENAMIENTOS PREFABRICADOS' : 'PLANIFICACIÓN TEÓRICA'}{!mode.startsWith('template') && ` · ${day.day.toUpperCase()}`}</div><h2>{day.type || 'Añadir entrenamiento'}{!mode.startsWith('template') && ` · ${day.day}`}</h2>
-    {isReadOnly && mode.startsWith('template') && <div className="workout-practical-metrics"><b>TRIMPS {values.tr || calculateWorkoutTrimps(values.zones)}</b><b>{values.mins || 0} min</b><b>{format(values.km)} km</b></div>}
-    {isReadOnly && !mode.startsWith('template') && <div className="workout-practical-metrics"><b>WT {values.wt ?? '—'}/50</b><b>FC media {values.averageHr ?? '—'} ppm</b><b>FC reposo {values.restingHr ?? '—'} ppm</b><b>HRV {values.hrv ?? '—'} ms</b></div>}
-    <div className="workout-editor-grid">
-      <label className="field-label">Tipo de entrenamiento<select required={!isReadOnly && mode.startsWith('template')} disabled={isReadOnly} value={type} onChange={(event) => update('type', event.target.value)}><option value="">Selecciona tipo…</option>{workoutTypes.map((item) => <option key={item}>{item}</option>)}</select></label>
-      <label className="field-label">Zapatillas recomendadas<select disabled={isReadOnly} value={values.shoes || ''} onChange={(event) => update('shoes', event.target.value)}><option value="">Sin indicación</option>{shoeTypes.map((item) => <option key={item}>{item}</option>)}</select></label>
-      <label className="field-label">Duración · min<input disabled={isReadOnly} type="number" min="0" value={values.mins || ''} onChange={(event) => update('mins', Number(event.target.value))} /></label>
-      <label className="field-label">Distancia · km<input disabled={isReadOnly} type="number" min="0" step="0.1" value={values.km || ''} onChange={(event) => update('km', Number(event.target.value))} /></label>
-    </div>
-    <label className="field-label">Descripción del entrenamiento<textarea disabled={isReadOnly} rows="3" value={values.desc || values.blocks || ''} onChange={(event) => { update('desc', event.target.value); update('blocks', event.target.value); }} placeholder="Estructura y detalles de la sesión" /></label>
-    {['Cambios', 'Cuestas', 'Series largas', 'Series cortas', 'Competición', 'Test'].includes(type) && <div className="workout-editor-grid">
-      <label className="field-label">Calentamiento<input disabled={isReadOnly} value={values.warmup || ''} onChange={(event) => update('warmup', event.target.value)} placeholder="Ej. 15 min suaves + movilidad" /></label>
-      <label className="field-label">Enfriamiento<input disabled={isReadOnly} value={values.cooldown || ''} onChange={(event) => update('cooldown', event.target.value)} placeholder="Ej. 10 min suaves" /></label>
-    </div>}
-    {type && type !== 'Descanso' && type !== 'Acondicionamiento físico' && <fieldset className="workout-fieldset effort-target-fieldset"><legend>RPE estimado · obligatorio · escala 1–10</legend><div className="workout-editor-grid">
-      <label className="field-label">RPE mínimo<input name="rpeMin" required={!isReadOnly && !mode.startsWith('template')} disabled={isReadOnly} type="number" min="1" max={values.details.rpeMax || 10} step="1" value={values.details.rpeMin ?? ''} onChange={(event) => updateDetail('rpeMin', event.target.value)} placeholder="Ej. 4" /></label>
-      <label className="field-label">RPE máximo<input name="rpeMax" required={!isReadOnly && !mode.startsWith('template')} disabled={isReadOnly} type="number" min={values.details.rpeMin || 1} max="10" step="1" value={values.details.rpeMax ?? ''} onChange={(event) => updateDetail('rpeMax', event.target.value)} placeholder="Ej. 6" /></label>
-    </div><p className="help-text">Añade, si quieres, el rango equivalente de pulsaciones.</p><div className="workout-editor-grid">
-      <label className="field-label">Pulsaciones desde · ppm<input name="hrMin" disabled={isReadOnly} type="number" min="60" max={values.details.hrMax || 220} value={values.details.hrMin || ''} onChange={(event) => updateDetail('hrMin', event.target.value)} placeholder="140" required={Boolean(values.details.hrMin || values.details.hrMax)} /></label>
-      <label className="field-label">Pulsaciones hasta · ppm<input name="hrMax" disabled={isReadOnly} type="number" min={values.details.hrMin || 60} max="220" value={values.details.hrMax || ''} onChange={(event) => updateDetail('hrMax', event.target.value)} placeholder="155" required={Boolean(values.details.hrMin || values.details.hrMax)} /></label>
-    </div></fieldset>}
-    {type === 'Long run / tirada larga' && <label className="field-label">Número de cambios (máximo 3)<input disabled={isReadOnly} type="number" min="0" max="3" value={values.details.changes ?? 0} onChange={(event) => updateDetail('changes', Math.min(3, Number(event.target.value)))} /></label>}
-    {intervalType && <fieldset className="workout-fieldset"><legend>Bloques de trabajo · hasta {intervalLimit} repeticiones</legend>
-      {workoutGroups.map((group, index) => {
-        const otherReps = workoutGroups.reduce((sum, item, itemIndex) => sum + (itemIndex === index ? 0 : Number(item.repetitions) || 0), 0);
-        const availableReps = Math.max(1, intervalLimit - otherReps);
-        const isSeries = type === 'Series largas' || type === 'Series cortas';
-        const minMeters = type === 'Series largas' ? 200 : 10;
-        const maxMeters = type === 'Series largas' ? 10000 : 1000;
-        return <div className="interval-group-editor" key={index}><div className="interval-group-heading"><b>Bloque {index + 1}</b>{!isReadOnly && workoutGroups.length > 1 && <button type="button" className="text-button" onClick={() => setWorkoutGroups((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Quitar bloque</button>}</div><div className="workout-editor-grid">
-          <label className="field-label">Repeticiones<input disabled={isReadOnly} type="number" min="1" max={availableReps} value={group.repetitions} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, repetitions: Math.min(availableReps, Number(event.target.value)) } : item))} /></label>
-          {isSeries ? <label className="field-label">Distancia · metros<input disabled={isReadOnly} type="number" min={minMeters} max={maxMeters} step="10" value={group.interval} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, interval: event.target.value } : item))} placeholder={`${minMeters}–${maxMeters} m`} /></label> : <label className="field-label">Distancia o duración<input disabled={isReadOnly} value={group.interval} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, interval: event.target.value } : item))} placeholder={type === 'Cuestas' ? '20 m–2 km o 5 s–10 min' : '800 m, 2 min, 30 s'} /></label>}
-          <label className="field-label">Guía<select disabled={isReadOnly} value={group.guide} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, guide: event.target.value } : item))}>{['Sin objetivo', 'RPE', 'Ritmo', 'Pulsaciones', 'Lactato'].map((guide) => <option key={guide}>{guide}</option>)}</select></label>
-          <label className="field-label">Objetivo<input disabled={isReadOnly} value={group.target} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, target: event.target.value } : item))} placeholder="Ej. RPE 7, 4:00/km o 165 ppm" /></label>
-        </div>{type === 'Series cortas' && <label className="short-series-sled"><input type="checkbox" disabled={isReadOnly} checked={Boolean(group.withSled)} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, withSled: event.target.checked } : item))} /> Con arrastres</label>}{isSeries ? <div className="workout-editor-grid series-notes-grid">
-          <label className="field-label">Recuperación<input disabled={isReadOnly} value={group.recovery || ''} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, recovery: event.target.value } : item))} placeholder="Ej. 2 min o 200 m" /></label>
-          <label className="field-label">Comentarios<textarea disabled={isReadOnly} rows="2" value={group.comment || ''} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, comment: event.target.value } : item))} placeholder="Indicaciones para el atleta" /></label>
-        </div> : <label className="field-label">Recuperación / comentario<input disabled={isReadOnly} value={group.comment} onChange={(event) => setWorkoutGroups((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, comment: event.target.value } : item))} /></label>}</div>;
-      })}
-      {!isReadOnly && workoutGroups.length < intervalLimit && <button type="button" className="text-button" onClick={() => setWorkoutGroups((current) => [...current, { repetitions: '', interval: '', guide: 'Sin objetivo', target: '', recovery: '', comment: '', withSled: false }])}>+ Añadir bloque</button>}
-    </fieldset>}
-    {type === 'Cuestas' && <label className="field-label">Longitud de cada cuesta<input disabled={isReadOnly} value={values.details.hillLength || ''} onChange={(event) => updateDetail('hillLength', event.target.value)} placeholder="20 m – 2 km o 5 s – 10 min" /></label>}
-    {type === 'Competición' && <div className="workout-editor-grid"><label className="field-label">Distancia de carrera<input disabled={isReadOnly} value={values.details.raceDistance || ''} onChange={(event) => updateDetail('raceDistance', event.target.value)} /></label><label className="field-label">Tiempo objetivo<input disabled={isReadOnly} value={values.details.goalTime || ''} onChange={(event) => updateDetail('goalTime', event.target.value)} placeholder="h:mm:ss" /></label><label className="field-label">Series previas · hasta 10 × 1 km<input disabled={isReadOnly} type="number" min="0" max="10" value={values.details.preRaceReps ?? 0} onChange={(event) => updateDetail('preRaceReps', Math.min(10, Number(event.target.value)))} /></label><label className="field-label">Bloques de umbral · hasta 5 × 10 min<input disabled={isReadOnly} type="number" min="0" max="5" value={values.details.thresholdReps ?? 0} onChange={(event) => updateDetail('thresholdReps', Math.min(5, Number(event.target.value)))} /></label></div>}
-    {type === 'Test' && <><label className="field-label">Explicación del test<textarea disabled={isReadOnly} rows="2" value={values.details.testExplanation || ''} onChange={(event) => updateDetail('testExplanation', event.target.value)} /></label><label className="field-label">Resultados (VAM, LT1, LT2, etc.)<textarea disabled={isReadOnly} rows="2" value={values.details.testResults || ''} onChange={(event) => updateDetail('testResults', event.target.value)} placeholder="VAM · LT1 · LT2" /></label></>}
-    {type === 'Gimnasio' && <><fieldset className="workout-fieldset"><legend>Ejercicios · máximo 10</legend>{exerciseRows.map((exercise, index) => <div className="gym-exercise-row" key={index}><select disabled={isReadOnly} value={exercise.name} onChange={(event) => setExerciseRows((current) => current.map((row, i) => i === index ? { ...row, name: event.target.value } : row))}>{gymExercises.map((name) => <option key={name}>{name}</option>)}</select><input disabled={isReadOnly} value={exercise.sets || ''} onChange={(event) => setExerciseRows((current) => current.map((row, i) => i === index ? { ...row, sets: event.target.value } : row))} placeholder="Series × repeticiones / peso" /><input disabled={isReadOnly} value={exercise.comment || ''} onChange={(event) => setExerciseRows((current) => current.map((row, i) => i === index ? { ...row, comment: event.target.value } : row))} placeholder="Comentario" /></div>)}{!isReadOnly && exerciseRows.length < 10 && <button type="button" className="text-button" onClick={() => setExerciseRows((current) => [...current, { name: gymExercises[0], sets: '', comment: '' }])}>+ Añadir ejercicio</button>}<label className="field-label">Ejercicio personalizado<input disabled={isReadOnly} value={values.details.customExercise || ''} onChange={(event) => updateDetail('customExercise', event.target.value)} placeholder="Nombre del ejercicio" /></label></fieldset><div className="workout-editor-grid"><label className="field-label">Trabajo antes del gimnasio<select disabled={isReadOnly} value={values.details.beforeGym || ''} onChange={(event) => updateDetail('beforeGym', event.target.value)}><option value="">Ninguno</option>{workoutTypes.filter((item) => !['Gimnasio', 'Competición', 'Descanso'].includes(item)).map((item) => <option key={item}>{item}</option>)}</select></label><label className="field-label">Trabajo después del gimnasio<select disabled={isReadOnly} value={values.details.afterGym || ''} onChange={(event) => updateDetail('afterGym', event.target.value)}><option value="">Ninguno</option>{workoutTypes.filter((item) => !['Gimnasio', 'Competición', 'Descanso'].includes(item)).map((item) => <option key={item}>{item}</option>)}</select></label></div></>}
-    {type === 'Acondicionamiento físico' && <fieldset className="workout-fieldset conditioning-fieldset"><legend>Bloques de trabajo · hasta 4</legend>
-      {conditioningBlocks.map((block, index) => <div className="conditioning-block" key={index}>
-        <div className="interval-group-heading"><b>Bloque {index + 1}</b>{!isReadOnly && conditioningBlocks.length > 1 && <button type="button" className="text-button" onClick={() => setConditioningBlocks((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Quitar bloque</button>}</div>
-        <div className="workout-editor-grid">
-          <label className="field-label">Tipo de bloque<select disabled={isReadOnly} value={block.type} onChange={(event) => setConditioningBlocks((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, type: event.target.value } : item))}>{conditioningTypes.filter((item) => item === block.type || !conditioningBlocks.some((selected, itemIndex) => itemIndex !== index && selected.type === item)).map((item) => <option key={item}>{item}</option>)}</select></label>
-          <label className="field-label">Volumen / duración<input disabled={isReadOnly} value={block.volume} onChange={(event) => setConditioningBlocks((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, volume: event.target.value } : item))} placeholder="Ej. 3 × 30 s · 10 min" /></label>
-        </div>
-        <label className="field-label">Ejercicios / contenido<textarea disabled={isReadOnly} rows="2" value={block.exercises} onChange={(event) => setConditioningBlocks((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, exercises: event.target.value } : item))} placeholder="Indica los ejercicios y su secuencia" /></label>
-        <label className="field-label">Notas<input disabled={isReadOnly} value={block.comment} onChange={(event) => setConditioningBlocks((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, comment: event.target.value } : item))} placeholder="Indicaciones o precauciones" /></label>
-      </div>)}
-      {!isReadOnly && conditioningBlocks.length < 4 && <button type="button" className="text-button" onClick={() => setConditioningBlocks((current) => [...current, { type: conditioningTypes.find((item) => !current.some((block) => block.type === item)), exercises: '', volume: '', comment: '' }])}>＋ Añadir bloque</button>}
-    </fieldset>}
-    <fieldset className="workout-fieldset"><legend>Distribución por zonas</legend><div className="workout-editor-grid">{effortZones.map((zone, index) => <label className="field-label" key={zone}>{zone} · min<input disabled={isReadOnly} type="number" min="0" value={values.zones[index] || 0} onChange={(event) => update('zones', values.zones.map((minutes, i) => i === index ? Number(event.target.value) : minutes))} /></label>)}</div></fieldset>
-    <div className="inline-actions">{isReadOnly && <button className="button secondary" type="button" onClick={() => setIsReadOnly(false)}>Editar entrenamiento</button>}<button className="button secondary" type="button" onClick={onClose}>{isReadOnly ? 'Cerrar' : 'Cancelar'}</button>{!isReadOnly && <button className="button primary" type="submit">Guardar entrenamiento</button>}</div>
-  </form></div>;
-}
-
-function OverviewModal({ title, onClose, children }) {
-  return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}><section className="modal wide-modal overview-modal"><button className="modal-close" onClick={onClose} aria-label="Cerrar">×</button><h2>{title}</h2><div className="overview-list">{children}</div></section></div>;
-}
-
-function Stat({ label, value }) { return <div className="coach-total"><small>{label}</small><b>{value}</b></div>; }
+function Stat({ label, value }) { return <div className="coach-total"><small><TermLabel>{label}</TermLabel></small><b>{value}</b></div>; }
 
 function LogValue({ label, value, unit = '' }) {
-  return <div className="practical-log-value"><small>{label}</small><b>{value ? `${value}${unit ? ` ${unit}` : ''}` : '—'}</b></div>;
+  return <div className="practical-log-value"><small><TermLabel>{label}</TermLabel></small><b>{value ? `${value}${unit ? ` ${unit}` : ''}` : '—'}</b></div>;
 }
-
-function sumDays(days) {
-  return days.reduce((total, day) => ({
-    km: total.km + (Number(day.km) || 0), mins: total.mins + (Number(day.mins) || 0),
-    tr: total.tr + (Number.parseFloat(day.tr) || 0), wt: total.wt + (Number(day.wt) || 0),
-  }), { km: 0, mins: 0, tr: 0, wt: 0 });
-}
-
-function calculateWorkoutTrimps(zones = []) {
-  return (Number(zones[0]) || 0) + 2 * (Number(zones[1]) || 0) + 3 * (Number(zones[2]) || 0);
-}
-
-function format(value) { return new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 }).format(Number(value) || 0); }
-
-function calculatePace(minutes, distance) {
-  const totalMinutes = Number(minutes);
-  const kilometers = Number(distance);
-  if (!totalMinutes || !kilometers) return '';
-  const totalSeconds = Math.round((totalMinutes / kilometers) * 60);
-  return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`;
-}
-
-function dateRange(days) {
-  if (!days.length) return '';
-  const first = dayDate(days[0]);
-  const last = dayDate(days.at(-1));
-  return `${first}–${last}`;
-}
-
-function dayDate(day) {
-  return `${day.date} ${day.month || 'oct'}`;
-}
-
-function formatWorkoutDate(weekNumber, dayName) {
-  const dayIndex = daysOfWeek.indexOf(dayName);
-  const date = new Date(Date.UTC(2025, 8, 8 + (weekNumber - 1) * 7 + Math.max(dayIndex, 0)));
-  const dateLabel = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', timeZone: 'UTC' }).format(date);
-  const weekday = new Intl.DateTimeFormat('es-ES', { weekday: 'long', timeZone: 'UTC' }).format(date);
-  return `${dateLabel} - ${weekday}`;
-}
-
-function formatRecentDateRange(workouts) {
-  if (!workouts.length) return '';
-  const oldest = workouts[workouts.length - 1];
-  const newest = workouts[0];
-  return `${formatShortDate(oldest.date)} – ${formatShortDate(newest.date)} 2026`;
-}
-
-function formatShortDate(dateStr) {
-  if (!dateStr) return '';
-  const parts = dateStr.split('-');
-  if (parts.length < 3) return dateStr;
-  const d = parts[2];
-  const m = Number(parts[1]);
-  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-  return `${Number(d)} ${months[m - 1] || 'oct'}`;
-}
-

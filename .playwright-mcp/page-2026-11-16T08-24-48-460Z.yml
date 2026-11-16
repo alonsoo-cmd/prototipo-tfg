@@ -1,0 +1,230 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: e
+      - generic [ref=e7]: edurance.
+    - group "MODO DEMOSTRACIÓN" [ref=e8]:
+      - generic [ref=e10]:
+        - button "Atleta" [pressed] [ref=e11] [cursor=pointer]
+        - button "Grupo" [ref=e12] [cursor=pointer]
+        - button "Entrenador" [ref=e13] [cursor=pointer]
+      - generic [ref=e14]: Cambia de vista para probar el prototipo. En la versión real dependerá de tu cuenta.
+    - navigation "Navegación principal" [ref=e15]:
+      - generic [ref=e16]:
+        - heading "MENÚ" [level=2] [ref=e17]
+        - button "Inicio" [ref=e18] [cursor=pointer]:
+          - generic [aria-hidden] [ref=e19]: ⌂
+          - text: Inicio
+          - generic [aria-hidden] [ref=e20]: ›
+        - button "Diario" [ref=e21] [cursor=pointer]:
+          - generic [aria-hidden] [ref=e22]: ▦
+          - text: Diario
+          - generic [aria-hidden] [ref=e23]: ›
+        - button "Datos" [ref=e24] [cursor=pointer]:
+          - generic [aria-hidden] [ref=e25]: ◌
+          - text: Datos
+          - generic [aria-hidden] [ref=e26]: ›
+        - button "Perfil" [active] [ref=e27] [cursor=pointer]:
+          - generic [aria-hidden] [ref=e28]: ○
+          - text: Perfil
+          - generic [aria-hidden] [ref=e29]: ›
+    - generic [ref=e30]:
+      - generic [ref=e31]: AM
+      - generic [ref=e32]:
+        - generic [ref=e33]: Alex Martín
+        - generic [ref=e34]: Atleta · Madrid
+      - button "···" [ref=e35] [cursor=pointer]
+  - main [ref=e36]:
+    - generic [ref=e37]:
+      - generic [ref=e38]: Área del atleta / Perfil
+      - generic [ref=e39]:
+        - generic [ref=e40]: Datos de ejemplo
+        - button "Notificaciones" [ref=e42] [cursor=pointer]:
+          - text: ♧
+          - emphasis [ref=e43]: "2"
+        - generic [ref=e44]: AM
+    - generic [ref=e246]:
+      - generic [ref=e247]:
+        - generic [ref=e248]:
+          - generic [ref=e249]: CUENTA
+          - heading "Perfil del atleta" [level=1] [ref=e250]
+          - paragraph [ref=e251]: Información personal, preparación y referencias de rendimiento
+        - button "Guardar cambios" [ref=e252] [cursor=pointer]
+      - generic [ref=e253]:
+        - generic [ref=e254]:
+          - generic [ref=e255]:
+            - generic [ref=e256]:
+              - generic "Cambiar foto de perfil" [ref=e257] [cursor=pointer]:
+                - generic [ref=e258]: AM
+                - button "Subir foto de perfil" [ref=e259]
+              - generic [ref=e260]:
+                - heading "Alex Martín" [level=2] [ref=e261]
+                - paragraph [ref=e262]: Atleta · Madrid, España
+            - generic [ref=e263]: EJEMPLO
+          - generic [ref=e264]:
+            - generic [ref=e265]:
+              - generic [ref=e266]:
+                - generic [ref=e267]: Nombre
+                - generic "El nombre está vinculado a tu cuenta y no se puede modificar" [ref=e268]: No editable
+              - textbox "Nombre No editable" [disabled] [ref=e269]: Alex Martín
+            - generic [ref=e270]:
+              - generic [ref=e271]:
+                - generic [ref=e272]: Correo electrónico
+                - generic "El correo electrónico está vinculado a tu cuenta y no se puede modificar" [ref=e273]: No editable
+              - textbox "Correo electrónico No editable" [disabled] [ref=e274]: alex.martin@example.com
+            - generic [ref=e275]:
+              - generic [ref=e276]:
+                - generic [ref=e277]: Fecha de nacimiento
+                - generic "La fecha de nacimiento está vinculada a tu cuenta y no se puede modificar" [ref=e278]: No editable
+              - textbox "Fecha de nacimiento No editable" [disabled] [ref=e279]: 12 de abril de 1998
+            - generic [ref=e280]:
+              - generic [ref=e281]:
+                - generic [ref=e282]: Género
+                - generic "El género está vinculado a tu cuenta y no se puede modificar" [ref=e283]: No editable
+              - textbox "Género No editable" [disabled] [ref=e284]: No especificado
+            - generic [ref=e285]:
+              - text: Club
+              - textbox "Club" [ref=e286]:
+                - /placeholder: Añadir club
+            - generic [ref=e287]:
+              - text: Especialidad
+              - textbox "Especialidad" [ref=e288]: Carrera de fondo
+          - generic [ref=e289]:
+            - text: Sobre mí como atleta
+            - textbox "Sobre mí como atleta" [ref=e290]:
+              - /placeholder: Detalles sobre lesiones previas, disponibilidad material, volumen semanal máximo o experiencia deportiva
+              - text: Corredor amateur. Entrenamiento de fondo y pista.
+        - generic [ref=e291]:
+          - generic [ref=e292]:
+            - generic [ref=e293]:
+              - heading "Preparación" [level=2] [ref=e294]
+              - paragraph [ref=e295]: 1 objetivos · una preparación activa
+            - generic [ref=e296]: ACTIVA
+          - generic [ref=e297]:
+            - strong [ref=e298]: Preparación de otoño
+            - generic [ref=e299]: "12 semanas · Entrenador: Lucía Fernández"
+          - article [ref=e301]:
+            - generic [ref=e302]:
+              - strong [ref=e303]: Media Maratón Madrid
+              - generic [ref=e304]: Media maratón
+              - button "Quitar objetivo Media Maratón Madrid" [ref=e305] [cursor=pointer]: Quitar
+            - generic [ref=e306]: Fecha objetivo · 6 de diciembre de 2026
+          - generic [ref=e307]:
+            - strong [ref=e308]: Añadir objetivo a la preparación
+            - generic [ref=e309]:
+              - text: Nombre del objetivo
+              - textbox "Nombre del objetivo" [ref=e310]:
+                - /placeholder: Ej. 10K de otoño
+            - generic [ref=e311]:
+              - generic [ref=e312]:
+                - text: Distancia
+                - combobox "Distancia" [ref=e313]:
+                  - option "400 m"
+                  - option "800 m"
+                  - option "1.500 m"
+                  - option "3.000 m"
+                  - option "5 km"
+                  - option "10 km"
+                  - option "Media maratón" [selected]
+                  - option "Maratón"
+              - generic [ref=e314]:
+                - text: Fecha objetivo
+                - button "Elegir fecha objetivo" [ref=e316] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e317]: ▦
+                  - generic [ref=e318]: Opcional
+                  - generic [aria-hidden] [ref=e319]: ⌄
+            - button "＋ Añadir objetivo" [disabled] [ref=e320]
+        - generic [ref=e321]:
+          - generic [ref=e323]:
+            - heading "Parámetros fisiológicos" [level=2] [ref=e324]
+            - paragraph [ref=e325]: Usados para calcular el TRIMP (carga interna) de cada entrenamiento
+          - generic [ref=e326]:
+            - generic [ref=e327]:
+              - text: FC máxima
+              - generic [ref=e328]: Frecuencia cardíaca máxima en pulsaciones por minuto. Puedes estimarla como 220 − tu edad o medirla en un test de esfuerzo máximo.
+              - generic [ref=e329]:
+                - spinbutton "FC máxima Frecuencia cardíaca máxima en pulsaciones por minuto. Puedes estimarla como 220 − tu edad o medirla en un test de esfuerzo máximo. ppm" [ref=e330]: "190"
+                - generic [ref=e331]: ppm
+            - generic [ref=e332]:
+              - text: Sexo biológico
+              - generic [ref=e333]: Afecta al coeficiente exponencial de la fórmula de Banister (k = 1,92 hombre · k = 1,67 mujer). Selecciona el que corresponda con tu fisiología.
+              - combobox "Sexo biológico Afecta al coeficiente exponencial de la fórmula de Banister (k = 1,92 hombre · k = 1,67 mujer). Selecciona el que corresponda con tu fisiología." [ref=e334]:
+                - option "Hombre (k = 1,92)" [selected]
+                - option "Mujer (k = 1,67)"
+          - paragraph [ref=e335]:
+            - text: "Fórmula Banister: TRIMP ="
+            - emphasis [ref=e336]: D
+            - text: × ΔFC × 0,64 × e
+            - superscript [ref=e337]: k·ΔFC
+            - text: · donde ΔFC = (FC
+            - subscript [ref=e338]: media
+            - text: − FC
+            - subscript [ref=e339]: reposo
+            - text: ) / (FC
+            - subscript [ref=e340]: máx
+            - text: − FC
+            - subscript [ref=e341]: reposo
+            - text: )
+        - generic [ref=e342]:
+          - generic [ref=e344]:
+            - heading "Marcas personales" [level=2] [ref=e345]
+            - paragraph [ref=e346]: Elige hasta 3 pruebas y añade tus mejores tiempos
+          - generic [ref=e347]:
+            - generic [ref=e348]:
+              - text: Prueba
+              - combobox "Prueba" [ref=e349]:
+                - option "Selecciona una prueba" [selected]
+                - option "400 m"
+                - option "800 m"
+                - option "1.500 m"
+                - option "3.000 m"
+                - option "5.000 m / 5K"
+                - option "10.000 m / 10K"
+                - option "Media maratón"
+                - option "Maratón"
+            - button "Añadir prueba" [disabled] [ref=e350]
+          - paragraph [ref=e351]: "Añade entre una y tres pruebas: desde 400 m hasta media maratón y maratón."
+        - generic [ref=e352]:
+          - generic [ref=e354]:
+            - heading "Perfiles deportivos" [level=2] [ref=e355]
+            - paragraph [ref=e356]: Opcional · añade enlaces públicos a tus perfiles
+          - generic [ref=e357]:
+            - text: Perfil de Strava
+            - textbox "Perfil de Strava" [ref=e358]:
+              - /placeholder: https://www.strava.com/athletes/…
+          - generic [ref=e359]:
+            - text: Perfil de Garmin
+            - textbox "Perfil de Garmin" [ref=e360]:
+              - /placeholder: https://connect.garmin.com/…
+        - region "Glosario" [ref=e361]:
+          - generic [ref=e363]:
+            - heading "Glosario" [level=2] [ref=e364]
+            - paragraph [ref=e365]: Qué significa cada término que verás en la app
+          - generic [ref=e366]:
+            - generic [ref=e367]:
+              - term [ref=e368]: TRIMP (TR)
+              - definition [ref=e369]: "Carga del entrenamiento. Combina lo que ha durado la sesión y lo altas que han ido tus pulsaciones: cuanto más alto, más exigente. En las tarjetas aparece abreviado como TR."
+            - generic [ref=e370]:
+              - term [ref=e371]: WT · Bienestar total
+              - definition [ref=e372]: "Suma de los cinco indicadores de bienestar del día (irritabilidad, fatiga, agujetas, mal descanso y estrés). Va de 5 a 50: cuanto más bajo, mejor estás."
+            - generic [ref=e373]:
+              - term [ref=e374]: RPE · Esfuerzo percibido
+              - definition [ref=e375]: Lo duro que te ha parecido el entrenamiento, del 1 (muy suave) al 10 (esfuerzo máximo).
+            - generic [ref=e376]:
+              - term [ref=e377]: FC media
+              - definition [ref=e378]: Pulsaciones medias durante el entrenamiento. Junto con la duración, sirve para calcular el TRIMP.
+            - generic [ref=e379]:
+              - term [ref=e380]: FC en reposo
+              - definition [ref=e381]: Tus pulsaciones en reposo, mejor medidas al despertar. Si suben varios días seguidos, puede ser señal de cansancio o de que estás incubando algo.
+            - generic [ref=e382]:
+              - term [ref=e383]: HRV · Variabilidad cardiaca
+              - definition [ref=e384]: Pequeñas variaciones de tiempo entre latidos, en milisegundos. Suele medirla el reloj por la noche. Si baja mucho respecto a lo habitual, puede indicar cansancio.
+            - generic [ref=e385]:
+              - term [ref=e386]: Ritmo (min/km)
+              - definition [ref=e387]: Minutos que tardas en recorrer un kilómetro. Cuanto más bajo, más rápido vas.
+            - generic [ref=e388]:
+              - term [ref=e389]: Umbrales LT1 y LT2
+              - definition [ref=e390]: "Marcan las zonas de intensidad. Hasta LT1: ritmo cómodo, puedes hablar. Entre LT1 y LT2: exigente pero sostenible. Por encima de LT2: muy intenso, solo se aguanta poco tiempo."
+            - generic [ref=e391]:
+              - term [ref=e392]: Fases (BI, BII, BIII)
+              - definition [ref=e393]: "La preparación se divide en bloques: BI Base (volumen suave), BII Acumulación y Transformación (más carga y calidad), BIII Realización (afinar para la carrera) y Competición."
