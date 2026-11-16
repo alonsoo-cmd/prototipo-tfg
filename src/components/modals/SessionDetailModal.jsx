@@ -1,8 +1,9 @@
 import Metric from '../ui/Metric.jsx';
 import { format } from '../../utils/format.js';
+import HrPercent from '../ui/HrPercent.jsx';
 
 /** Detalle de una sesión planificada (contenido del modal). */
-export default function SessionDetailModal({ session, canRegister = true, hasLog = false, onRegister, onClose }) {
+export default function SessionDetailModal({ session, averageHr = null, fcMax = 200, canRegister = true, hasLog = false, onRegister, onClose }) {
   return <>
     <div className="eyebrow">{session.day} · {session.dateLabel || `${session.date} ${(session.month || '').toUpperCase()}`.trim()}</div>
     <h2>{session.type}</h2>
@@ -13,7 +14,7 @@ export default function SessionDetailModal({ session, canRegister = true, hasLog
     <div className="detail-metrics">
       <Metric label="Duración" value={`${session.mins} min`} />
       <Metric label="Distancia" value={`${format(session.km)} km`} />
-      <Metric label="TRIMPS" value={session.tr} />
+      <Metric label="% FC máx" value={<HrPercent averageHr={averageHr} fcMax={fcMax} />} />
     </div>
     <div className="section-block">
       <h3>Comentario del entrenador</h3>

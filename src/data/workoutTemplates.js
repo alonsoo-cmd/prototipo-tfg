@@ -66,7 +66,7 @@ export function createSampleWorkoutTemplates() {
     return {
       id: `sample-${String(index + 1).padStart(2, '0')}`,
       day: 'Plantilla', type, tone: type === 'Descanso' ? 'rest' : 'blue',
-      desc: description, blocks: description, mins, km, tr: String(zones[0] + 2 * zones[1] + 3 * zones[2]),
+      desc: description, blocks: description, mins, km,
       zones, details, shoes: type === 'Series cortas' ? 'Voladoras' : '',
       state: 'Planificado', time: '—', wt: 0,
     };

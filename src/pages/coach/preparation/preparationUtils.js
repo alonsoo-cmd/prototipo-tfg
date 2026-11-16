@@ -11,7 +11,7 @@ export function blankWeek(number) {
     days: daysOfWeek.map((day, index) => {
       return {
       day, ...sessionDayFields(number, index), type: '', tone: 'rest', desc: '', mins: 0, km: 0,
-      tr: '0', state: 'Planificado', time: '—', blocks: '', wt: [38, 35, 41, 36, 42, 39, 40][index],
+      state: 'Planificado', time: '—', blocks: '', wt: [38, 35, 41, 36, 42, 39, 40][index],
       zones: [0, 0, 0], warmup: '', cooldown: '', details: {},
       };
     }),
@@ -25,8 +25,8 @@ export function copyWeeks(weeks = []) {
 export function sumDays(days) {
   return days.reduce((total, day) => ({
     km: total.km + (Number(day.km) || 0), mins: total.mins + (Number(day.mins) || 0),
-    tr: total.tr + (Number.parseFloat(day.tr) || 0), wt: total.wt + (Number(day.wt) || 0),
-  }), { km: 0, mins: 0, tr: 0, wt: 0 });
+    wt: total.wt + (Number(day.wt) || 0),
+  }), { km: 0, mins: 0, wt: 0 });
 }
 
 export function calculatePace(minutes, distance) {

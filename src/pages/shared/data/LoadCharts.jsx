@@ -149,21 +149,18 @@ export function ExternalLoadChart({ data }) {
   // Use dynamic max for normalization to overlap lines
   const maxKm = Math.max(1, ...pointsData.map(d => d.rollingDistance || 0));
   const maxMin = Math.max(1, ...pointsData.map(d => d.rollingMinutes || 0));
-  const maxTrimp = Math.max(1, ...pointsData.map(d => d.rollingTrimps || 0));
 
   const points = pointsData.map((d, i) => {
     const x = padding.left + i * dx;
     // Overlap them in the same area, scaling relative to their own maximums
     const yKm = padding.top + plotHeight - ((d.rollingDistance || 0) / maxKm) * plotHeight;
     const yMin = padding.top + plotHeight - ((d.rollingMinutes || 0) / maxMin) * plotHeight;
-    const yTrimp = padding.top + plotHeight - ((d.rollingTrimps || 0) / maxTrimp) * plotHeight;
-    return { ...d, x, yKm, yMin, yTrimp };
+    return { ...d, x, yKm, yMin };
   });
 
   const kmPath = points.map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.yKm}`).join(' ');
   const kmAreaPath = points.length ? `${kmPath} L ${points.at(-1).x} ${padding.top + plotHeight} L ${points[0].x} ${padding.top + plotHeight} Z` : '';
   const minPath = points.map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.yMin}`).join(' ');
-  const trimpPath = points.map((p, i) => `${i===0?'M':'L'} ${p.x} ${p.yTrimp}`).join(' ');
 
   return (
     <section className="panel chart-card external-load-chart">
@@ -189,7 +186,6 @@ export function ExternalLoadChart({ data }) {
 
            <path d={kmPath} fill="none" stroke="#4c88ad" strokeWidth="3" strokeLinejoin="round" />
            <path d={minPath} fill="none" stroke="#70a582" strokeWidth="2.5" strokeDasharray="6 6" strokeLinecap="round" strokeLinejoin="round" />
-           <path d={trimpPath} fill="none" stroke="#bd8b56" strokeWidth="2" strokeDasharray="2 4" strokeLinecap="round" strokeLinejoin="round" />
            
            {points.map((p, i) => <circle key={`km-${i}`} cx={p.x} cy={p.yKm} r={4} fill="#4c88ad" stroke="#fff" strokeWidth="1.5" />)}
            
@@ -222,8 +218,7 @@ export function ExternalLoadChart({ data }) {
           }}>
             <b style={{ display: 'block', color: '#99a3ac', marginBottom: 6, fontSize: 'var(--text-xs)' }}>{hoveredDay.date} (Últ. 7d)</b>
             <div style={{ marginBottom: 4 }}><strong style={{ color: '#4c88ad' }}>{hoveredDay.rollingDistance}</strong> km</div>
-            <div style={{ marginBottom: 4 }}><strong style={{ color: '#70a582' }}>{hoveredDay.rollingMinutes}</strong> min</div>
-            <div><strong style={{ color: '#bd8b56' }}>{hoveredDay.rollingTrimps}</strong> TRIMPS</div>
+            <div><strong style={{ color: '#70a582' }}>{hoveredDay.rollingMinutes}</strong> min</div>
           </div>
         )}
       </div>
@@ -235,10 +230,6 @@ export function ExternalLoadChart({ data }) {
         <span style={{ display: 'flex', alignItems: 'center' }}>
           <i style={{ borderBottom: '2.5px dashed #70a582', height: 0, width: 14, marginRight: 6, display: 'inline-block', borderRadius: 0, background: 'transparent' }} />
           Minutos (max {Math.round(maxMin)})
-        </span>
-        <span style={{ display: 'flex', alignItems: 'center' }}>
-          <i style={{ borderBottom: '2px dotted #bd8b56', height: 0, width: 14, marginRight: 6, display: 'inline-block', borderRadius: 0, background: 'transparent' }} />
-          TRIMPS (max {Math.round(maxTrimp)})
         </span>
       </div>
     </section>

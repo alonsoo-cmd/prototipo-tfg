@@ -10,9 +10,9 @@ export const PREPARATION_WEEKS = 12;
 export const currentUser = { name: 'Alex Martín', firstName: 'Alex', initials: 'AM' };
 
 export const initialAthleteProfile = {
-  // FC máxima y sexo alimentan el cálculo del TRIMP (fórmula de Banister).
+  // La FC máxima sirve para calcular el % de FC máxima de cada actividad.
   fcMax: 200,
-  // 'male' | 'female' | null (sin especificar: el TRIMP usa k = 1,92 por defecto).
+  // 'male' | 'female' | null (sin especificar).
   sex: null,
   // Umbrales de lactato: ritmo en segundos por km y FC en ppm.
   lt1: { paceSeconds: 240, hr: 180 },

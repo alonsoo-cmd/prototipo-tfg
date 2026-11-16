@@ -1,10 +1,10 @@
 export const coachAthletes = [
-  { id: 'lucia', initials: 'LF', name: 'Lucía Fernández', goal: 'Media maratón · Madrid', eventDate: '6 dic 2026', distance: 'Media maratón', duration: '12 semanas' },
-  { id: 'diego', initials: 'DM', name: 'Diego Morales', goal: '10K · Valencia', eventDate: '15 nov 2026', distance: '10 km', duration: '10 semanas' },
-  { id: 'sara', initials: 'SR', name: 'Sara Ruiz', goal: '5K · Alcalá', eventDate: '22 nov 2026', distance: '5 km', duration: '8 semanas' },
-  { id: 'javier', initials: 'JM', name: 'Javier Martín', goal: 'Maratón · Sevilla', eventDate: '21 feb 2027', distance: 'Maratón', duration: '16 semanas' },
-  { id: 'ana', initials: 'AG', name: 'Ana Gómez', goal: 'Media maratón · Málaga', eventDate: '8 mar 2027', distance: 'Media maratón', duration: '12 semanas' },
-  { id: 'coach', initials: 'AM', name: 'Alex Martín', goal: 'Mi preparación', eventDate: '6 dic 2026', distance: 'Media maratón', duration: '12 semanas', isCoach: true },
+  { id: 'lucia', fcMax: 194, initials: 'LF', name: 'Lucía Fernández', goal: 'Media maratón · Madrid', eventDate: '6 dic 2026', distance: 'Media maratón', duration: '12 semanas' },
+  { id: 'diego', fcMax: 188, initials: 'DM', name: 'Diego Morales', goal: '10K · Valencia', eventDate: '15 nov 2026', distance: '10 km', duration: '10 semanas' },
+  { id: 'sara', fcMax: 196, initials: 'SR', name: 'Sara Ruiz', goal: '5K · Alcalá', eventDate: '22 nov 2026', distance: '5 km', duration: '8 semanas' },
+  { id: 'javier', fcMax: 182, initials: 'JM', name: 'Javier Martín', goal: 'Maratón · Sevilla', eventDate: '21 feb 2027', distance: 'Maratón', duration: '16 semanas' },
+  { id: 'ana', fcMax: 190, initials: 'AG', name: 'Ana Gómez', goal: 'Media maratón · Málaga', eventDate: '8 mar 2027', distance: 'Media maratón', duration: '12 semanas' },
+  { id: 'coach', fcMax: 200, initials: 'AM', name: 'Alex Martín', goal: 'Mi preparación', eventDate: '6 dic 2026', distance: 'Media maratón', duration: '12 semanas', isCoach: true },
 ];
 
 export const workoutTypes = [

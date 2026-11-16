@@ -63,7 +63,7 @@ export default function WorkoutsPage({ templates = [], setTemplates }) {
         <span className="workout-template-type">{template.type}</span>
         <strong>{template.type || 'Entrenamiento'}</strong>
         <span className="workout-template-description">{template.desc || template.blocks || 'Sin descripción añadida.'}</span>
-        <span className="workout-template-metrics">{template.mins || 0} min · {format(template.km)} km · {template.tr || 0} TR</span>
+        <span className="workout-template-metrics">{template.mins || 0} min · {format(template.km)} km</span>
       </button>
       <button className="workout-template-delete" type="button" aria-label={`Eliminar ${template.type}`} onClick={() => deleteTemplate(template)}>Eliminar</button>
     </article>)}</div> : <section className="panel workout-template-empty"><div className="empty-graphic small">＋</div><h2>{templates.length ? 'No hay entrenamientos de este tipo' : 'No se ha creado ningún entrenamiento todavía'}</h2><p>{templates.length ? 'Prueba a seleccionar otro tipo de entrenamiento.' : 'Cuando guardes un entrenamiento prefabricado, aparecerá aquí.'}</p></section>}
@@ -75,5 +75,5 @@ export default function WorkoutsPage({ templates = [], setTemplates }) {
 }
 
 function blankTemplate() {
-  return { day: 'Plantilla', date: '', month: '', type: '', tone: 'rest', desc: '', mins: 0, km: 0, tr: '0', state: 'Planificado', time: '—', blocks: '', wt: 0, zones: [0, 0, 0], warmup: '', cooldown: '', details: {} };
+  return { day: 'Plantilla', date: '', month: '', type: '', tone: 'rest', desc: '', mins: 0, km: 0, state: 'Planificado', time: '—', blocks: '', wt: 0, zones: [0, 0, 0], warmup: '', cooldown: '', details: {} };
 }

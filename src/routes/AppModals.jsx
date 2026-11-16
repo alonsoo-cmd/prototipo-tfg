@@ -31,7 +31,7 @@ export default function AppModals({ state }) {
   const hasLog = modal === 'session' && Boolean(state.trainingLogs[logKey(session.week, session.day)]);
 
   return <ModalShell onClose={closeModal} wide={modal === 'phases'}>
-    {modal === 'session' && <SessionDetailModal session={session} canRegister={!isFutureSession} hasLog={hasLog} onRegister={() => setModal('journal')} onClose={closeModal} />}
+    {modal === 'session' && <SessionDetailModal session={session} averageHr={state.trainingLogs[logKey(session.week, session.day)]?.averageHr || (session.preparationWeek ? session.averageHr : null)} fcMax={state.athleteProfile?.fcMax} canRegister={!isFutureSession} hasLog={hasLog} onRegister={() => setModal('journal')} onClose={closeModal} />}
     {modal === 'request' && <PreparationRequestForm coachName={state.requestCoach} requestDate={state.requestDate} setRequestDate={state.setRequestDate} onSubmit={() => { state.setRequestSent(true); setModal('request-done'); }} />}
     {modal === 'request-done' && <RequestSentNotice coachName={state.requestCoach} onBack={() => go('Dashboard')} />}
     {modal === 'request-review' && <RequestReview

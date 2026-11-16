@@ -8,6 +8,7 @@ export function summarize(records, label, key) {
   const wellnessValues = records.map((record) => record.wellbeingTotal).filter(Number.isFinite);
   const hrvValues = records.map((record) => record.hrv).filter(Number.isFinite);
   const restingHrValues = records.map((record) => record.restingHr).filter(Number.isFinite);
+  const averageHrValues = records.map((record) => record.averageHr).filter((value) => Number.isFinite(value) && value > 0);
   return {
     key,
     label,
@@ -17,9 +18,9 @@ export function summarize(records, label, key) {
     firstDate: days.sort()[0],
     kilometers: records.reduce((sum, record) => sum + record.distance, 0),
     minutes: records.reduce((sum, record) => sum + record.minutes, 0),
-    trimps: records.reduce((sum, record) => sum + record.trimps, 0),
     wellbeingTotal: wellnessValues.length ? wellnessValues.reduce((sum, value) => sum + value, 0) / wellnessValues.length : null,
     hrv: hrvValues.length ? hrvValues.reduce((sum, value) => sum + value, 0) / hrvValues.length : null,
+    averageHr: averageHrValues.length ? averageHrValues.reduce((sum, value) => sum + value, 0) / averageHrValues.length : null,
     restingHr: restingHrValues.length ? restingHrValues.reduce((sum, value) => sum + value, 0) / restingHrValues.length : null,
   };
 }
@@ -47,22 +48,20 @@ export function createRollingLoad(allPhaseRecords, denseTrend) {
     {
       distance: records.reduce((sum, record) => sum + record.distance, 0),
       minutes: records.reduce((sum, record) => sum + record.minutes, 0),
-      trimps: records.reduce((sum, record) => sum + record.trimps, 0)
     }
   ]));
 
   return denseTrend.map((trendDay) => {
     const end = new Date(`${trendDay.date}T00:00:00Z`);
-    let distance = 0, minutes = 0, trimps = 0;
+    let distance = 0, minutes = 0;
     for (let offset = 0; offset < 7; offset += 1) {
       const day = new Date(end);
       day.setUTCDate(day.getUTCDate() - offset);
-      const stats = byDate.get(day.toISOString().slice(0, 10)) || { distance: 0, minutes: 0, trimps: 0 };
+      const stats = byDate.get(day.toISOString().slice(0, 10)) || { distance: 0, minutes: 0 };
       distance += stats.distance;
       minutes += stats.minutes;
-      trimps += stats.trimps;
     }
-    return { ...trendDay, rollingDistance: round(distance), rollingMinutes: round(minutes), rollingTrimps: round(trimps) };
+    return { ...trendDay, rollingDistance: round(distance), rollingMinutes: round(minutes) };
   });
 }
 
@@ -122,7 +121,6 @@ export function sessionFromRecord(record) {
     time: '—',
     mins: record.minutes,
     km: record.distance,
-    tr: String(record.trimps),
     blocks: record.description,
     state: stateLabel,
     tone,

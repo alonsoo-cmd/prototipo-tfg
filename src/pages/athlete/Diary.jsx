@@ -12,6 +12,7 @@ import './Diary.css';
 import InfoTip, { TermLabel } from '../../components/ui/InfoTip.jsx';
 import { format } from '../../utils/format.js';
 import { CURRENT_WEEK, sessionDate, today } from '../../domain/calendar.js';
+import HrPercent from '../../components/ui/HrPercent.jsx';
 
 
 
@@ -25,7 +26,7 @@ export default function Diary({
   coachWeeks,
   trainingLogs,
   setTrainingLogs,
-  athleteProfile = { fcMax: 200, sex: 'male' },
+  athleteProfile = { fcMax: 200, sex: null },
 }) {
   const [journalDay, setJournalDay] = useState(null);
   const [showAverages, setShowAverages] = useState(false);
@@ -41,8 +42,10 @@ export default function Diary({
   const totals = savedLogs.reduce((result, log) => ({
     kilometers: result.kilometers + numberFrom(log.distance),
     minutes: result.minutes + numberFrom(log.minutes),
-    trimps: result.trimps + numberFrom(log.trimps),
-  }), { kilometers: 0, minutes: 0, trimps: 0 });
+  }), { kilometers: 0, minutes: 0 });
+  const hrLogs = savedLogs.map((log) => numberFrom(log.averageHr)).filter((value) => value > 0);
+  const averageHr = hrLogs.length ? hrLogs.reduce((sum, value) => sum + value, 0) / hrLogs.length : null;
+  const fcMax = athleteProfile?.fcMax || 200;
 
   const wellbeingLogs = savedLogs.filter((log) => wellbeingFields.some(([key]) => log[key] !== '' && log[key] !== undefined));
   const averageWt = wellbeingLogs.length
@@ -83,7 +86,7 @@ export default function Diary({
         </div>
         <Stat label="Kilómetros" value={formatNumber(stats.kilometers)} unit="km" />
         <Stat label="Minutos" value={formatNumber(stats.minutes)} unit="min" />
-        <Stat label="TRIMPS" value={formatNumber(stats.trimps)} />
+        <Stat label="% FC máx medio" value={<HrPercent averageHr={averageHr} fcMax={fcMax} />} />
         <Stat label="Media WT diaria" value={stats.averageWt === null ? '—' : formatNumber(stats.averageWt, 1)} unit="/ 50" />
       </section>
 
@@ -165,9 +168,9 @@ export default function Diary({
                   )}
                   <div className="day-load">
                     <span>{format(logEntry?.distance || session.km || 0, 1)} km</span>
-                    <span className={logEntry?.trimps ? 'logged-trimp' : ''} title={logEntry?.trimps ? `TRIMP registrado: ${logEntry.trimps}` : `TRIMP planificado: ${session.tr}`}>
-                      {logEntry?.trimps ? `${logEntry.trimps} TR` : `${session.tr} TR`}
-                    </span>
+                    {logEntry?.averageHr
+                      ? <HrPercent averageHr={logEntry.averageHr} fcMax={fcMax} />
+                      : <span>{session.mins ? `${session.mins} min` : '—'}</span>}
                   </div>
                 </article>
               );
@@ -193,6 +196,7 @@ export default function Diary({
           trainingLogs={trainingLogs}
           coachWeeks={coachWeeks}
           currentWeek={week}
+          fcMax={fcMax}
         />
       )}
       <Toast message={toast} onDone={() => setToast('')} />
@@ -213,7 +217,6 @@ function WeeklyLoad({ week }) {
   const rows = [
     ['Kilómetros', '35', '4', '8', '46'],
     ['Minutos', '182', '16', '34', '232'],
-    ['TRIMPS', '182', '32', '102', '316'],
   ];
 
   return (

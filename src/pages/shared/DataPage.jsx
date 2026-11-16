@@ -8,7 +8,7 @@ import './DataPage.css';
 import InfoTip from '../../components/ui/InfoTip.jsx';
 import { today } from '../../domain/calendar.js';
 
-export default function DataPage({ trainingLogs = {}, setTrainingLogs, onSession, role, coachWeeks = [] }) {
+export default function DataPage({ trainingLogs = {}, setTrainingLogs, onSession, role, coachWeeks = [], fcMax = 200 }) {
   const [section, setSection] = useState('data');
   const [period, setPeriod] = useState('last30');
   const [phase, setPhase] = useState('all');
@@ -103,6 +103,7 @@ export default function DataPage({ trainingLogs = {}, setTrainingLogs, onSession
           recentSevenDays={recentSevenDays}
           onSession={onSession}
           setTrainingLogs={setTrainingLogs}
+          fcMax={fcMax}
         />
       ) : (
         <ChartsSection

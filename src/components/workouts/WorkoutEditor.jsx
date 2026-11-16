@@ -43,13 +43,12 @@ export function WorkoutEditor({ day, mode, onClose, onSave }) {
     } else {
       delete details.speedFrom; delete details.speedTo;
     }
-    const trimps = calculateWorkoutTrimps(values.zones);
-    onSave({ ...values, desc: description, blocks: description, details, tone: type === 'Descanso' ? 'rest' : 'blue', tr: String(trimps) });
+    onSave({ ...values, desc: description, blocks: description, details, tone: type === 'Descanso' ? 'rest' : 'blue' });
   };
 
   return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}><form className="modal wide-modal workout-editor-modal" onSubmit={submit}>
     <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button><div className="eyebrow">{isReadOnly ? 'ENTRENAMIENTO · DETALLE' : mode.startsWith('template') ? 'ENTRENAMIENTOS PREFABRICADOS' : 'PLANIFICACIÓN TEÓRICA'}{!mode.startsWith('template') && ` · ${day.day.toUpperCase()}`}</div><h2>{day.type || 'Añadir entrenamiento'}{!mode.startsWith('template') && ` · ${day.day}`}</h2>
-    {isReadOnly && mode.startsWith('template') && <div className="workout-practical-metrics"><b>TRIMPS {values.tr || calculateWorkoutTrimps(values.zones)}</b><b>{values.mins || 0} min</b><b>{format(values.km)} km</b></div>}
+    {isReadOnly && mode.startsWith('template') && <div className="workout-practical-metrics"><b>{values.mins || 0} min</b><b>{format(values.km)} km</b></div>}
     {isReadOnly && !mode.startsWith('template') && <div className="workout-practical-metrics"><b>WT {values.wt ?? '—'}/50</b><b>FC media {values.averageHr ?? '—'} ppm</b><b>FC reposo {values.restingHr ?? '—'} ppm</b><b>HRV {values.hrv ?? '—'} ms</b></div>}
     <div className="workout-editor-grid">
       <label className="field-label">Tipo de entrenamiento<select required={!isReadOnly && mode.startsWith('template')} disabled={isReadOnly} value={type} onChange={(event) => update('type', event.target.value)}><option value="">Selecciona tipo…</option>{workoutTypes.map((item) => <option key={item}>{item}</option>)}</select></label>
@@ -121,8 +120,4 @@ export function WorkoutEditor({ day, mode, onClose, onSave }) {
     {error && <p className="form-error" role="alert">{error}</p>}
     <div className="inline-actions">{isReadOnly && <button className="button secondary" type="button" onClick={() => setIsReadOnly(false)}>Editar entrenamiento</button>}<button className="button secondary" type="button" onClick={onClose}>{isReadOnly ? 'Cerrar' : 'Cancelar'}</button>{!isReadOnly && <button className="button primary" type="submit">Guardar entrenamiento</button>}</div>
   </form></div>;
-}
-
-function calculateWorkoutTrimps(zones = []) {
-  return (Number(zones[0]) || 0) + 2 * (Number(zones[1]) || 0) + 3 * (Number(zones[2]) || 0);
 }

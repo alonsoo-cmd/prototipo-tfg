@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { injuryRegions, wellbeingFields, wellbeingScales } from '../../domain/wellbeing.js';
 import { NumberField, RangeField, TextField, WorkoutDetailRow } from './JournalFields.jsx';
-import { calculateSpeed, calculateTrimps, getTrimpBadge, trimpCoefficient } from '../../domain/training.js';
+import { calculateSpeed } from '../../domain/training.js';
+import { hrColors, hrPercent, hrZone } from '../../domain/heartRate.js';
 import { createWorkoutDetailSections, hasWorkoutDetailOption } from './workoutDetailSections.js';
 import './JournalModal.css';
 import InfoTip from '../ui/InfoTip.jsx';
@@ -18,7 +19,7 @@ export function missingWellbeingFields(values) {
  * el resto (series, salud, molestias) es opcional y va plegado.
  * `hidePersonalFields` oculta solo salud y molestias (el Dashboard las recoge en su propio panel).
  */
-export function JournalModal({ session, initialValues, onClose, onSave, hidePersonalFields = false, athleteProfile = { fcMax: 200, sex: null } }) {
+export function JournalModal({ session, initialValues, onClose, onSave, hidePersonalFields = false, athleteProfile = { fcMax: 200 } }) {
   const isCycling = /bicicleta|ciclismo|\bbici\b/i.test(session.type);
   const [stravaConnected, setStravaConnected] = useState(false);
   const [intervalImage, setIntervalImage] = useState(null);
@@ -39,12 +40,10 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
     const mins = initialValues?.minutes ?? (session.mins || '');
     const avgHr = initialValues?.averageHr ?? '';
     const restHr = initialValues?.restingHr ?? '';
-    const initialTrimp = initialValues?.trimps || (mins && avgHr ? calculateTrimps(mins, avgHr, restHr, athleteProfile) : '');
     const initialSpeed = initialValues?.speed ?? (isCycling && initialValues?.pace ? initialValues.pace : '');
     return {
       distance: initialValues?.distance ?? (session.km || ''),
       minutes: mins,
-      trimps: initialTrimp,
       pace: initialValues?.pace ?? '',
       speed: initialSpeed,
       averageHr: avgHr,
@@ -60,11 +59,7 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
     };
   });
 
-  const update = (key, value) => setValues((current) => {
-    const next = { ...current, [key]: value };
-    next.trimps = calculateTrimps(next.minutes, next.averageHr, next.restingHr, athleteProfile);
-    return next;
-  });
+  const update = (key, value) => setValues((current) => ({ ...current, [key]: value }));
   const supportsIntervals = /series|umbral|cuesta|interval|repeticion|repetición|fartlek|velocidad/i.test(`${session.type} ${session.blocks}`);
   const isRestDay = /descanso/i.test(session.type);
   const hasOptionalWorkoutDetails = hasWorkoutDetailOption(session);
@@ -122,7 +117,6 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
       speed: isCycling ? '25.3' : '',
       pace: isCycling ? '' : '6:04',
       averageHr: '154',
-      trimps: calculateTrimps('58', '154', current.restingHr, athleteProfile),
     }));
   };
 
@@ -144,14 +138,13 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
     const workoutNotDone = completionStatus === 'missed';
     onSave({
       ...values,
-      ...(workoutNotDone ? { distance: '', minutes: '', trimps: '', pace: '', speed: '', averageHr: '', description: '' } : {}),
+      ...(workoutNotDone ? { distance: '', minutes: '', pace: '', speed: '', averageHr: '', description: '' } : {}),
       speed: workoutNotDone ? '' : (values.speed || (isCycling && values.distance && values.minutes ? calculateSpeed(values.minutes, values.distance) : '')),
       pace: workoutNotDone || isCycling ? '' : values.pace,
       injuries: savedInjuries,
       completionStatus,
       trainingDetailsEnabled: workoutNotDone ? false : trainingDetailsEnabled,
       workoutDetailSections: workoutNotDone || !trainingDetailsEnabled ? [] : workoutDetailSections,
-      trimps: workoutNotDone ? '' : (values.trimps || calculateTrimps(values.minutes, values.averageHr, values.restingHr, athleteProfile)),
     });
   };
 
@@ -217,13 +210,7 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
             )}
             <NumberField label="FC media" unit="ppm" value={values.averageHr} onChange={(value) => update('averageHr', value)} />
           </div>
-          <TrimpCard
-            trimp={values.trimps}
-            athleteProfile={athleteProfile}
-            hasMinutes={Boolean(values.minutes)}
-            hasHr={Boolean(values.averageHr)}
-            hasRestHr={Boolean(values.restingHr)}
-          />
+          <HrPercentCard averageHr={values.averageHr} fcMax={athleteProfile?.fcMax} />
         </fieldset>}
 
         <label className="field-label journal-notes">Sensaciones y notas del día<textarea rows="2" value={values.notes} onChange={(event) => update('notes', event.target.value)} placeholder="Cómo te has sentido, contexto o comentarios" /></label>
@@ -334,56 +321,30 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
   );
 }
 
-function TrimpCard({ trimp, athleteProfile, hasMinutes, hasHr, hasRestHr }) {
-  const badge = getTrimpBadge(trimp);
-  const fcMax = athleteProfile?.fcMax || 200;
-  const coefficient = trimpCoefficient(athleteProfile?.sex);
-  const k = String(coefficient.k).replace('.', ',');
-
+/**
+ * % de la FC máxima de la actividad (solo informativo): FC media / FC máxima del perfil.
+ * El color va de verde (bajo) a rojo (alto) siguiendo las zonas de FC.
+ */
+function HrPercentCard({ averageHr, fcMax = 200 }) {
+  const percent = hrPercent(averageHr, fcMax);
+  const zone = hrZone(percent);
+  const colors = percent === null ? null : hrColors(percent);
   return (
-    <div className={`journal-trimp-card ${trimp ? 'has-value' : 'empty'}`}>
-      <div className="journal-trimp-card-header">
-        <div className="journal-trimp-label-group">
-          <span className="journal-trimp-icon" aria-hidden="true">⚡</span>
-          <div>
-            <b>Impulso de entrenamiento (TRIMP) <InfoTip term="trimp" /></b>
-            <small>Fórmula Banister · FC máx: {fcMax} ppm · {coefficient.label} (k = {k}{coefficient.isDefault ? ' por defecto' : ''})</small>
-          </div>
-        </div>
-        {badge && (
-          <span className={`trimp-impact-badge ${badge.tone}`}>
-            <span className="trimp-badge-dot" />
-            <span>{badge.label}</span>
-            <small>· {badge.category}</small>
-          </span>
-        )}
+    <div className={`journal-hr-card ${percent === null ? 'empty' : 'has-value'}`} style={colors ? { '--hr-color': colors.color, '--hr-bg': colors.background, '--hr-solid': colors.solid } : undefined}>
+      <div className="journal-hr-card-heading">
+        <b>Intensidad respecto a tu FC máxima <InfoTip term="fcMaxPercent" /></b>
+        <small>FC media de la actividad ÷ FC máxima del perfil ({fcMax} ppm) · solo informativo</small>
       </div>
-
-      {trimp ? (
-        <div className="journal-trimp-card-body">
-          <div className="journal-trimp-value-display">
-            <strong>{trimp}</strong>
-            <span>TRIMPS</span>
-          </div>
-          <div className="journal-trimp-info">
-            <p className="journal-trimp-category-desc">{badge?.description}</p>
-            {!hasRestHr && (
-              <small className="journal-trimp-tip">
-                💡 Consejo: Añade tu FC en reposo en la sección de Salud para afinar la reserva cardíaca.
-              </small>
-            )}
-          </div>
-        </div>
+      {percent === null ? (
+        <p className="journal-hr-empty">Introduce la FC media para ver el porcentaje.</p>
       ) : (
-        <div className="journal-trimp-empty-guide">
-          <span>ℹ️</span>
-          <p>
-            {!hasMinutes && !hasHr
-              ? 'Introduce duración y FC media para calcular el TRIMP en tiempo real.'
-              : !hasMinutes
-                ? 'Introduce la duración para completar el cálculo de TRIMP.'
-                : 'Introduce la FC media para calcular el TRIMP exponencial.'}
-          </p>
+        <div className="journal-hr-card-body">
+          <strong className="journal-hr-value">{percent} %</strong>
+          <span className="journal-hr-zone">{zone.id} · {zone.label}</span>
+          <div className="journal-hr-scale" aria-hidden="true">
+            <i style={{ left: `${Math.min(100, Math.max(0, (percent - 50) * 2))}%` }} />
+          </div>
+          <div className="journal-hr-scale-labels" aria-hidden="true"><span>50 %</span><span>75 %</span><span>100 %</span></div>
         </div>
       )}
     </div>

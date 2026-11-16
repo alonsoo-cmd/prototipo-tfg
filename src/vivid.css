@@ -240,3 +240,8 @@ body { color: var(--ink); background: #f3f5f2; }
 .find-coach-self small { margin-top: 4px; color: var(--muted-ink); font-size: var(--text-sm); }
 .empty-card .button.large + .button.large { margin-top: 10px; }
 @media (max-width: 760px) { .find-coach-self { flex-direction: column; align-items: stretch; } }
+
+/* % de la FC máxima (componente HrPercent): color de verde a rojo según el porcentaje */
+.hr-percent { display: inline-block; padding: 2px 7px; border-radius: 999px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hr-percent.empty { padding: 0; color: var(--muted-ink); font-weight: 400; }
+.hr-percent small { font-weight: 600; }

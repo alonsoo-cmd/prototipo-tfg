@@ -12,6 +12,7 @@ import InfoTip, { TermLabel } from '../../components/ui/InfoTip.jsx';
 import Toast from '../../components/ui/Toast.jsx';
 import DatePicker from '../../components/ui/DatePicker.jsx';
 import { CURRENT_WEEK, today, todayKey } from '../../domain/calendar.js';
+import HrPercent from '../../components/ui/HrPercent.jsx';
 
 // En el prototipo, Lucía (primer atleta del entrenador) es la persona de la vista «Atleta»:
 // comparten el plan semanal (`weeks`) y también la preparación con sus objetivos.
@@ -43,6 +44,8 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
 
   const planWeeks = athlete.id === 'lucia' ? weeks : otherPlans[athlete.id] || copyWeeks(weeks);
   const plannedWeeks = Number.parseInt(athlete.duration, 10) || planWeeks.length;
+  // FC máxima del atleta seleccionado (para el % de FC máxima de sus sesiones).
+  const athleteFcMax = athlete.fcMax || 200;
   const current = planWeeks.find((week) => week.number === selectedWeek) || planWeeks.at(-1) || blankWeek(1);
   
   const setPlanWeeks = (updater) => {
@@ -112,11 +115,10 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
   }, [completedHistory, last7Range]);
   const last7Totals = useMemo(() => {
     if (!last7Workouts.length) {
-      return { km: 0, mins: 0, tr: 0, completed: 0, partial: 0, missed: 0, avgWt: null, avgHr: null, avgPace: '' };
+      return { km: 0, mins: 0, completed: 0, partial: 0, missed: 0, avgWt: null, avgHr: null, avgPace: '' };
     }
     const km = last7Workouts.reduce((sum, w) => sum + (Number(w.distance) || 0), 0);
     const mins = last7Workouts.reduce((sum, w) => sum + (Number(w.minutes) || 0), 0);
-    const tr = last7Workouts.reduce((sum, w) => sum + (Number(w.trimps) || 0), 0);
     const completed = last7Workouts.filter((w) => w.completionStatus === 'completed').length;
     const partial = last7Workouts.filter((w) => w.completionStatus === 'partial').length;
     const missed = last7Workouts.filter((w) => w.completionStatus === 'missed').length;
@@ -126,7 +128,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
     const hrAverage = average(last7Workouts.map((w) => Number(w.averageHr)).filter((value) => value > 0));
     const avgHr = hrAverage === null ? null : Math.round(hrAverage);
     const avgPace = calculatePace(mins, km);
-    return { km, mins, tr, completed, partial, missed, avgWt, avgHr, avgPace };
+    return { km, mins, completed, partial, missed, avgWt, avgHr, avgPace };
   }, [last7Workouts]);
   const preparationOwner = preparationOwnerId(athlete.id);
   const athletePreparation = preparations.find((item) => item.athleteId === preparationOwner) || null;
@@ -272,10 +274,10 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
       <div className="coach-total-strip weekly-totals" style={{ margin: '14px 0 16px', padding: '12px 14px', background: 'rgba(255,255,255,0.7)', borderRadius: '8px', border: '1px solid #dce8dc' }}>
         <Stat label="Kilómetros (7d)" value={`${format(last7Totals.km)} km`} />
         <Stat label="Tiempo total" value={`${last7Totals.mins} min`} />
-        <Stat label="Carga (TRIMPS)" value={last7Totals.tr} />
         <Stat label="Completados" value={`${last7Totals.completed} de ${last7Workouts.length}`} />
         <Stat label="Ritmo medio" value={last7Totals.avgPace ? `${last7Totals.avgPace} min/km` : '—'} />
         <Stat label="FC media" value={last7Totals.avgHr ? `${last7Totals.avgHr} ppm` : '—'} />
+        <Stat label="% FC máx medio" value={<HrPercent averageHr={last7Totals.avgHr} fcMax={athleteFcMax} />} />
         <Stat label="Bienestar (WT)" value={last7Totals.avgWt ? `${format(last7Totals.avgWt)} / 50` : '—'} />
       </div>
 
@@ -309,7 +311,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
             <div className="practical-log-activity">
               <LogValue label="Distancia" value={item.distance ? format(item.distance) : ''} unit="km" />
               <LogValue label="Duración" value={item.minutes} unit="min" />
-              <LogValue label="TRIMPS" value={item.trimps} />
+              <div className="practical-log-value"><small><TermLabel>% FC máx</TermLabel></small><b><HrPercent averageHr={item.averageHr} fcMax={athleteFcMax} /></b></div>
               {isCyclingWorkout(item.type) ? (
                 <LogValue label="Velocidad media" value={item.speed || calculateSpeed(item.minutes, item.distance)} unit="km/h" />
               ) : (
@@ -353,7 +355,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
       {workoutTemplates.length > 0 ? <section className="workout-template-library">
         <div className="workout-template-library-heading"><div><b>Entrenamientos predefinidos</b><span>Pulsa «Usar plantilla…» en un día o arrastra un bloque sobre él.</span></div><label>Tipo<select value={templateTypeFilter} onChange={(event) => setTemplateTypeFilter(event.target.value)}><option value="all">Todos</option>{workoutTypes.map((type) => <option key={type}>{type}</option>)}</select></label><span>{visibleWorkoutTemplates.length} disponibles</span></div>
         {visibleWorkoutTemplates.length ? <div className="workout-template-blocks">{visibleWorkoutTemplates.map((template) => <button type="button" draggable key={template.id} className={`workout-template-block workout-color-${workoutColor(template.type)}`} onDragStart={(event) => { event.dataTransfer.setData('application/x-edurance-template', String(template.id)); event.dataTransfer.effectAllowed = 'copy'; }} onDragEnd={() => setDropTarget('')}>
-          <b>{template.type}</b><span>{template.desc || template.blocks || 'Sin descripción'}</span><small>{template.mins || 0} min · {format(template.km)} km · {template.tr || 0} TR</small>
+          <b>{template.type}</b><span>{template.desc || template.blocks || 'Sin descripción'}</span><small>{template.mins || 0} min · {format(template.km)} km</small>
         </button>)}</div> : <p className="workout-template-filter-empty">No hay entrenamientos predefinidos de este tipo.</p>}
       </section> : <section className="workout-template-library workout-template-library-empty"><b>Entrenamientos predefinidos</b><span>No hay entrenamientos guardados. Puedes seguir planificando cada día manualmente.</span></section>}
       <div className="coach-week-grid">{current.days.map((day) => <div
@@ -364,7 +366,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
         onDrop={(event) => placeTemplate(day, event)}
       >
         <button type="button" className={`coach-workout-card ${day.type ? `workout-color-${workoutColor(day.type)}` : 'empty'}`} aria-label={`${day.day}: ${day.type || 'sin entrenamiento'}. Editar`} onClick={() => { if (skipDayClick.current) return; setEditingDay({ day, mode: 'edit' }); }}>
-        <span className="coach-workout-day">{day.day}<small>{dayDate(day)}</small></span><b>{day.type || '+ Añadir entrenamiento'}</b><span className="coach-workout-description">{day.desc || day.blocks || (day.type ? 'Sin descripción' : 'Día en blanco')}</span>{day.shoes && <span className="coach-workout-description">👟 {day.shoes}</span>}<span className="coach-workout-metrics">{day.mins || 0} min · {format(day.km)} km · {day.tr || 0} TR</span><WorkoutStatus status={trainingLogs[`${current.number}-${day.day}`]?.completionStatus || (trainingLogs[`${current.number}-${day.day}`] ? 'completed' : null)} className="coach-workout-status" />
+        <span className="coach-workout-day">{day.day}<small>{dayDate(day)}</small></span><b>{day.type || '+ Añadir entrenamiento'}</b><span className="coach-workout-description">{day.desc || day.blocks || (day.type ? 'Sin descripción' : 'Día en blanco')}</span>{day.shoes && <span className="coach-workout-description">👟 {day.shoes}</span>}<span className="coach-workout-metrics">{day.mins || 0} min · {format(day.km)} km</span><WorkoutStatus status={trainingLogs[`${current.number}-${day.day}`]?.completionStatus || (trainingLogs[`${current.number}-${day.day}`] ? 'completed' : null)} className="coach-workout-status" />
         </button>
         <div className="coach-day-actions">
           {workoutTemplates.length > 0 && <button type="button" className="coach-day-action primary" onClick={() => setTemplatePickerDay(day)} aria-label={`Usar plantilla para el ${day.day}`}>Usar plantilla…</button>}
@@ -372,7 +374,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
           {clipboard?.type === 'day' && <button type="button" className="coach-day-action" onClick={(event) => pasteDay(day, event)} aria-label={`Pegar en ${day.day}`}>Pegar</button>}
         </div>
       </div>)}</div>
-      <div className="coach-total-strip weekly-totals"><Stat label={`Km · semana ${current.number}`} value={`${format(totals.km)} km`} /><Stat label="Minutos" value={`${totals.mins} min`} /><Stat label="TRIMPS" value={totals.tr} /><button className="text-button" onClick={() => setShowAllWeeks(true)}>Ver desglose BX · BI · BII →</button></div>
+      <div className="coach-total-strip weekly-totals"><Stat label={`Km · semana ${current.number}`} value={`${format(totals.km)} km`} /><Stat label="Minutos" value={`${totals.mins} min`} /><button className="text-button" onClick={() => setShowAllWeeks(true)}>Ver desglose BX · BI · BII →</button></div>
     </section>
 
     <section className="panel new-week-section"><div><div className="eyebrow">PLANIFICACIÓN</div><h2>Nueva semana</h2><p>La semana {planWeeks.length + 1} se abrirá con los siete días en blanco para planificar desde cero.</p></div><button className="button primary" onClick={createWeek} disabled={planWeeks.length >= (Number.parseInt(athlete.duration, 10) || 12)}>＋ Crear semana {planWeeks.length + 1}</button></section>
@@ -404,7 +406,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
     {showAllDays && <OverviewModal title={`Todos los entrenamientos · ${athlete.name}`} onClose={() => setShowAllDays(false)}>
       {completedHistory.slice().reverse().map((day) => <div className="overview-row" key={day.id}>
         <b>Semana {day.preparationWeek} · {day.day} ({formatShortDate(day.date)}) · {day.type}</b>
-        <span>{day.distance ? format(day.distance) : '—'} km · {day.minutes || '—'} min · {day.trimps || '—'} TR · {isCyclingWorkout(day.type) ? `Velocidad ${day.speed || calculateSpeed(day.minutes, day.distance) || '—'} km/h` : `Ritmo ${day.pace || '—'} min/km`} · FC {day.averageHr || '—'} ppm · {day.status}</span>
+        <span>{day.distance ? format(day.distance) : '—'} km · {day.minutes || '—'} min · {isCyclingWorkout(day.type) ? `Velocidad ${day.speed || calculateSpeed(day.minutes, day.distance) || '—'} km/h` : `Ritmo ${day.pace || '—'} min/km`} · FC {day.averageHr || '—'} ppm · {day.status}</span>
         <span>Fatiga {day.fatigue || '—'} · Irritabilidad {day.mood || '—'} · Agujetas {day.soreness || '—'} · Mal descanso {day.sleep || '—'} · Estrés {day.stress || '—'} · WT {day.wellbeingTotal || '—'}/50</span>
         {day.notes && <span style={{ color: 'var(--muted-color)', fontStyle: 'italic' }}>“{day.notes}”</span>}
       </div>)}
@@ -422,7 +424,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
             {status === 'future' && 'Planificada'}
           </span>
         </div>
-        <span>{format(sum.km)} km · {sum.mins} min · {sum.tr} TRIMPS</span>
+        <span>{format(sum.km)} km · {sum.mins} min</span>
         <span>{week.days.filter((day) => day.type).length} entrenamientos</span>
       </button>;
     })}</OverviewModal>}

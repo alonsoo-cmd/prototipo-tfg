@@ -99,7 +99,6 @@ export function createTrainingHistory(trainingLogs = {}, weeks = []) {
       const distance = valueOrDemo(demoLog?.distance, round(plannedDistance * done));
       const minutes = valueOrDemo(demoLog?.minutes, Math.round(plannedMinutes * done));
       const intensity = type === 'Umbral' || type === 'Series' || type === 'Competición';
-      const trimps = valueOrDemo(demoLog?.trimps, Math.round(minutes * (intensity ? 1.8 : 1.2)));
       const mood = demoLog?.mood === '' || demoLog?.mood === undefined ? 2 + ((preparationWeek + dayIndex) % 4) : Number(demoLog.mood);
       const fatigue = demoLog?.fatigue === '' || demoLog?.fatigue === undefined ? 3 + ((preparationWeek + dayIndex * 2) % 5) : Number(demoLog.fatigue);
       const soreness = demoLog?.soreness === '' || demoLog?.soreness === undefined ? 2 + ((preparationWeek + dayIndex) % 5) : Number(demoLog.soreness);
@@ -139,7 +138,6 @@ export function createTrainingHistory(trainingLogs = {}, weeks = []) {
         description: competition?.description || workoutDescriptions[type],
         distance: numberValue(distance),
         minutes: numberValue(minutes),
-        trimps: numberValue(trimps),
         speed: demoLog?.speed || (isCycling ? (demoLog?.pace || formatSpeed(minutes, distance)) : ''),
         pace: isCycling ? '' : (demoLog?.pace || formatPace(minutes, distance)),
         averageHr: numberValue(demoLog?.averageHr || sampleHr),

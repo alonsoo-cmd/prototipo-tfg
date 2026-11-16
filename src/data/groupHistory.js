@@ -30,7 +30,6 @@ export function createGroupHistory(coachWeeks = [], trainingLogs = {}) {
       description: day.desc || '',
       distance: Number(day.km) || 0,
       minutes: Number(day.mins) || 0,
-      trimps: Number(day.tr) || 0,
       pace: '5:00',
       averageHr: 140, restingHr: 50, hrv: 50, wellbeingTotal: 0,
       rpe: 6,

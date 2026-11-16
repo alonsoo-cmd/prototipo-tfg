@@ -5,8 +5,9 @@ import { capitalize, formatDate, formatNumber, groupBy, monthFormatter, sessionF
 import { PanelHeading, SummaryTable } from './DataPanels.jsx';
 import InfoTip from '../../../components/ui/InfoTip.jsx';
 import { format } from '../../../utils/format.js';
+import HrPercent from '../../../components/ui/HrPercent.jsx';
 
-export function DataSection({ records, recentSevenDays, onSession, setTrainingLogs }) {
+export function DataSection({ records, recentSevenDays, onSession, setTrainingLogs, fcMax = 200 }) {
   const [viewMode, setViewMode] = useState('table');
   const monthGroups = [...groupBy(records, (record) => record.date.slice(0, 7)).entries()]
     .sort(([monthA], [monthB]) => monthB.localeCompare(monthA));
@@ -41,6 +42,7 @@ export function DataSection({ records, recentSevenDays, onSession, setTrainingLo
         {viewMode === 'table' ? (
           <DetailedTrainingTable
             records={records}
+            fcMax={fcMax}
             onSession={onSession}
             setTrainingLogs={setTrainingLogs}
           />
@@ -62,8 +64,8 @@ export function DataSection({ records, recentSevenDays, onSession, setTrainingLo
       </section>
 
       <section className="panel data-table-panel recent-seven-panel">
-        <PanelHeading title="Últimos 7 días" description="Kilómetros, minutos y TRIMPS consolidados de los siete días más recientes del periodo" />
-        <SummaryTable rows={recentSevenDays} firstColumn="Día" />
+        <PanelHeading title="Últimos 7 días" description="Kilómetros, minutos e intensidad (% de la FC máxima) de los siete días más recientes del periodo" />
+        <SummaryTable rows={recentSevenDays} firstColumn="Día" fcMax={fcMax} />
       </section>
     </div>
   );
@@ -95,7 +97,7 @@ function RpeBadge({ rpe }) {
   );
 }
 
-function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
+function DetailedTrainingTable({ records, onSession, setTrainingLogs, fcMax = 200 }) {
   const weekGroups = useMemo(() => {
     const groups = groupBy(records, (r) => r.preparationWeek);
     return [...groups.entries()].sort(([weekA], [weekB]) => Number(weekB) - Number(weekA));
@@ -115,9 +117,9 @@ function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
             <th style={{ width: '135px' }}>Tipo sesión</th>
             <th style={{ width: '80px' }} className="num-col">Kms</th>
             <th style={{ width: '80px' }} className="num-col">Minutos</th>
-            <th style={{ width: '80px' }} className="num-col">TRIMPS <InfoTip term="trimp" /></th>
             <th style={{ width: '75px' }} className="num-col">RPE <InfoTip term="rpe" /></th>
             <th style={{ width: '85px' }} className="num-col">FC media</th>
+            <th style={{ width: '90px' }} className="num-col">% FC máx <InfoTip term="fcMaxPercent" /></th>
             <th>Sensaciones / Notas</th>
           </tr>
         </thead>
@@ -125,7 +127,6 @@ function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
           {weekGroups.map(([weekNum, weekRecords]) => {
             const weekKm = weekRecords.reduce((sum, r) => sum + (Number(r.distance) || 0), 0);
             const weekMin = weekRecords.reduce((sum, r) => sum + (Number(r.minutes) || 0), 0);
-            const weekTrimp = weekRecords.reduce((sum, r) => sum + (Number(r.trimps) || 0), 0);
             const validRpe = weekRecords.map((r) => Number(r.rpe)).filter((v) => Number.isFinite(v) && v > 0);
             const avgRpe = validRpe.length ? (validRpe.reduce((a, b) => a + b, 0) / validRpe.length) : null;
             const validHr = weekRecords.map((r) => Number(r.averageHr)).filter((v) => Number.isFinite(v) && v > 0);
@@ -208,17 +209,15 @@ function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
                         <small className="unit"> min</small>
                       </td>
                       <td className="num-col">
-                        <span className={`trimp-cell-badge ${record.trimps > 100 ? 'high' : ''}`}>
-                          {record.trimps}
-                        </span>
-                      </td>
-                      <td className="num-col">
                         <RpeBadge rpe={record.rpe} />
                       </td>
                       <td className="num-col">
                         {record.averageHr ? (
                           <span><b>{record.averageHr}</b><small className="unit"> ppm</small></span>
                         ) : '—'}
+                      </td>
+                      <td className="num-col">
+                        <HrPercent averageHr={record.averageHr} fcMax={fcMax} />
                       </td>
                       <td className="notes-col">
                         <span className="notes-text" title={record.notes}>
@@ -241,13 +240,13 @@ function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
                     <strong className="summary-val">{weekMin} min</strong>
                   </td>
                   <td className="num-col">
-                    <strong className="summary-val">{weekTrimp} TR</strong>
-                  </td>
-                  <td className="num-col">
                     {avgRpe ? <small>Media: {format(avgRpe, 1)}</small> : '—'}
                   </td>
                   <td className="num-col">
                     {avgHr ? <small>Media: {avgHr} ppm</small> : '—'}
+                  </td>
+                  <td className="num-col">
+                    <HrPercent averageHr={avgHr} fcMax={fcMax} />
                   </td>
                   <td>
                     <small className="muted">{completedCount}/{weekRecords.length} sesiones completadas</small>

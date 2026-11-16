@@ -4,11 +4,12 @@ import { getWeekDateRange } from '../ui/WeekTimeline.jsx';
 import { wellbeingFields } from '../../domain/wellbeing.js';
 import './DiaryAveragesModal.css';
 import InfoTip, { TermLabel } from '../ui/InfoTip.jsx';
+import HrPercent from '../ui/HrPercent.jsx';
 
 const monthFormatter = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 
-export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, currentWeek }) {
+export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, currentWeek, fcMax = 200 }) {
   const [mode, setMode] = useState('weekly');
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
 
@@ -108,10 +109,10 @@ export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, 
                 <AvgMetric label="Distancia" value={fmt(averages.distanceAvg, 1)} unit="km/día" />
                 <AvgMetric label="Duración" value={fmt(averages.minutesAvg, 0)} unit="min/día" />
                 <AvgMetric label="FC media" value={fmt(averages.averageHr, 0)} unit="ppm" />
-                <AvgMetric label="TRIMPS" value={fmt(averages.trimpsAvg, 0)} unit="/día" />
+                <AvgMetric label="% FC máx medio" value={<HrPercent averageHr={averages.averageHr} fcMax={fcMax} />} />
               </div>
               <div className="averages-totals">
-                Totales: {fmt(averages.distanceTotal, 1)} km · {fmt(averages.minutesTotal, 0)} min · {fmt(averages.trimpsTotal, 0)} TRIMPS
+                Totales: {fmt(averages.distanceTotal, 1)} km · {fmt(averages.minutesTotal, 0)} min
               </div>
             </div>
 
@@ -198,8 +199,6 @@ function computeAverages(records) {
     distanceAvg: avg(records.map((r) => r.distance)),
     minutesTotal: sum(records.map((r) => r.minutes)),
     minutesAvg: avg(records.map((r) => r.minutes)),
-    trimpsTotal: sum(records.map((r) => r.trimps)),
-    trimpsAvg: avg(records.map((r) => r.trimps)),
     averageHr: avg(records.map((r) => r.averageHr)),
     restingHr: avg(records.map((r) => r.restingHr)),
     hrv: avg(records.map((r) => r.hrv)),

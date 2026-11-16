@@ -2,9 +2,9 @@
 // Lo usan los iconos ⓘ (InfoTip) y el glosario del Perfil.
 
 export const glossary = {
-  trimp: {
-    term: 'TRIMP (TR)',
-    text: 'Carga del entrenamiento. Combina lo que ha durado la sesión y lo altas que han ido tus pulsaciones: cuanto más alto, más exigente. En las tarjetas aparece abreviado como TR. Se calcula con la fórmula de Banister, cuyo coeficiente k es 1,92 en hombres y 1,67 en mujeres; si el sexo no está especificado se usa 1,92 por defecto.',
+  fcMaxPercent: {
+    term: '% de la FC máxima',
+    text: 'FC media de la actividad dividida entre tu FC máxima (la que tienes en el perfil). Es solo informativo: cuanto más alto, más intensa ha sido la sesión. El color va del verde (suave) al rojo (muy intensa) según las zonas de FC: Z1 50-60 %, Z2 60-70 %, Z3 70-80 %, Z4 80-90 % y Z5 más del 90 %.',
   },
   wt: {
     term: 'WT · Bienestar total',
@@ -16,7 +16,7 @@ export const glossary = {
   },
   fcMedia: {
     term: 'FC media',
-    text: 'Pulsaciones medias durante el entrenamiento. Junto con la duración, sirve para calcular el TRIMP.',
+    text: 'Pulsaciones medias durante el entrenamiento. Con tu FC máxima se calcula el % de la FC máxima de la sesión.',
   },
   fcReposo: {
     term: 'FC en reposo',
@@ -43,7 +43,7 @@ export const glossary = {
 /** Detecta qué término del glosario corresponde a una etiqueta visible. */
 export function glossaryKeyFor(label) {
   if (typeof label !== 'string') return null;
-  if (/TRIMP/i.test(label)) return 'trimp';
+  if (/% FC máx|FC máxima/i.test(label)) return 'fcMaxPercent';
   if (/\bWT\b/.test(label)) return 'wt';
   if (/\bRPE\b|^Esfuerzo$/i.test(label)) return 'rpe';
   if (/FC en reposo|\bFCR\b/i.test(label)) return 'fcReposo';

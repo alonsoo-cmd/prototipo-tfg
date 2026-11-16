@@ -33,7 +33,7 @@ export default function AppRoutes({ state }) {
     case 'Diary':
       return <Diary role={role} week={week} setWeek={setWeek} preparation={athletePreparation} onSession={openSession} onPhases={() => setModal('phases')} coachWeeks={coachWeeks} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs} athleteProfile={athleteProfile} />;
     case 'Data':
-      return <DataPage role={role} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs} onSession={openSession} coachWeeks={coachWeeks} />;
+      return <DataPage role={role} fcMax={athleteProfile?.fcMax} trainingLogs={trainingLogs} setTrainingLogs={setTrainingLogs} onSession={openSession} coachWeeks={coachWeeks} />;
     case 'Profile':
       return <Profile role={role} preparation={athletePreparation} athleteProfile={athleteProfile} coachExperience={coachExperience} onSaveCoachExperience={setCoachExperience} />;
     case 'Find coach':

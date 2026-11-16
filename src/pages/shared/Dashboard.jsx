@@ -267,7 +267,6 @@ function WeeklySummary({ weekNumber }) {
   const rows = [
     ['Kms', '35', '4', '8', '46'],
     ['Minutos', '182', '16', '34', '232'],
-    ['TRIMPS', '182', '32', '102', '316'],
     ['% mins', '78', '7', '15', '100'],
   ];
 

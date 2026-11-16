@@ -441,19 +441,7 @@
   white-space: nowrap;
 }
 
-/* ── TRIMP and RPE Badges ── */
-.trimp-cell-badge {
-  display: inline-block;
-  padding: 2px 5px;
-  border-radius: 4px;
-  font-weight: 700;
-  color: #2e475d;
-}
-
-.trimp-cell-badge.high {
-  background: #fcf1e5;
-  color: #925414;
-}
+/* ── RPE Badges ── */
 
 .rpe-badge {
   display: inline-flex;

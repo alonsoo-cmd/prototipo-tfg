@@ -158,6 +158,12 @@
   - Últimos 7 días: se filtra por fecha (29 oct – 4 nov) y las medias de FC y WT ignoran las sesiones sin datos (antes las no realizadas contaban como 0 ppm).
   - Entrenadora de Alex: Elena Santos (directorio). Con autopreparación, Perfil muestra "Entrenador: Autopreparación"; sin preparación, "Sin preparación activa".
 
+### 1.12 Sustituir el TRIMP por el % de la FC máxima (hecho, 16 nov)
+- [x] Decisión: el TRIMP desaparece de toda la app. Donde se muestra una sesión aparece el **% de la FC máxima** (FC media ÷ FC máxima del perfil), solo informativo. Los totales semanales y la gráfica de carga lo pierden sin sustituto, porque un porcentaje no se suma.
+- [x] Color por zonas de FC (Z1 50-60 % … Z5 >90 %): gradiente continuo de verde (bajo) a rojo (alto). `src/domain/heartRate.js` y `src/components/ui/HrPercent.jsx`.
+- [x] Modal del diario: tarjeta "Intensidad respecto a tu FC máxima" con valor, zona y barra de color. También en las tarjetas del Diario, sus estadísticas, las medias, el detalle de sesión, Datos (columna y resumen semanal), "Últimos 7 días" y Preparaciones. Cada atleta del entrenador tiene su propia FC máxima en `coachAthletes.js`.
+- [ ] Pendiente: los resúmenes semanales de Inicio (`WeeklySummary`) y del Diario (`WeeklyLoad`) tienen las cifras escritas a mano (35 km, 182 min…), iguales en todas las semanas. Hay que calcularlas o quitarlas.
+
 ---
 
 ## Fase 2 — Modales, móvil y accesibilidad

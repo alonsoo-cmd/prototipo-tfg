@@ -59,7 +59,7 @@ export function TemplatePickerModal({ day, templates, onPick, onClose }) {
         <button type="button" className={`template-picker-option workout-color-${workoutColor(template.type)}`} onClick={() => onPick(template)}>
           <b>{template.type}</b>
           <span>{template.desc || template.blocks || 'Sin descripción'}</span>
-          <small>{template.mins || 0} min · {format(template.km)} km · {template.tr || 0} TR</small>
+          <small>{template.mins || 0} min · {format(template.km)} km</small>
         </button>
       </li>)}
     </ul> : <p className="muted">No hay plantillas de este tipo.</p>}
