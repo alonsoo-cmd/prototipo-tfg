@@ -5,13 +5,28 @@ export function calculateSpeed(minutes, distance) {
   return String(Math.round((d / (m / 60)) * 10) / 10);
 }
 
-export function calculateTrimps(minutes, averageHr, restingHr, athleteProfile = { fcMax: 200, sex: 'male' }) {
+/**
+ * Coeficiente k de la fórmula de Banister: 1,92 en hombres y 1,67 en mujeres.
+ * La fórmula no tiene valor neutro; sin sexo especificado se usa 1,92 y se indica.
+ */
+export function trimpCoefficient(sex) {
+  if (sex === 'female') return { k: 1.67, label: 'mujer', isDefault: false };
+  if (sex === 'male') return { k: 1.92, label: 'hombre', isDefault: false };
+  return { k: 1.92, label: 'sexo sin especificar', isDefault: true };
+}
+
+/** Texto del perfil para el sexo registrado. */
+export function sexLabel(sex) {
+  return sex === 'female' ? 'Mujer' : sex === 'male' ? 'Hombre' : 'No especificado';
+}
+
+export function calculateTrimps(minutes, averageHr, restingHr, athleteProfile = { fcMax: 200, sex: null }) {
   const duration = Number(minutes);
   const avg = Number(averageHr);
   const rest = Number(restingHr);
   if (!duration || !avg) return '';
   const maxHr = Number(athleteProfile?.fcMax) || 200;
-  const k = athleteProfile?.sex === 'female' ? 1.67 : 1.92;
+  const { k } = trimpCoefficient(athleteProfile?.sex);
   const restHr = rest || 60;
   if (avg <= restHr) return 0;
   const reserve = Math.max(0, Math.min(1, (avg - restHr) / (maxHr - restHr)));

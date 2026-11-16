@@ -5,6 +5,7 @@ import { currentUser, initialAthleteProfile, initialCoachExperience } from '../.
 import { glossary } from '../../domain/glossary.js';
 import { formatLongDate } from '../../utils/format.js';
 import CoachExperienceSection from './profile/CoachExperienceSection.jsx';
+import { sexLabel } from '../../domain/training.js';
 
 const raceMarks = [
   ['400 m', '400 m'], ['800 m', '800 m'], ['1.500 m', '1.500 m'],
@@ -25,7 +26,7 @@ export default function Profile({ role = 'atleta', preparation = null, email = '
   // Datos de la cuenta: se fijan en el registro y no se editan desde el perfil.
   const name = currentUser.name;
   const birthDate = '1998-04-12';
-  const gender = 'No especificado';
+  const gender = sexLabel(athleteProfile?.sex);
   const [club, setClub] = useState('');
   const [specialty, setSpecialty] = useState('Carrera de fondo');
   const [about, setAbout] = useState('Corredor amateur. Entrenamiento de fondo y pista.');

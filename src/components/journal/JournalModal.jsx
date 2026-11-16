@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { injuryRegions, wellbeingFields, wellbeingScales } from '../../domain/wellbeing.js';
 import { NumberField, RangeField, TextField, WorkoutDetailRow } from './JournalFields.jsx';
-import { calculateSpeed, calculateTrimps, getTrimpBadge } from '../../domain/training.js';
+import { calculateSpeed, calculateTrimps, getTrimpBadge, trimpCoefficient } from '../../domain/training.js';
 import { createWorkoutDetailSections, hasWorkoutDetailOption } from './workoutDetailSections.js';
 import './JournalModal.css';
 import InfoTip from '../ui/InfoTip.jsx';
@@ -18,7 +18,7 @@ export function missingWellbeingFields(values) {
  * el resto (series, salud, molestias) es opcional y va plegado.
  * `hidePersonalFields` oculta solo salud y molestias (el Dashboard las recoge en su propio panel).
  */
-export function JournalModal({ session, initialValues, onClose, onSave, hidePersonalFields = false, athleteProfile = { fcMax: 200, sex: 'male' } }) {
+export function JournalModal({ session, initialValues, onClose, onSave, hidePersonalFields = false, athleteProfile = { fcMax: 200, sex: null } }) {
   const isCycling = /bicicleta|ciclismo|\bbici\b/i.test(session.type);
   const [stravaConnected, setStravaConnected] = useState(false);
   const [intervalImage, setIntervalImage] = useState(null);
@@ -337,8 +337,8 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
 function TrimpCard({ trimp, athleteProfile, hasMinutes, hasHr, hasRestHr }) {
   const badge = getTrimpBadge(trimp);
   const fcMax = athleteProfile?.fcMax || 200;
-  const k = athleteProfile?.sex === 'female' ? '1,67' : '1,92';
-  const sexLabel = athleteProfile?.sex === 'female' ? 'mujer' : 'hombre';
+  const coefficient = trimpCoefficient(athleteProfile?.sex);
+  const k = String(coefficient.k).replace('.', ',');
 
   return (
     <div className={`journal-trimp-card ${trimp ? 'has-value' : 'empty'}`}>
@@ -347,7 +347,7 @@ function TrimpCard({ trimp, athleteProfile, hasMinutes, hasHr, hasRestHr }) {
           <span className="journal-trimp-icon" aria-hidden="true">⚡</span>
           <div>
             <b>Impulso de entrenamiento (TRIMP) <InfoTip term="trimp" /></b>
-            <small>Fórmula Banister · FC máx: {fcMax} ppm · {sexLabel} (k = {k})</small>
+            <small>Fórmula Banister · FC máx: {fcMax} ppm · {coefficient.label} (k = {k}{coefficient.isDefault ? ' por defecto' : ''})</small>
           </div>
         </div>
         {badge && (

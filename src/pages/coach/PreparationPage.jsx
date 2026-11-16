@@ -11,7 +11,7 @@ import { format, formatLongDate } from '../../utils/format.js';
 import InfoTip, { TermLabel } from '../../components/ui/InfoTip.jsx';
 import Toast from '../../components/ui/Toast.jsx';
 import DatePicker from '../../components/ui/DatePicker.jsx';
-import { CURRENT_WEEK } from '../../domain/calendar.js';
+import { CURRENT_WEEK, today, todayKey } from '../../domain/calendar.js';
 
 // En el prototipo, Lucía (primer atleta del entrenador) es la persona de la vista «Atleta»:
 // comparten el plan semanal (`weeks`) y también la preparación con sus objetivos.
@@ -42,6 +42,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
   const skipDayClick = useRef(false);
 
   const planWeeks = athlete.id === 'lucia' ? weeks : otherPlans[athlete.id] || copyWeeks(weeks);
+  const plannedWeeks = Number.parseInt(athlete.duration, 10) || planWeeks.length;
   const current = planWeeks.find((week) => week.number === selectedWeek) || planWeeks.at(-1) || blankWeek(1);
   
   const setPlanWeeks = (updater) => {
@@ -100,9 +101,15 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
   const completedHistory = useMemo(() => {
     return recordedHistory.filter((item) => ['completed', 'partial', 'missed'].includes(item.completionStatus));
   }, [recordedHistory]);
+  // Últimos 7 días naturales hasta hoy (incluido), no las 7 últimas sesiones.
+  const last7Range = useMemo(() => {
+    const start = today();
+    start.setUTCDate(start.getUTCDate() - 6);
+    return { from: start.toISOString().slice(0, 10), to: todayKey() };
+  }, []);
   const last7Workouts = useMemo(() => {
-    return completedHistory.slice(-7).reverse();
-  }, [completedHistory]);
+    return completedHistory.filter((item) => item.date >= last7Range.from && item.date <= last7Range.to).reverse();
+  }, [completedHistory, last7Range]);
   const last7Totals = useMemo(() => {
     if (!last7Workouts.length) {
       return { km: 0, mins: 0, tr: 0, completed: 0, partial: 0, missed: 0, avgWt: null, avgHr: null, avgPace: '' };
@@ -113,10 +120,11 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
     const completed = last7Workouts.filter((w) => w.completionStatus === 'completed').length;
     const partial = last7Workouts.filter((w) => w.completionStatus === 'partial').length;
     const missed = last7Workouts.filter((w) => w.completionStatus === 'missed').length;
-    const wtTotal = last7Workouts.reduce((sum, w) => sum + (Number(w.wellbeingTotal) || 0), 0);
-    const avgWt = wtTotal / last7Workouts.length;
-    const hrTotal = last7Workouts.reduce((sum, w) => sum + (Number(w.averageHr) || 0), 0);
-    const avgHr = Math.round(hrTotal / last7Workouts.length);
+    // Las medias ignoran los valores vacíos (p. ej. sesiones no realizadas, sin FC).
+    const average = (values) => (values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null);
+    const avgWt = average(last7Workouts.map((w) => Number(w.wellbeingTotal)).filter((value) => value > 0));
+    const hrAverage = average(last7Workouts.map((w) => Number(w.averageHr)).filter((value) => value > 0));
+    const avgHr = hrAverage === null ? null : Math.round(hrAverage);
     const avgPace = calculatePace(mins, km);
     return { km, mins, tr, completed, partial, missed, avgWt, avgHr, avgPace };
   }, [last7Workouts]);
@@ -255,8 +263,8 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
       <div className="schedule-heading">
         <div>
           <div className="eyebrow">PREPARACIÓN PRÁCTICA</div>
-          <h2>Resumen de los últimos 7 días de entrenamientos <span className="subtle-dates">{formatRecentDateRange(last7Workouts)}</span></h2>
-          <p>Entrenamientos realizados y registros de {athlete.name} en las últimas 7 sesiones.</p>
+          <h2>Resumen de los últimos 7 días de entrenamientos <span className="subtle-dates">{formatRecentDateRange([{ date: last7Range.to }, { date: last7Range.from }])}</span></h2>
+          <p>Entrenamientos realizados y registros de {athlete.name} en los últimos 7 días.</p>
         </div>
         <button className="text-button" type="button" onClick={() => setShowAllDays(true)}>Ver todos los entrenamientos →</button>
       </div>
@@ -334,7 +342,7 @@ export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = 
     </section>
 
     <section className="panel schedule-editor coach-theory-section">
-      <div className="schedule-heading"><div><div className="eyebrow">PREPARACIÓN TEÓRICA</div><h2>Plan semanal</h2><p>{athlete.duration} · {athlete.distance} · {planWeeks.length} semanas planificadas</p></div><div className="schedule-actions"><button className="button secondary" onClick={() => setShowAllWeeks(true)}>Semana {current.number} · ver todas ↗</button><button className="button primary" onClick={createWeek} disabled={planWeeks.length >= (Number.parseInt(athlete.duration, 10) || 12)}>＋ Nueva semana</button></div></div>
+      <div className="schedule-heading"><div><div className="eyebrow">PREPARACIÓN TEÓRICA</div><h2>Plan semanal</h2><p>{[athlete.distance, athlete.eventDate, planWeeks.length < plannedWeeks ? `${planWeeks.length} de ${plannedWeeks} semanas planificadas` : athlete.duration].filter(Boolean).join(' · ')}</p></div><div className="schedule-actions"><button className="button secondary" onClick={() => setShowAllWeeks(true)}>Semana {current.number} · ver todas ↗</button><button className="button primary" onClick={createWeek} disabled={planWeeks.length >= (Number.parseInt(athlete.duration, 10) || 12)}>＋ Nueva semana</button></div></div>
       <WeekTimeline
         weeks={planWeeks}
         selectedWeek={selectedWeek}

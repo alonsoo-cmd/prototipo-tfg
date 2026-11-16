@@ -88,7 +88,7 @@
   - [x] Dos o tres notas distintas por tipo.
 - **Comprobación:** en Datos, ningún rodaje tiene más FC que unas series de la misma semana.
   - [x] Además: competiciones en las semanas 5 (10 km), 8 (cross universitario) y 12 (Media Maratón, domingo); RPE por tipo; la tirada larga es la sesión más larga; las sesiones no realizadas tienen 0 km y las sesiones a medias, el 55 %. `groupHistory.js` usa la misma regla de estados.
-  - [ ] Pendiente menor: Datos dice "Incompleto" y el resto de la app "A medias".
+  - [x] Pendiente menor: Datos dice "Incompleto" y el resto de la app "A medias".
 
 ### 1.5 El editor de plantillas guarda formularios vacíos (S)
 - **Visto:** al pulsar "Guardar entrenamiento" sin rellenar nada se crea "Entrenamiento · 0 min · 0 km · 0 TR".
@@ -130,7 +130,7 @@
 - [x] La tabla de asistencia usa otros nombres (Carlos Díaz, Luis Herrero, Marta Ruiz) que no están en la lista de atletas.
 - [x] La solicitud dice "me gustaría empezar en septiembre" y está fechada en noviembre.
 - [x] Además: la solicitud es ahora de Clara Romero (10 km · 17 ene 2027), en `src/data/preparationRequest.js`; el contador y la etiqueta "Nueva" cambian al aceptar o rechazar; la asistencia no marca días futuros; quedaban dos `setSelectedWeek(8)` en `PreparationPage.jsx`.
-- [ ] Pendiente: en `initialState.js` la entrenadora de Alex es Lucía Fernández, que en el rol entrenador es atleta de Alex.
+- [x] Pendiente: en `initialState.js` la entrenadora de Alex es Lucía Fernández, que en el rol entrenador es atleta de Alex.
 
 ### 1.9 Formato de números mezclado (S)
 - **Visto:** "Media: 7.0" junto a "3,5 km"; "11.5 km" en Entrenamientos y "11,5 km" en Preparaciones; "4.5 km" en el resumen práctico.
@@ -150,9 +150,13 @@
   - `currentUser` en `initialState.js` es la única fuente del nombre y las iniciales (menú, barra superior, Inicio y Perfil).
 
 ### 1.11 Detalles menores (S)
-- [ ] `JournalModal.jsx:341`: el TRIMP dice "hombre (k = 1,92)" aunque el perfil pone género "No especificado". Indicar que es el valor por defecto.
-- [ ] Preparaciones: "12 semanas · Media maratón · 12 semanas planificadas" repite el dato.
-- [ ] Preparaciones: el título habla de "últimos 7 días" y la descripción de "últimas 7 sesiones".
+- [x] `JournalModal.jsx:341`: el TRIMP dice "hombre (k = 1,92)" aunque el perfil pone género "No especificado". Indicar que es el valor por defecto.
+- [x] Preparaciones: "12 semanas · Media maratón · 12 semanas planificadas" repite el dato.
+- [x] Preparaciones: el título habla de "últimos 7 días" y la descripción de "últimas 7 sesiones".
+  - TRIMP: `sex: null` en el perfil es la única fuente (Perfil muestra "No especificado") y el diario dice "sexo sin especificar (k = 1,92 por defecto)". El glosario explica el valor por defecto. `trimpCoefficient()` en `domain/training.js`.
+  - Plan semanal: "Media maratón · 6 dic 2026 · 12 semanas"; "X de Y semanas planificadas" solo si faltan semanas.
+  - Últimos 7 días: se filtra por fecha (29 oct – 4 nov) y las medias de FC y WT ignoran las sesiones sin datos (antes las no realizadas contaban como 0 ppm).
+  - Entrenadora de Alex: Elena Santos (directorio). Con autopreparación, Perfil muestra "Entrenador: Autopreparación"; sin preparación, "Sin preparación activa".
 
 ---
 

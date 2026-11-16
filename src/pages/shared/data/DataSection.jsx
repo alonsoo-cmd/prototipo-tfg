@@ -154,7 +154,7 @@ function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
                   const statusLabel = compStatus === 'completed'
                     ? 'Completado'
                     : compStatus === 'partial'
-                      ? 'Incompleto'
+                      ? 'A medias'
                       : compStatus === 'missed'
                         ? 'No realizado'
                         : (record.status || 'Planificado');

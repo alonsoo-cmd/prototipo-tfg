@@ -4,7 +4,7 @@
 export const glossary = {
   trimp: {
     term: 'TRIMP (TR)',
-    text: 'Carga del entrenamiento. Combina lo que ha durado la sesión y lo altas que han ido tus pulsaciones: cuanto más alto, más exigente. En las tarjetas aparece abreviado como TR.',
+    text: 'Carga del entrenamiento. Combina lo que ha durado la sesión y lo altas que han ido tus pulsaciones: cuanto más alto, más exigente. En las tarjetas aparece abreviado como TR. Se calcula con la fórmula de Banister, cuyo coeficiente k es 1,92 en hombres y 1,67 en mujeres; si el sexo no está especificado se usa 1,92 por defecto.',
   },
   wt: {
     term: 'WT · Bienestar total',

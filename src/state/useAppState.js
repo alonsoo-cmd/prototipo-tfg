@@ -43,6 +43,8 @@ export function useAppState() {
   const [requestSent, setRequestSent] = useState(false);
   // Entrenador al que se ha enviado la solicitud (un atleta solo puede tener uno).
   const [requestCoach, setRequestCoach] = useState(null);
+  // true si la preparación activa se la ha creado el propio entrenador.
+  const [selfPrepared, setSelfPrepared] = useState(false);
   const [requestStatus, setRequestStatus] = useState('Pendiente');
 
   const go = (nextPage) => {
@@ -59,6 +61,7 @@ export function useAppState() {
   // Modo demostración: atleta con o sin preparación activa.
   const togglePlan = (hasPlan) => {
     setActivePlan(hasPlan);
+    setSelfPrepared(false);
     setModal(null);
     if (hasPlan) {
       // Con preparación ya tiene entrenador: la búsqueda y la solicitud dejan de tener sentido.
@@ -71,6 +74,7 @@ export function useAppState() {
   // El entrenador sin preparación puede preparársela él mismo: se crea y se abre en Preparaciones.
   const startSelfPreparation = () => {
     setActivePlan(true);
+    setSelfPrepared(true);
     setRequestSent(false);
     setRequestCoach(null);
     setModal(null);
@@ -84,7 +88,11 @@ export function useAppState() {
   };
   const closeModal = () => setModal(null);
 
-  const athletePreparation = preparations.find((item) => item.athleteId === CURRENT_ATHLETE_ID) || null;
+  // Preparación activa de Alex: ninguna en el modo «Sin preparación»; «Autopreparación» si se la creó él.
+  const storedPreparation = preparations.find((item) => item.athleteId === CURRENT_ATHLETE_ID) || null;
+  const athletePreparation = !activePlan || !storedPreparation
+    ? null
+    : selfPrepared ? { ...storedPreparation, coach: 'Autopreparación' } : storedPreparation;
 
   return {
     trainingLogs, setTrainingLogs,

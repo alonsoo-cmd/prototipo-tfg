@@ -12,7 +12,8 @@ export const currentUser = { name: 'Alex Martín', firstName: 'Alex', initials: 
 export const initialAthleteProfile = {
   // FC máxima y sexo alimentan el cálculo del TRIMP (fórmula de Banister).
   fcMax: 200,
-  sex: 'male',
+  // 'male' | 'female' | null (sin especificar: el TRIMP usa k = 1,92 por defecto).
+  sex: null,
   // Umbrales de lactato: ritmo en segundos por km y FC en ppm.
   lt1: { paceSeconds: 240, hr: 180 },
   lt2: { paceSeconds: 225, hr: 190 },
@@ -40,7 +41,7 @@ export const initialPreparations = [{
   athleteName: 'Alex Martín',
   name: 'Preparación de otoño',
   duration: '12 semanas',
-  coach: 'Lucía Fernández',
+  coach: 'Elena Santos', // del directorio de entrenadores; Lucía Fernández es atleta de Alex
   objectives: [{ id: 11, name: 'Media Maratón Madrid', distance: 'Media maratón', eventDate: '2026-12-06' }],
 }];
 
