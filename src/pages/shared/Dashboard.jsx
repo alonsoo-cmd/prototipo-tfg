@@ -7,6 +7,7 @@ import Toast from '../../components/ui/Toast.jsx';
 import './Dashboard.css';
 import { format } from '../../utils/format.js';
 import { today as demoToday } from '../../domain/calendar.js';
+import { currentUser } from '../../data/initialState.js';
 
 const athleteShortcuts = [
   {
@@ -26,6 +27,12 @@ const athleteShortcuts = [
     tone: 'green',
   },
 ];
+
+const dashboardSubtitles = {
+  atleta: 'Este es el resumen de tu preparación para esta semana.',
+  grupo: 'Esta semana entrenas con el plan de tu grupo.',
+  entrenador: 'Tu propio entrenamiento de esta semana. Tus atletas están en «Atletas».',
+};
 
 const coachShortcuts = [
   ...athleteShortcuts,
@@ -66,11 +73,11 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
     <div className="content dashboard">
       <section className="dashboard-heading">
         <div className="eyebrow">INICIO · {{ atleta: 'ATLETA', grupo: 'GRUPO', entrenador: 'ENTRENADOR' }[role] || 'ATLETA'}</div>
-        <h1>Hola, Alex</h1>
-        <p>Este es el resumen de tu preparación para esta semana.</p>
+        <h1>Hola, {currentUser.firstName}</h1>
+        <p>{dashboardSubtitles[role] || dashboardSubtitles.atleta}</p>
       </section>
 
-      {role === 'atleta' && todaySession && <section className="today-training" aria-label="Entrenamiento de hoy">
+      {role !== 'grupo' && todaySession && <section className="today-training" aria-label="Entrenamiento de hoy">
         <div className="today-training-circle-side">
           <button
             type="button"

@@ -68,6 +68,16 @@ export function useAppState() {
     }
   };
   // La sesión lleva su semana para que «Registrar» guarde el diario en la clave correcta.
+  // El entrenador sin preparación puede preparársela él mismo: se crea y se abre en Preparaciones.
+  const startSelfPreparation = () => {
+    setActivePlan(true);
+    setRequestSent(false);
+    setRequestCoach(null);
+    setModal(null);
+    setPage('Preparations');
+    setFocusAthleteId('coach');
+    setToast('Tu preparación está creada: planifica tus semanas');
+  };
   const openSession = (session, weekNumber) => {
     setActiveSession({ ...session, week: weekNumber ?? session.preparationWeek ?? week });
     setModal('session');
@@ -87,7 +97,7 @@ export function useAppState() {
     role, page, week, setWeek, mobileNavOpen, setMobileNavOpen,
     go, changeRole,
     modal, setModal, closeModal, activeSession, openSession,
-    activePlan, setActivePlan, togglePlan, requestCoach, setRequestCoach,
+    activePlan, setActivePlan, togglePlan, startSelfPreparation, requestCoach, setRequestCoach,
     toast, setToast,
     focusAthleteId, setFocusAthleteId,
     requestDate, setRequestDate, requestSent, setRequestSent, requestStatus, setRequestStatus,

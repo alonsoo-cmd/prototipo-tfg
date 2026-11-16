@@ -16,12 +16,15 @@ export default function AppRoutes({ state }) {
     preparations, setPreparations, athletePreparation,
     workoutTemplates, setWorkoutTemplates, athleteProfile,
     coachExperience, setCoachExperience,
-    activePlan, requestSent, requestCoach, requestStatus,
+    activePlan, startSelfPreparation, requestSent, requestCoach, requestStatus,
   } = state;
 
-  // Atleta sin preparación: Inicio y Diario no tienen calendario que mostrar.
-  if (role === 'atleta' && !activePlan && (page === 'Dashboard' || page === 'Diary')) {
-    return <NoPreparation requestCoach={requestSent ? requestCoach : null} onFindCoach={() => go('Find coach')} />;
+  // Sin preparación (atleta o entrenador): Inicio y Diario no tienen calendario que mostrar.
+  // El entrenador puede, además, preparársela él mismo.
+  const withoutPlan = role !== 'grupo' && !activePlan;
+  const selfPrepare = role === 'entrenador' ? startSelfPreparation : null;
+  if (withoutPlan && (page === 'Dashboard' || page === 'Diary')) {
+    return <NoPreparation requestCoach={requestSent ? requestCoach : null} onFindCoach={() => go('Find coach')} onSelfPrepare={selfPrepare} />;
   }
 
   switch (page) {
@@ -35,12 +38,12 @@ export default function AppRoutes({ state }) {
       return <Profile role={role} preparation={athletePreparation} athleteProfile={athleteProfile} coachExperience={coachExperience} onSaveCoachExperience={setCoachExperience} />;
     case 'Find coach':
       // Solo para atletas sin preparación; en cualquier otro caso, la página no existe.
-      if (role !== 'atleta' || activePlan) return null;
-      return <FindCoach requestCoach={requestSent ? requestCoach : null} onRequest={(coachName) => { setRequestCoach(coachName); setModal('request'); }} />;
+      if (!withoutPlan) return null;
+      return <FindCoach onSelfPrepare={selfPrepare} requestCoach={requestSent ? requestCoach : null} onRequest={(coachName) => { setRequestCoach(coachName); setModal('request'); }} />;
     case 'Athletes':
-      return <CoachHome go={go} openAthlete={(athleteId) => { go('Preparations'); setFocusAthleteId(athleteId); }} openRequest={() => setModal('request-review')} requestStatus={requestStatus} weeks={coachWeeks} trainingLogs={trainingLogs} />;
+      return <CoachHome hasOwnPlan={activePlan} go={go} openAthlete={(athleteId) => { go('Preparations'); setFocusAthleteId(athleteId); }} openRequest={() => setModal('request-review')} requestStatus={requestStatus} weeks={coachWeeks} trainingLogs={trainingLogs} />;
     case 'Preparations':
-      return <PreparationPage key={focusAthleteId || 'default'} initialAthleteId={focusAthleteId} weeks={coachWeeks} setWeeks={setCoachWeeks} preparations={preparations} setPreparations={setPreparations} trainingLogs={trainingLogs} workoutTemplates={workoutTemplates} onProfile={() => go('Profile')} />;
+      return <PreparationPage key={focusAthleteId || 'default'} initialAthleteId={focusAthleteId} hasOwnPlan={activePlan} weeks={coachWeeks} setWeeks={setCoachWeeks} preparations={preparations} setPreparations={setPreparations} trainingLogs={trainingLogs} workoutTemplates={workoutTemplates} onProfile={() => go('Profile')} />;
     case 'Workouts':
       return role === 'entrenador' ? <WorkoutsPage templates={workoutTemplates} setTemplates={setWorkoutTemplates} /> : null;
     default:

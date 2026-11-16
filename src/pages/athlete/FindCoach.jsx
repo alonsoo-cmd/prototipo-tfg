@@ -9,7 +9,7 @@ const normalize = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLoca
  * Directorio de entrenadores para un atleta sin preparación.
  * Un atleta solo puede tener un entrenador: con una solicitud enviada no se puede pedir otra.
  */
-export default function FindCoach({ onRequest, requestCoach = null }) {
+export default function FindCoach({ onRequest, requestCoach = null, onSelfPrepare = null }) {
   const [query, setQuery] = useState('');
   const [location, setLocation] = useState('');
   const [specialty, setSpecialty] = useState('');
@@ -38,6 +38,10 @@ export default function FindCoach({ onRequest, requestCoach = null }) {
         <p>Consulta perfiles y solicita una preparación. Solo puedes tener un entrenador.</p>
       </div>
     </div>
+    {onSelfPrepare && !requestCoach && <div className="find-coach-self">
+      <div><b>¿Prefieres planificarte tú?</b><small>Como entrenador puedes crear tu propia preparación con las mismas herramientas que usas con tus atletas.</small></div>
+      <button className="button primary" onClick={onSelfPrepare}>Crear mi propia preparación</button>
+    </div>}
     {requestCoach && <p className="find-coach-pending" role="status">Has enviado una solicitud a <b>{requestCoach}</b>. Mientras esté pendiente no puedes solicitar otra preparación.</p>}
 
     <div className="search-row find-coach-filters">

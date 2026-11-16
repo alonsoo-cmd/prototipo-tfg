@@ -9,10 +9,11 @@ import { formatLongDate } from '../../utils/format.js';
 const attendanceLabels = { green: 'Completado', yellow: 'A medias', red: 'No realizado', gray: 'Pendiente' };
 const attendanceGlyphs = { green: '✓', yellow: '½', red: '✕', gray: '—' };
 
-export default function CoachHome({go,openAthlete,openRequest,requestStatus,weeks,trainingLogs={}}){
+export default function CoachHome({hasOwnPlan=true,go,openAthlete,openRequest,requestStatus,weeks,trainingLogs={}}){
   // Cifras calculadas a partir de los datos (antes estaban escritas a mano).
   const athletes = coachAthletes.filter((athlete) => !athlete.isCoach);
-  const preparationsInProgress = coachAthletes.length; // incluye la preparación propia del entrenador
+  const listedAthletes = coachAthletes.filter((athlete) => !athlete.isCoach || hasOwnPlan);
+  const preparationsInProgress = listedAthletes.length; // incluye la preparación propia si existe
   const pendingRequests = requestStatus === 'Pendiente' ? 1 : 0;
   const featured = coachAthletes[0];
   const injuryAlerts = createInjuryAlerts(weeks, trainingLogs, 'Alex Martín');
@@ -46,7 +47,7 @@ export default function CoachHome({go,openAthlete,openRequest,requestStatus,week
     <div className="stat-card">
     <small>Preparaciones</small>
     <b>{preparationsInProgress}</b>
-    <span>En curso · incluida la tuya</span>
+    <span>{hasOwnPlan ? 'En curso · incluida la tuya' : 'En curso'}</span>
     </div>
     <div className="stat-card">
     <small>Solicitudes nuevas</small>
@@ -72,7 +73,7 @@ export default function CoachHome({go,openAthlete,openRequest,requestStatus,week
     </div>
     <span className="count-badge">{athletes.length}</span>
     </div>
-    <div className="coach-athlete-list">{coachAthletes.map((athlete)=><button className="request-row" key={athlete.id} onClick={()=>openAthlete(athlete.id)}>
+    <div className="coach-athlete-list">{listedAthletes.map((athlete)=><button className="request-row" key={athlete.id} onClick={()=>openAthlete(athlete.id)}>
       <div className="mini-avatar">{athlete.initials}</div>
       <div className="request-person"><b>{athlete.name}</b><small>{athlete.isCoach ? 'Tu preparación' : 'Preparación activa'} · {athlete.goal} · {athlete.eventDate}</small></div>
       <span className="row-chevron">›</span>

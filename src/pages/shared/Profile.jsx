@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import InfoTip from '../../components/ui/InfoTip.jsx';
 import Toast from '../../components/ui/Toast.jsx';
-import { initialAthleteProfile, initialCoachExperience } from '../../data/initialState.js';
+import { currentUser, initialAthleteProfile, initialCoachExperience } from '../../data/initialState.js';
 import { glossary } from '../../domain/glossary.js';
 import { formatLongDate } from '../../utils/format.js';
 import CoachExperienceSection from './profile/CoachExperienceSection.jsx';
@@ -23,7 +23,7 @@ const rmPercentages = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 /** Perfil único para atleta, grupo y entrenador: mismas secciones para todos; el entrenador añade su experiencia. */
 export default function Profile({ role = 'atleta', preparation = null, email = 'alex.martin@example.com', athleteProfile = initialAthleteProfile, coachExperience = initialCoachExperience, onSaveCoachExperience = () => {} }) {
   // Datos de la cuenta: se fijan en el registro y no se editan desde el perfil.
-  const name = 'Alex Martín';
+  const name = currentUser.name;
   const birthDate = '1998-04-12';
   const gender = 'No especificado';
   const [club, setClub] = useState('');

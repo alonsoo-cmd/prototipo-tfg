@@ -6,6 +6,9 @@ import { sessionDayFields } from '../domain/calendar.js';
 
 export const PREPARATION_WEEKS = 12;
 
+/** Cuenta con la que se usa el prototipo (la misma persona en los tres roles). */
+export const currentUser = { name: 'Alex Martín', firstName: 'Alex', initials: 'AM' };
+
 export const initialAthleteProfile = {
   // FC máxima y sexo alimentan el cálculo del TRIMP (fórmula de Banister).
   fcMax: 200,

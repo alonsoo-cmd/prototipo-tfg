@@ -21,9 +21,9 @@ const preparationOwnerId = (athleteId) => (athleteId === SHARED_PREPARATION.coac
 const objectiveDistances = ['400 m', '800 m', '1.500 m', '3.000 m', '5 km', '10 km', 'Media maratón', 'Maratón'];
 const emptyObjective = { name: '', distance: 'Media maratón', eventDate: '' };
 
-export default function PreparationPage({ initialAthleteId = null, weeks, setWeeks, preparations = [], setPreparations = () => {}, trainingLogs = {}, workoutTemplates = [], onProfile }) {
+export default function PreparationPage({ initialAthleteId = null, hasOwnPlan = true, weeks, setWeeks, preparations = [], setPreparations = () => {}, trainingLogs = {}, workoutTemplates = [], onProfile }) {
   const [athlete, setAthlete] = useState(() => coachAthletes.find((item) => item.id === initialAthleteId) || coachAthletes[0]);
-  const [athleteList, setAthleteList] = useState(coachAthletes);
+  const [athleteList, setAthleteList] = useState(() => coachAthletes.filter((item) => !item.isCoach || hasOwnPlan));
   const [otherPlans, setOtherPlans] = useState(() => Object.fromEntries(coachAthletes.filter((item) => item.id !== 'lucia').map((item) => [item.id, copyWeeks(weeks)])));
   const [selectedWeek, setSelectedWeek] = useState(CURRENT_WEEK);
   const [editingDay, setEditingDay] = useState(null);

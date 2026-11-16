@@ -1,4 +1,5 @@
 import { PAGES, ROLE_SUBTITLES, athleteNavigation, coachNavigation } from '../../routes/navigation.js';
+import { currentUser } from '../../data/initialState.js';
 
 export default function Sidebar({ role, page, onRoleChange, onNavigate, activePlan = true, onTogglePlan, mobileOpen = false }) {
   const navigate = (nextRole, nextPage) => onRoleChange(nextRole, nextPage);
@@ -24,7 +25,7 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, activePl
         <button type="button" aria-pressed={role === 'grupo'} className={role === 'grupo' ? 'selected' : ''} onClick={() => onRoleChange('grupo', 'Dashboard')}>Grupo</button>
         <button type="button" aria-pressed={role === 'entrenador'} className={role === 'entrenador' ? 'selected' : ''} onClick={() => onRoleChange('entrenador', 'Dashboard')}>Entrenador</button>
       </div>
-      {role === 'atleta' && <label className="demo-plan-toggle">
+      {role !== 'grupo' && <label className="demo-plan-toggle">
         <input type="checkbox" checked={!activePlan} onChange={(event) => onTogglePlan(!event.target.checked)} />
         Sin preparación
       </label>}
@@ -34,7 +35,7 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, activePl
       {role === 'entrenador' ? <>
         <section className="sidebar-group">
           <h2 className="nav-label">MI ENTRENAMIENTO</h2>
-          {renderItems(athleteNavigation.filter((name) => name !== 'Dashboard'), 'entrenador')}
+          {renderItems(activePlan ? athleteNavigation : [...athleteNavigation, 'Find coach'], 'entrenador')}
         </section>
         <section className="sidebar-group">
           <h2 className="nav-label">ENTRENADOR</h2>
@@ -55,6 +56,6 @@ export default function Sidebar({ role, page, onRoleChange, onNavigate, activePl
         </button>
       </section>}
     </nav>
-    <div className="side-bottom"><div className="mini-avatar">AM</div><div><b>Alex Martín</b><small>{ROLE_SUBTITLES[role]}</small></div></div>
+    <div className="side-bottom"><div className="mini-avatar">{currentUser.initials}</div><div><b>{currentUser.name}</b><small>{ROLE_SUBTITLES[role]}</small></div></div>
   </aside>;
 }

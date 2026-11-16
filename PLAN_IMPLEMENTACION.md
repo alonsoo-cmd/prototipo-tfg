@@ -143,8 +143,11 @@
 - **Comprobación:** buscar `\d\.\d` en pantalla no da resultados en cifras.
 
 ### 1.10 Inicio según el rol (S)
-- [ ] `Sidebar.jsx`: en el rol entrenador se filtra `Dashboard`, así que no hay forma de volver a Inicio salvo con el selector de demostración.
-- [ ] `Dashboard.jsx:67-68`: "Hola, Alex" está escrito a mano (usar el nombre del perfil) y el subtítulo es el mismo para atleta, grupo y entrenador.
+- [x] `Sidebar.jsx`: en el rol entrenador se filtra `Dashboard`, así que no hay forma de volver a Inicio salvo con el selector de demostración.
+- [x] `Dashboard.jsx:67-68`: "Hola, Alex" está escrito a mano (usar el nombre del perfil) y el subtítulo es el mismo para atleta, grupo y entrenador.
+  - Decisión (16 nov, opción B): el entrenador también entrena. "Mi entrenamiento" incluye Inicio, con su entreno de hoy y su bienestar, como el atleta.
+  - El modo "Sin preparación" también existe para el entrenador: además de "Buscar entrenador", puede "Crear mi propia preparación", que la crea y abre "Mi preparación" en Preparaciones. Sin preparación propia, Atletas y Preparaciones no la cuentan ni la listan.
+  - `currentUser` en `initialState.js` es la única fuente del nombre y las iniciales (menú, barra superior, Inicio y Perfil).
 
 ### 1.11 Detalles menores (S)
 - [ ] `JournalModal.jsx:341`: el TRIMP dice "hombre (k = 1,92)" aunque el perfil pone género "No especificado". Indicar que es el valor por defecto.

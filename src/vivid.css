@@ -233,3 +233,10 @@ body { color: var(--ink); background: #f3f5f2; }
   .coach-card-actions { flex-direction: row; width: 100%; margin-left: 0; }
   .coach-card-actions .button { flex: 1; }
 }
+
+/* Buscar entrenador: opción de autopreparación del entrenador */
+.find-coach-self { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 16px; padding: 14px 16px; border: 1px solid #e3e8d0; border-radius: 8px; background: #f7fbe9; }
+.find-coach-self b, .find-coach-self small { display: block; }
+.find-coach-self small { margin-top: 4px; color: var(--muted-ink); font-size: var(--text-sm); }
+.empty-card .button.large + .button.large { margin-top: 10px; }
+@media (max-width: 760px) { .find-coach-self { flex-direction: column; align-items: stretch; } }
