@@ -1,4 +1,5 @@
 import Metric from '../ui/Metric.jsx';
+import { format } from '../../utils/format.js';
 
 /** Detalle de una sesión planificada (contenido del modal). */
 export default function SessionDetailModal({ session, onRegister, onClose }) {
@@ -11,7 +12,7 @@ export default function SessionDetailModal({ session, onRegister, onClose }) {
     </div>
     <div className="detail-metrics">
       <Metric label="Duración" value={`${session.mins} min`} />
-      <Metric label="Distancia" value={`${session.km} km`} />
+      <Metric label="Distancia" value={`${format(session.km)} km`} />
       <Metric label="TRIMPS" value={session.tr} />
     </div>
     <div className="section-block">

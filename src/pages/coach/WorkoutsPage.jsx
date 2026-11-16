@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { workoutColor, workoutTypes } from '../../data/coachAthletes.js';
 import { WorkoutEditor } from '../../components/workouts/WorkoutEditor.jsx';
 import Toast from '../../components/ui/Toast.jsx';
+import { format } from '../../utils/format.js';
 
 export default function WorkoutsPage({ templates = [], setTemplates }) {
   const [editing, setEditing] = useState(null);
@@ -62,7 +63,7 @@ export default function WorkoutsPage({ templates = [], setTemplates }) {
         <span className="workout-template-type">{template.type}</span>
         <strong>{template.type || 'Entrenamiento'}</strong>
         <span className="workout-template-description">{template.desc || template.blocks || 'Sin descripción añadida.'}</span>
-        <span className="workout-template-metrics">{template.mins || 0} min · {template.km || 0} km · {template.tr || 0} TR</span>
+        <span className="workout-template-metrics">{template.mins || 0} min · {format(template.km)} km · {template.tr || 0} TR</span>
       </button>
       <button className="workout-template-delete" type="button" aria-label={`Eliminar ${template.type}`} onClick={() => deleteTemplate(template)}>Eliminar</button>
     </article>)}</div> : <section className="panel workout-template-empty"><div className="empty-graphic small">＋</div><h2>{templates.length ? 'No hay entrenamientos de este tipo' : 'No se ha creado ningún entrenamiento todavía'}</h2><p>{templates.length ? 'Prueba a seleccionar otro tipo de entrenamiento.' : 'Cuando guardes un entrenamiento prefabricado, aparecerá aquí.'}</p></section>}

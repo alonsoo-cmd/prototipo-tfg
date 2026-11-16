@@ -202,3 +202,16 @@ body { color: var(--ink); background: #f3f5f2; }
 .demo-mode .workspace-label { margin: 0 2px 8px; color: #d5e99a; letter-spacing: 1px; }
 .demo-mode-help { display: block; margin: 8px 2px 0; color: #b9c5d2; font-size: var(--text-xs); line-height: 1.4; }
 .demo-mode .role-switch button { padding: 8px 4px; }
+
+/* Barra superior en móvil: la miga de pan se recorta en vez de montarse sobre las acciones */
+@media (max-width: 1024px) {
+  .breadcrumb { flex: 1; min-width: 0; margin-right: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .breadcrumb .breadcrumb-area { margin: 0; color: inherit; }
+  .top-actions { flex: none; }
+}
+@media (max-width: 760px) {
+  .breadcrumb .breadcrumb-area, .breadcrumb .breadcrumb-sep { display: none; }
+}
+
+/* Error de validación en formularios (mismo tono que el aviso del bienestar en Inicio) */
+.form-error { margin: 16px 0 0; color: #a33a32; font-size: var(--text-sm); font-weight: 600; }

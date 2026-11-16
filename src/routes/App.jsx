@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Sidebar from '../components/layout/Sidebar.jsx';
 import Topbar from '../components/layout/Topbar.jsx';
 import { useAppState } from '../state/useAppState.js';
@@ -8,6 +9,9 @@ import AppModals from './AppModals.jsx';
 export default function App() {
   const state = useAppState();
   const { role, page, go, changeRole, mobileNavOpen, setMobileNavOpen } = state;
+
+  // Al cambiar de página o de rol, la nueva vista empieza arriba.
+  useEffect(() => { window.scrollTo(0, 0); }, [page, role]);
 
   return <div className="app-shell">
     <Sidebar

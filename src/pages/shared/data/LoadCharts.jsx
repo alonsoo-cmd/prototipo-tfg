@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PanelHeading } from './DataPanels.jsx';
 import { round, sessionFromRecord } from './dataStats.js';
+import { format } from '../../../utils/format.js';
 
 function getColorForType(type) {
   if (!type) return '#cbd5e1';
@@ -112,7 +113,7 @@ export function InternalLoadChart({ data, onSession }) {
             {hoveredDay.records.map((r, i) => (
               <div key={i} style={{ marginBottom: i < hoveredDay.records.length - 1 ? 8 : 0 }}>
                 <strong style={{ display: 'block', color: getColorForType(r.type), marginBottom: 2 }}>{r.type || 'Entrenamiento'}</strong>
-                <span style={{ fontSize: 'var(--text-xs)', color: '#e2e8f0' }}>{r.distance ? `${r.distance} km · ` : ''}{r.minutes ? `${r.minutes} min` : ''}</span>
+                <span style={{ fontSize: 'var(--text-xs)', color: '#e2e8f0' }}>{r.distance ? `${format(r.distance)} km · ` : ''}{r.minutes ? `${r.minutes} min` : ''}</span>
               </div>
             ))}
             {hoveredDay.wellbeingTotal > 0 && <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #3b4c5a', fontSize: 'var(--text-xs)', color: '#cbd5e1' }}>

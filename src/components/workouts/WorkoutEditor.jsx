@@ -15,7 +15,8 @@ export function WorkoutEditor({ day, mode, onClose, onSave }) {
   const [conditioningBlocks, setConditioningBlocks] = useState(values.details.conditioningBlocks || [{ type: 'Core', exercises: '', volume: '', comment: '' }]);
   const [workoutGroups, setWorkoutGroups] = useState(() => (values.details.groups || [{ repetitions: '', interval: '', guide: 'Sin objetivo', target: '', recovery: '', comment: '', withSled: false }]).map((group) => ({ recovery: '', ...group })));
   const [isReadOnly, setIsReadOnly] = useState(mode === 'view' || mode === 'template-view');
-  const update = (key, value) => setValues((current) => ({ ...current, [key]: value }));
+  const [error, setError] = useState('');
+  const update = (key, value) => { setError(''); setValues((current) => ({ ...current, [key]: value })); };
   const updateDetail = (key, value) => setValues((current) => ({ ...current, details: { ...current.details, [key]: value } }));
   const type = values.type || '';
   const isCycling = isCyclingWorkout(type);
@@ -24,6 +25,13 @@ export function WorkoutEditor({ day, mode, onClose, onSave }) {
 
   const submit = (event) => {
     event.preventDefault();
+    const missing = [];
+    if (!type) missing.push('tipo de entrenamiento');
+    if (type !== 'Descanso' && !(Number(values.mins) > 0)) missing.push('duración mayor que 0 min');
+    if (missing.length) {
+      setError(`No se puede guardar. Falta: ${missing.join(', ')}.`);
+      return;
+    }
     const blockSummary = conditioningBlocks.map((block) => `${block.type}${block.exercises ? `: ${block.exercises}` : ''}${block.volume ? ` (${block.volume})` : ''}`).join(' · ');
     const description = values.desc || (type === 'Acondicionamiento físico' ? blockSummary : '');
     const details = { ...values.details, exercises: exerciseRows, groups: workoutGroups, conditioningBlocks };
@@ -110,6 +118,7 @@ export function WorkoutEditor({ day, mode, onClose, onSave }) {
       {!isReadOnly && conditioningBlocks.length < 4 && <button type="button" className="text-button" onClick={() => setConditioningBlocks((current) => [...current, { type: conditioningTypes.find((item) => !current.some((block) => block.type === item)), exercises: '', volume: '', comment: '' }])}>＋ Añadir bloque</button>}
     </fieldset>}
     <fieldset className="workout-fieldset"><legend>Distribución por zonas <InfoTip term="umbrales" /></legend><div className="workout-editor-grid">{effortZones.map((zone, index) => <label className="field-label" key={zone}>{zone} · min<input disabled={isReadOnly} type="number" min="0" value={values.zones[index] || 0} onChange={(event) => update('zones', values.zones.map((minutes, i) => i === index ? Number(event.target.value) : minutes))} /></label>)}</div></fieldset>
+    {error && <p className="form-error" role="alert">{error}</p>}
     <div className="inline-actions">{isReadOnly && <button className="button secondary" type="button" onClick={() => setIsReadOnly(false)}>Editar entrenamiento</button>}<button className="button secondary" type="button" onClick={onClose}>{isReadOnly ? 'Cerrar' : 'Cancelar'}</button>{!isReadOnly && <button className="button primary" type="submit">Guardar entrenamiento</button>}</div>
   </form></div>;
 }

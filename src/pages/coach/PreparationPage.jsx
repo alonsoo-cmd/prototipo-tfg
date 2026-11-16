@@ -298,7 +298,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
               </div>
             </header>
             <div className="practical-log-activity">
-              <LogValue label="Distancia" value={item.distance} unit="km" />
+              <LogValue label="Distancia" value={item.distance ? format(item.distance) : ''} unit="km" />
               <LogValue label="Duración" value={item.minutes} unit="min" />
               <LogValue label="TRIMPS" value={item.trimps} />
               {isCyclingWorkout(item.type) ? (
@@ -395,7 +395,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
     {showAllDays && <OverviewModal title={`Todos los entrenamientos · ${athlete.name}`} onClose={() => setShowAllDays(false)}>
       {completedHistory.slice().reverse().map((day) => <div className="overview-row" key={day.id}>
         <b>Semana {day.preparationWeek} · {day.day} ({formatShortDate(day.date)}) · {day.type}</b>
-        <span>{day.distance || '—'} km · {day.minutes || '—'} min · {day.trimps || '—'} TR · {isCyclingWorkout(day.type) ? `Velocidad ${day.speed || calculateSpeed(day.minutes, day.distance) || '—'} km/h` : `Ritmo ${day.pace || '—'} min/km`} · FC {day.averageHr || '—'} ppm · {day.status}</span>
+        <span>{day.distance ? format(day.distance) : '—'} km · {day.minutes || '—'} min · {day.trimps || '—'} TR · {isCyclingWorkout(day.type) ? `Velocidad ${day.speed || calculateSpeed(day.minutes, day.distance) || '—'} km/h` : `Ritmo ${day.pace || '—'} min/km`} · FC {day.averageHr || '—'} ppm · {day.status}</span>
         <span>Fatiga {day.fatigue || '—'} · Irritabilidad {day.mood || '—'} · Agujetas {day.soreness || '—'} · Mal descanso {day.sleep || '—'} · Estrés {day.stress || '—'} · WT {day.wellbeingTotal || '—'}/50</span>
         {day.notes && <span style={{ color: 'var(--muted-color)', fontStyle: 'italic' }}>“{day.notes}”</span>}
       </div>)}

@@ -10,6 +10,7 @@ import { weekPhase } from '../../data/phases.js';
 import Toast from '../../components/ui/Toast.jsx';
 import './Diary.css';
 import InfoTip, { TermLabel } from '../../components/ui/InfoTip.jsx';
+import { format } from '../../utils/format.js';
 
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
@@ -151,7 +152,7 @@ export default function Diary({
                     {session.shoes && <div className="session-shoes-note">👟 {session.shoes}</div>}
                     <div className="card-meta">
                       <span>{session.mins ? `${session.mins} min` : '—'}</span>
-                      <span>{session.km ? `${session.km} km` : '—'}</span>
+                      <span>{session.km ? `${format(session.km)} km` : '—'}</span>
                     </div>
                     <div className="card-state"><i />{session.state}</div>
                   </button>
@@ -190,7 +191,7 @@ export default function Diary({
                     </button>
                   )}
                   <div className="day-load">
-                    <span>{logEntry?.distance ? Number(logEntry.distance).toFixed(1).replace('.', ',') : (session.km ? session.km.toFixed(1).replace('.', ',') : '0,0')} km</span>
+                    <span>{format(logEntry?.distance || session.km || 0, 1)} km</span>
                     <span className={logEntry?.trimps ? 'logged-trimp' : ''} title={logEntry?.trimps ? `TRIMP registrado: ${logEntry.trimps}` : `TRIMP planificado: ${session.tr}`}>
                       {logEntry?.trimps ? `${logEntry.trimps} TR` : `${session.tr} TR`}
                     </span>

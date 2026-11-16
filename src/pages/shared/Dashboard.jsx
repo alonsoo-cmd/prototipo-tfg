@@ -5,6 +5,7 @@ import { injuryRegions, wellbeingScales } from '../../domain/wellbeing.js';
 import { weekPhase } from '../../data/phases.js';
 import Toast from '../../components/ui/Toast.jsx';
 import './Dashboard.css';
+import { format } from '../../utils/format.js';
 
 const athleteShortcuts = [
   {
@@ -79,7 +80,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
             <span className="today-training-kicker">{activityLogged ? 'ACTIVIDAD REGISTRADA' : wellbeingLogged ? 'BIENESTAR REGISTRADO' : 'ENTRENO DE HOY'}</span>
             <strong>{todaySession.type}</strong>
             <span className="today-training-description">{todaySession.desc.replaceAll('\n', ' · ')}</span>
-            <span className="today-training-duration">{todaySession.mins ? `${todaySession.mins} min` : 'Descanso'}{todaySession.km ? ` · ${todaySession.km} km` : ''}</span>
+            <span className="today-training-duration">{todaySession.mins ? `${todaySession.mins} min` : 'Descanso'}{todaySession.km ? ` · ${format(todaySession.km)} km` : ''}</span>
             <span className="today-training-cta">Detalles del entreno <b>↗</b></span>
           </button>
           <button
@@ -241,7 +242,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
                 <span className="dashboard-day-date"><b>{session.day}</b><small>{session.date} oct</small></span>
                 <span className="dashboard-day-type">{session.type}<span aria-hidden="true">⌄</span></span>
                 <span className="dashboard-day-session">{session.desc.replaceAll('\n', ' · ')}</span>
-                <span className="dashboard-day-metrics"><span>{session.mins ? `${session.mins} min` : '—'}</span><span>{session.km ? `${session.km} km` : '—'}</span></span>
+                <span className="dashboard-day-metrics"><span>{session.mins ? `${session.mins} min` : '—'}</span><span>{session.km ? `${format(session.km)} km` : '—'}</span></span>
                 <span className="dashboard-day-state"><i />{session.state}</span>
               </button>
             ))}

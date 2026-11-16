@@ -4,6 +4,7 @@ import { workoutColor } from '../../../data/coachAthletes.js';
 import { capitalize, formatDate, formatNumber, groupBy, monthFormatter, sessionFromRecord, toDateKey } from './dataStats.js';
 import { PanelHeading, SummaryTable } from './DataPanels.jsx';
 import InfoTip from '../../../components/ui/InfoTip.jsx';
+import { format } from '../../../utils/format.js';
 
 export function DataSection({ records, recentSevenDays, onSession, setTrainingLogs }) {
   const [viewMode, setViewMode] = useState('table');
@@ -126,7 +127,7 @@ function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
             const weekMin = weekRecords.reduce((sum, r) => sum + (Number(r.minutes) || 0), 0);
             const weekTrimp = weekRecords.reduce((sum, r) => sum + (Number(r.trimps) || 0), 0);
             const validRpe = weekRecords.map((r) => Number(r.rpe)).filter((v) => Number.isFinite(v) && v > 0);
-            const avgRpe = validRpe.length ? (validRpe.reduce((a, b) => a + b, 0) / validRpe.length).toFixed(1) : null;
+            const avgRpe = validRpe.length ? (validRpe.reduce((a, b) => a + b, 0) / validRpe.length) : null;
             const validHr = weekRecords.map((r) => Number(r.averageHr)).filter((v) => Number.isFinite(v) && v > 0);
             const avgHr = validHr.length ? Math.round(validHr.reduce((a, b) => a + b, 0) / validHr.length) : null;
             const completedCount = weekRecords.filter((r) => (r.completionStatus || r.status) === 'completed' || r.status === 'Completado').length;
@@ -243,7 +244,7 @@ function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
                     <strong className="summary-val">{weekTrimp} TR</strong>
                   </td>
                   <td className="num-col">
-                    {avgRpe ? <small>Media: {avgRpe}</small> : '—'}
+                    {avgRpe ? <small>Media: {format(avgRpe, 1)}</small> : '—'}
                   </td>
                   <td className="num-col">
                     {avgHr ? <small>Media: {avgHr} ppm</small> : '—'}

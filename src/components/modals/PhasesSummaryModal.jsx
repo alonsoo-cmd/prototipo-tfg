@@ -1,4 +1,5 @@
 import { getWeekStatus } from '../ui/WeekTimeline.jsx';
+import { format } from '../../utils/format.js';
 
 /** Resumen de la preparación agrupado por fases y semanas. */
 export default function PhasesSummaryModal({ preparation, coachWeeks, week, onSelectWeek, onClose }) {
@@ -41,7 +42,7 @@ export default function PhasesSummaryModal({ preparation, coachWeeks, week, onSe
           <div className="phase-week-workouts">{planWeek.days.filter((day) => day.type).map((day) => <div className="phase-workout-item" key={day.day}>
             <div><b>{day.day} · {day.type}</b><small>{day.date} {day.month || 'oct'}</small></div>
             <p>{day.desc || day.blocks || 'Sin descripción'}</p>
-            <span>{day.mins || 0} min · {day.km || 0} km{day.shoes ? ` · 👟 ${day.shoes}` : ''}</span>
+            <span>{day.mins || 0} min · {format(day.km)} km{day.shoes ? ` · 👟 ${day.shoes}` : ''}</span>
           </div>)}{!planWeek.days.some((day) => day.type) && <p className="phase-no-workouts">Todavía no hay entrenamientos planificados para esta semana.</p>}</div>
         </details>;
       })}

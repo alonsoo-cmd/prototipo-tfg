@@ -44,7 +44,7 @@
 - **Visto:** tras bajar en Inicio y pulsar Diario, la página abre con el título cortado (`scrollY` se queda en 145).
 - **Archivo:** `src/routes/App.jsx`.
 - **Cambio:** `useEffect(() => window.scrollTo(0, 0), [page, role])`.
-- [ ] Hecho · **Comprobación:** bajar en cualquier página, navegar y ver el título completo.
+- [x] Hecho · **Comprobación:** bajar en cualquier página, navegar y ver el título completo.
 
 ### 1.2 Fechas incoherentes: hay cinco calendarios distintos (M)
 - **Visto:**
@@ -91,7 +91,7 @@
 - **Visto:** al pulsar "Guardar entrenamiento" sin rellenar nada se crea "Entrenamiento · 0 min · 0 km · 0 TR".
 - **Archivo:** `src/components/workouts/WorkoutEditor.jsx` (función `submit`).
 - **Cambio:** tipo obligatorio y duración mayor que 0 (salvo Descanso), con mensaje de error como el del bienestar en Inicio.
-- [ ] Hecho · **Comprobación:** guardar vacío muestra el error y no crea la tarjeta.
+- [x] Hecho · **Comprobación:** guardar vacío muestra el error y no crea la tarjeta.
 
 ### 1.6 "Buscar entrenador" es inaccesible (S-M, según D3)
 - **Visto:** `activePlan` empieza en `true` y en todo el código solo existe `setActivePlan(true)` (`Diary.jsx:76`). Nunca se llega a `FindCoach`, ni al formulario de solicitud, ni al aviso de solicitud enviada.
@@ -124,10 +124,11 @@
 ### 1.9 Formato de números mezclado (S)
 - **Visto:** "Media: 7.0" junto a "3,5 km"; "11.5 km" en Entrenamientos y "11,5 km" en Preparaciones; "4.5 km" en el resumen práctico.
 - **Cambio:** usar siempre `format()` de `src/utils/format.js`.
-  - [ ] `src/pages/shared/data/DataSection.jsx:129` (`toFixed`)
-  - [ ] `src/pages/coach/WorkoutsPage.jsx` (métricas de la tarjeta)
-  - [ ] Resumen práctico de `PreparationPage.jsx`
-  - [ ] `src/pages/athlete/Diary.jsx:193` (reemplazo manual de punto por coma)
+  - [x] `src/pages/shared/data/DataSection.jsx:129` (`toFixed`)
+  - [x] `src/pages/coach/WorkoutsPage.jsx` (métricas de la tarjeta)
+  - [x] Resumen práctico de `PreparationPage.jsx`
+  - [x] `src/pages/athlete/Diary.jsx:193` (reemplazo manual de punto por coma)
+  - [x] Además: `Dashboard.jsx`, `SessionDetailModal.jsx`, `PhasesSummaryModal.jsx`, `LoadCharts.jsx`. `format(valor, 1)` fija un decimal (7 → «7,0»).
 - **Comprobación:** buscar `\d\.\d` en pantalla no da resultados en cifras.
 
 ### 1.10 Inicio según el rol (S)
@@ -166,7 +167,7 @@
 ### 2.3 Barra superior en móvil (S)
 - **Visto (375 px):** con etiquetas largas ("Preparaciones", "Entrenamientos") la miga de pan se monta sobre el icono de notificaciones.
 - **Archivo:** `src/vivid.css` (bloque `@media (max-width: 1024px)`).
-- [ ] `.breadcrumb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }` o mostrar solo el nombre de la página por debajo de 760 px.
+- [x] `.breadcrumb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }` o mostrar solo el nombre de la página por debajo de 760 px.
 
 ### 2.4 Botones demasiado pequeños para el dedo (M)
 - **Medido a 375 px (controles de menos de 32 px):** Datos 35 de 40, Preparaciones 61 de 133, Entrenamientos 10 de 24.
