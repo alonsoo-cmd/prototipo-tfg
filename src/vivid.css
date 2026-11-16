@@ -220,3 +220,19 @@ body { color: var(--ink); background: #f3f5f2; }
 .demo-plan-toggle { display: flex; align-items: center; gap: 8px; margin: 10px 2px 0; color: #d5e0ea; font-size: var(--text-sm); cursor: pointer; }
 .demo-plan-toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--lime); cursor: pointer; }
 .find-coach-pending { margin: 0 0 16px; padding: 12px 14px; border: 1px solid #e3e8d0; border-radius: 8px; background: #f7fbe9; color: var(--ink); font-size: var(--text-sm); }
+
+/* Buscar entrenador: filtros, recuento, acciones y ficha */
+.find-coach-select { min-width: 170px; border: 1px solid #e2e7eb; border-radius: 6px; background: #fff; color: var(--ink); padding: 9px 10px; font-size: var(--text-sm); }
+.find-coach-count { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; color: var(--muted-ink); font-size: var(--text-sm); }
+.coach-card-actions { display: flex; flex-direction: column; gap: 8px; margin-left: auto; flex: none; }
+.coach-card-actions .button { white-space: nowrap; }
+.coach-profile-list { margin: 0; padding-left: 18px; color: #646f7c; font-size: var(--text-sm); line-height: 1.65; }
+.session-future-note { align-self: center; margin-right: auto; }
+@media (max-width: 760px) {
+  .find-coach-filters { flex-wrap: wrap; }
+  .find-coach-filters .search-field { flex-basis: 100%; }
+  .find-coach-select { flex: 1; min-width: 0; }
+  .coach-card { flex-wrap: wrap; }
+  .coach-card-actions { flex-direction: row; width: 100%; margin-left: 0; }
+  .coach-card-actions .button { flex: 1; }
+}

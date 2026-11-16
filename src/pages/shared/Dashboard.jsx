@@ -75,7 +75,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
           <button
             type="button"
             className={`today-training-circle ${todaySession.tone || ''}`}
-            onClick={() => onSession?.(todaySession)}
+            onClick={() => onSession?.(todaySession, currentWeek?.number || weekNumber)}
             aria-label={`Ver detalles del entrenamiento de hoy: ${todaySession.type}`}
           >
             <span className="today-training-kicker">{activityLogged ? 'ACTIVIDAD REGISTRADA' : wellbeingLogged ? 'BIENESTAR REGISTRADO' : 'ENTRENO DE HOY'}</span>
@@ -239,7 +239,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
         <div className="dashboard-week-layout">
           <div className="dashboard-week-days">
             {weekSessions.map((session) => (
-              <button className={`dashboard-day ${session.tone}`} key={session.day} onClick={() => onSession(session)}>
+              <button className={`dashboard-day ${session.tone}`} key={session.day} onClick={() => onSession(session, currentWeek?.number || weekNumber)}>
                 <span className="dashboard-day-date"><b>{session.day}</b><small>{session.date} oct</small></span>
                 <span className="dashboard-day-type">{session.type}<span aria-hidden="true">⌄</span></span>
                 <span className="dashboard-day-session">{session.desc.replaceAll('\n', ' · ')}</span>

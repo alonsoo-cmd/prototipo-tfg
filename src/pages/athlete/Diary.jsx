@@ -119,7 +119,7 @@ export default function Diary({
               return (
                 <article className="day-column" key={session.day}>
                   <div className="day-heading"><span>{session.day}</span><b>{sessionDate(week, session.day).getUTCDate()}</b></div>
-                  <button className={`session-card ${session.tone}`} onClick={() => onSession(session)}>
+                  <button className={`session-card ${session.tone}`} onClick={() => onSession(session, week)}>
                     <div className="card-title">{session.type}<span>⌄</span></div>
                     <div className="card-desc">{session.desc}</div>
                     {session.shoes && <div className="session-shoes-note">👟 {session.shoes}</div>}

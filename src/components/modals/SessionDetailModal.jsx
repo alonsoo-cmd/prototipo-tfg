@@ -2,7 +2,7 @@ import Metric from '../ui/Metric.jsx';
 import { format } from '../../utils/format.js';
 
 /** Detalle de una sesión planificada (contenido del modal). */
-export default function SessionDetailModal({ session, onRegister, onClose }) {
+export default function SessionDetailModal({ session, canRegister = true, hasLog = false, onRegister, onClose }) {
   return <>
     <div className="eyebrow">{session.day} · {session.dateLabel || `${session.date} ${(session.month || '').toUpperCase()}`.trim()}</div>
     <h2>{session.type}</h2>
@@ -37,7 +37,9 @@ export default function SessionDetailModal({ session, onRegister, onClose }) {
       {session.details.hrMin && session.details.hrMax && <div className="session-range-values"><span>Pulsaciones</span><strong>{session.details.hrMin}–{session.details.hrMax} ppm</strong></div>}
     </div>}
     <div className="inline-actions">
-      <button className="button secondary" onClick={onRegister}>Registrar actividad</button>
+      {canRegister
+        ? <button className="button secondary" onClick={onRegister}>{hasLog ? 'Editar registro del diario' : 'Registrar en el diario'}</button>
+        : <span className="help-text session-future-note">Podrás registrarla a partir del {session.dateLabel || `${session.date} ${session.month || ''}`.trim()}.</span>}
       <button className="button primary" onClick={onClose}>Cerrar</button>
     </div>
   </>;

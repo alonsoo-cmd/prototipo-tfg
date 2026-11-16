@@ -116,7 +116,10 @@
 | `src/components/modals/ActivityForm.jsx` | 92, 103, 104 | detectados buscando en el código, sin abrir el modal: revisar |
 
 - **Cambio:** darles función o quitarlos. Un botón muerto en una defensa se nota.
-- [ ] Hecho
+- [x] FindCoach: directorio de 10 entrenadores (`src/data/coaches.js`) en Madrid, Móstoles y Alcorcón con especialidad 1.500 m, 10K o Maratón. Buscador por nombre (sin distinguir tildes), filtros de ubicación y especialidad, recuento y "Quitar filtros".
+- [x] FindCoach: "Ver perfil" abre una ficha (experiencia, atletas, cómo planifica, formación) con "Solicitar preparación".
+- [x] ActivityForm eliminado. "Registrar en el diario" (o "Editar registro del diario") en el detalle de sesión abre el mismo `JournalModal` de Inicio y Diario, para la semana y el día de esa sesión. Las sesiones futuras no se pueden registrar.
+- [ ] Pendiente: botón `···` del menú y campana de notificaciones.
 
 ### 1.8 Panel del entrenador (Atletas) con datos contradictorios (M)
 - **Archivo:** `src/pages/coach/CoachHome.jsx`.

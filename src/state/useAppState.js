@@ -35,11 +35,8 @@ export function useAppState() {
   // ── Diario ───────────────────────────────────────────────
   const [activePlan, setActivePlan] = useState(true);
 
-  // ── Registro de actividad (simulado) ─────────────────────
-  const [comment, setComment] = useState('');
-  const [comments, setComments] = useState([]);
-  const [connected, setConnected] = useState(false);
-  const [uploaded, setUploaded] = useState(false);
+  // ── Aviso breve global (p. ej. al guardar el diario desde el detalle de sesión)
+  const [toast, setToast] = useState('');
 
   // ── Solicitud de preparación (simulada) ──────────────────
   const [requestDate, setRequestDate] = useState('2026-12-06');
@@ -70,16 +67,12 @@ export function useAppState() {
       if (page === 'Find coach') setPage('Dashboard');
     }
   };
-  const openSession = (session) => {
-    setActiveSession(session);
+  // La sesión lleva su semana para que «Registrar» guarde el diario en la clave correcta.
+  const openSession = (session, weekNumber) => {
+    setActiveSession({ ...session, week: weekNumber ?? session.preparationWeek ?? week });
     setModal('session');
   };
   const closeModal = () => setModal(null);
-  const addComment = () => {
-    if (!comment.trim()) return;
-    setComments((current) => [...current, comment.trim()]);
-    setComment('');
-  };
 
   const athletePreparation = preparations.find((item) => item.athleteId === CURRENT_ATHLETE_ID) || null;
 
@@ -95,7 +88,7 @@ export function useAppState() {
     go, changeRole,
     modal, setModal, closeModal, activeSession, openSession,
     activePlan, setActivePlan, togglePlan, requestCoach, setRequestCoach,
-    comment, setComment, comments, addComment, connected, setConnected, uploaded, setUploaded,
+    toast, setToast,
     focusAthleteId, setFocusAthleteId,
     requestDate, setRequestDate, requestSent, setRequestSent, requestStatus, setRequestStatus,
   };

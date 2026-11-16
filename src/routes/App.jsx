@@ -4,11 +4,12 @@ import Topbar from '../components/layout/Topbar.jsx';
 import { useAppState } from '../state/useAppState.js';
 import AppRoutes from './AppRoutes.jsx';
 import AppModals from './AppModals.jsx';
+import Toast from '../components/ui/Toast.jsx';
 
 /** Shell de la aplicación: layout (menú lateral + barra superior), página activa y modales globales. */
 export default function App() {
   const state = useAppState();
-  const { role, page, go, changeRole, mobileNavOpen, setMobileNavOpen, activePlan, togglePlan } = state;
+  const { role, page, go, changeRole, mobileNavOpen, setMobileNavOpen, activePlan, togglePlan, toast, setToast } = state;
 
   // Al cambiar de página o de rol, la nueva vista empieza arriba.
   useEffect(() => { window.scrollTo(0, 0); }, [page, role]);
@@ -31,5 +32,6 @@ export default function App() {
     </main>
 
     <AppModals state={state} />
+    <Toast message={toast} onDone={() => setToast('')} />
   </div>;
 }
