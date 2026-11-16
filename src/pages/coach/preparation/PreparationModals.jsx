@@ -47,7 +47,7 @@ export function TemplatePickerModal({ day, templates, onPick, onClose }) {
   const visible = templates.filter((template) => typeFilter === 'all' || template.type === typeFilter);
 
   return <ModalShell onClose={onClose} wide labelledBy="template-picker-title">
-    <div className="eyebrow">PLANIFICAR · {day.day.toUpperCase()} {day.date} {(day.month || 'oct').toUpperCase()}</div>
+    <div className="eyebrow">PLANIFICAR · {day.day.toUpperCase()} {day.date} {(day.month || '').toUpperCase()}</div>
     <h2 id="template-picker-title">Usar una plantilla</h2>
     <p className="muted">Elige un entrenamiento predefinido para el {day.day.toLocaleLowerCase('es-ES')}. {day.type ? `Sustituirá a «${day.type}». Podrás deshacerlo.` : ''}</p>
     <label className="field-label template-picker-filter">Tipo<select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>

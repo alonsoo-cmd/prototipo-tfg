@@ -11,15 +11,9 @@ import Toast from '../../components/ui/Toast.jsx';
 import './Diary.css';
 import InfoTip, { TermLabel } from '../../components/ui/InfoTip.jsx';
 import { format } from '../../utils/format.js';
+import { CURRENT_WEEK, sessionDate, today } from '../../domain/calendar.js';
 
-const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
-function getSessionDate(weekNumber, dayName) {
-  const dayIndex = daysOfWeek.indexOf(dayName);
-  const firstDate = new Date(Date.UTC(2026, 9, 21 + (weekNumber - 8) * 7));
-  firstDate.setUTCDate(firstDate.getUTCDate() + dayIndex);
-  return firstDate;
-}
 
 export default function Diary({
   role,
@@ -94,7 +88,7 @@ export default function Diary({
         weeks={coachWeeks}
         selectedWeek={week}
         onSelectWeek={setWeek}
-        currentWeek={8}
+        currentWeek={CURRENT_WEEK}
       />
 
       <section className="diary-stats" aria-label="Estadísticas de los últimos siete días">
@@ -113,7 +107,7 @@ export default function Diary({
 
       <div className="week-control">
         <div>
-          <strong>Semana {week} · {getWeekDateRange(week, 8)}</strong>
+          <strong>Semana {week} · {getWeekDateRange(week)}</strong>
         </div>
         <button className="text-button" onClick={onPhases}>Resumen de fases ↗</button>
       </div>
@@ -122,10 +116,7 @@ export default function Diary({
         <div className="week-board">
           <div className="week-grid">
             {weekSessions.map((session) => {
-              const sessionDate = getSessionDate(week, session.day);
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              const isFuture = sessionDate > today;
+              const isFuture = sessionDate(week, session.day) > today();
 
               const logEntry = trainingLogs[logKey(week, session.day)];
               const status = logEntry?.completionStatus;
@@ -145,7 +136,7 @@ export default function Diary({
 
               return (
                 <article className="day-column" key={session.day}>
-                  <div className="day-heading"><span>{session.day}</span><b>{sessionDate.getUTCDate()}</b></div>
+                  <div className="day-heading"><span>{session.day}</span><b>{sessionDate(week, session.day).getUTCDate()}</b></div>
                   <button className={`session-card ${session.tone}`} onClick={() => onSession(session)}>
                     <div className="card-title">{session.type}<span>⌄</span></div>
                     <div className="card-desc">{session.desc}</div>

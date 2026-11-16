@@ -11,6 +11,7 @@ import { format, formatLongDate } from '../../utils/format.js';
 import InfoTip, { TermLabel } from '../../components/ui/InfoTip.jsx';
 import Toast from '../../components/ui/Toast.jsx';
 import DatePicker from '../../components/ui/DatePicker.jsx';
+import { CURRENT_WEEK } from '../../domain/calendar.js';
 
 // En el prototipo, Lucía (primer atleta del entrenador) es la persona de la vista «Atleta»:
 // comparten el plan semanal (`weeks`) y también la preparación con sus objetivos.
@@ -24,7 +25,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
   const [athlete, setAthlete] = useState(coachAthletes[0]);
   const [athleteList, setAthleteList] = useState(coachAthletes);
   const [otherPlans, setOtherPlans] = useState(() => Object.fromEntries(coachAthletes.filter((item) => item.id !== 'lucia').map((item) => [item.id, copyWeeks(weeks)])));
-  const [selectedWeek, setSelectedWeek] = useState(8);
+  const [selectedWeek, setSelectedWeek] = useState(CURRENT_WEEK);
   const [editingDay, setEditingDay] = useState(null);
   const [showAllDays, setShowAllDays] = useState(false);
   const [showAllWeeks, setShowAllWeeks] = useState(false);
@@ -338,7 +339,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
         weeks={planWeeks}
         selectedWeek={selectedWeek}
         onSelectWeek={setSelectedWeek}
-        currentWeek={8}
+        currentWeek={CURRENT_WEEK}
       />
       <div className="selected-week-heading"><div><div className="eyebrow">SEMANA {current.number} · {current.phase.toUpperCase()}</div><h3>Semana {current.number} · planificación</h3></div><div className="week-actions" style={{ display: 'flex', gap: '8px' }}><button className="button secondary" type="button" onClick={undo} disabled={history.length === 0}>Deshacer</button><button className="button secondary" type="button" onClick={copyCurrentWeek}>Copiar semana</button><button className="button primary" type="button" onClick={pasteWeek} disabled={!clipboard}>Pegar semana</button></div></div>
       {workoutTemplates.length > 0 ? <section className="workout-template-library">
@@ -402,7 +403,7 @@ export default function PreparationPage({ weeks, setWeeks, preparations = [], se
       {!completedHistory.length && <p className="practical-empty-state">El atleta todavía no ha registrado entrenamientos.</p>}
     </OverviewModal>}
     {showAllWeeks && <OverviewModal title={`Semanas · ${athlete.name}`} onClose={() => setShowAllWeeks(false)}>{planWeeks.map((week) => {
-      const status = getWeekStatus(week.number, 8);
+      const status = getWeekStatus(week.number);
       const sum = sumDays(week.days);
       return <button className="overview-row" key={week.number} onClick={() => { setSelectedWeek(week.number); setShowAllWeeks(false); }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

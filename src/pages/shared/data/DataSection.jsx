@@ -132,7 +132,7 @@ function DetailedTrainingTable({ records, onSession, setTrainingLogs }) {
             const avgHr = validHr.length ? Math.round(validHr.reduce((a, b) => a + b, 0) / validHr.length) : null;
             const completedCount = weekRecords.filter((r) => (r.completionStatus || r.status) === 'completed' || r.status === 'Completado').length;
             const phaseName = weekRecords[0]?.phase || '';
-            const weekRange = getWeekDateRange(Number(weekNum), 8);
+            const weekRange = getWeekDateRange(Number(weekNum));
 
             return (
               <Fragment key={`week-group-${weekNum}`}>

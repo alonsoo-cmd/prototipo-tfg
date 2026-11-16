@@ -4,7 +4,7 @@ import { format } from '../../utils/format.js';
 /** Detalle de una sesión planificada (contenido del modal). */
 export default function SessionDetailModal({ session, onRegister, onClose }) {
   return <>
-    <div className="eyebrow">{session.day} · {session.dateLabel || `${session.date} OCT`}</div>
+    <div className="eyebrow">{session.day} · {session.dateLabel || `${session.date} ${(session.month || '').toUpperCase()}`.trim()}</div>
     <h2>{session.type}</h2>
     <div className="modal-status">
       <span className={'dot-status ' + session.tone} />

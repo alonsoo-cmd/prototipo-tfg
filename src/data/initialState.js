@@ -1,5 +1,6 @@
 import { sessions } from './sessions.js';
 import { phaseForWeek } from './phases.js';
+import { sessionDayFields } from '../domain/calendar.js';
 
 // Datos de partida del prototipo. No se persisten: se regeneran en cada carga.
 
@@ -45,6 +46,6 @@ export function createInitialCoachWeeks() {
   return Array.from({ length: PREPARATION_WEEKS }, (_, index) => ({
     number: index + 1,
     phase: phaseForWeek(index + 1),
-    days: sessions.map((session) => ({ ...session })),
+    days: sessions.map((session, dayIndex) => ({ ...session, ...sessionDayFields(index + 1, dayIndex) })),
   }));
 }

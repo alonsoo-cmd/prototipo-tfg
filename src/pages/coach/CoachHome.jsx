@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { coachAthletes } from '../../data/coachAthletes.js';
 import { createInjuryAlerts } from '../../data/injuryAlerts.js';
+import { CURRENT_WEEK } from '../../domain/calendar.js';
 
 const attendanceLabels = { green: 'Completado', yellow: 'A medias', red: 'No realizado', gray: 'Pendiente' };
 const attendanceGlyphs = { green: '✓', yellow: '½', red: '✕', gray: '—' };
 
 export default function CoachHome({go,openRequest,requestStatus,weeks,trainingLogs={}}){
   const injuryAlerts = createInjuryAlerts(weeks, trainingLogs, 'Alex Martín');
-  const [selectedWeek, setSelectedWeek] = useState(8);
-  const currentWeek = weeks.find((w) => w.number === selectedWeek) || weeks.find((w) => w.number === 8) || weeks[0];
+  const [selectedWeek, setSelectedWeek] = useState(CURRENT_WEEK);
+  const currentWeek = weeks.find((w) => w.number === selectedWeek) || weeks.find((w) => w.number === CURRENT_WEEK) || weeks[0];
 
   return <div className="content">
     <div className="page-heading">
@@ -128,7 +129,7 @@ function GroupAttendancePanel({ currentWeek, trainingLogs, selectedWeek, setSele
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <div className="eyebrow">CONTROL GRUPAL</div>
-          <h2 style={{ margin: '4px 0 0' }}>Asistencia de la Semana {currentWeek?.number || 8}</h2>
+          <h2 style={{ margin: '4px 0 0' }}>Asistencia de la Semana {currentWeek?.number || CURRENT_WEEK}</h2>
           <p style={{ margin: '4px 0 0', color: 'var(--muted-color)' }}>✓ Completado · ½ A medias · ✕ No realizado · — Pendiente</p>
         </div>
         {setSelectedWeek && (

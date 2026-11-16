@@ -39,7 +39,7 @@ export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, 
   const averages = useMemo(() => computeAverages(records), [records]);
 
   const weekPhase = coachWeeks.find((w) => w.number === selectedWeek)?.phase || '';
-  const weekDateRange = getWeekDateRange(selectedWeek, 8);
+  const weekDateRange = getWeekDateRange(selectedWeek);
   const monthLabel = selectedMonth
     ? capitalize(monthFormatter.format(new Date(`${selectedMonth}-01T00:00:00Z`)))
     : '';

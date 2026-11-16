@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { sessions } from '../data/sessions.js';
 import { createSampleWorkoutTemplates } from '../data/workoutTemplates.js';
 import { createInitialCoachWeeks, initialAthleteProfile, initialCoachExperience, initialPreparations } from '../data/initialState.js';
+import { CURRENT_WEEK } from '../domain/calendar.js';
 
 const CURRENT_ATHLETE_ID = 'alex';
 
@@ -22,7 +23,7 @@ export function useAppState() {
   // ── Navegación ───────────────────────────────────────────
   const [role, setRole] = useState('atleta');
   const [page, setPage] = useState('Dashboard');
-  const [week, setWeek] = useState(8);
+  const [week, setWeek] = useState(CURRENT_WEEK);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // ── Modales globales ─────────────────────────────────────

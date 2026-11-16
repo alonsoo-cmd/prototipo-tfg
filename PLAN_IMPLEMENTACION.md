@@ -65,11 +65,12 @@
 | `src/data/groupHistory.js` | 9 | semana 1 = 24 ago 2026 |
 
 - **Cambio:**
-  - [ ] Crear `src/domain/calendar.js` con `PREPARATION_START`, `DEMO_TODAY`, `weekMonday(n)`, `weekRange(n)`, `currentWeek()` y `today()` (según D1 y D2).
-  - [ ] Sustituir las siete líneas de la tabla por esas funciones.
-  - [ ] Sustituir `new Date()` por `today()` en `Dashboard.jsx:46`, `Diary.jsx:125`, `DataPage.jsx:34`, `dataStats.js:80`, `trainingHistory.js:45` y `groupHistory.js:11`. No tocar `DatePicker.jsx` ni `CoachExperienceSection.jsx` (ahí la fecha real es correcta).
-  - [ ] Quitar el `8` fijo de `useAppState.js` (`useState(8)`) y de las llamadas `getWeekDateRange(…, 8)` en `DataSection.jsx:134` y `DiaryAveragesModal.jsx:42`.
+  - [x] Crear `src/domain/calendar.js` con `PREPARATION_START`, `DEMO_TODAY`, `weekMonday(n)`, `weekRange(n)`, `currentWeek()` y `today()` (según D1 y D2).
+  - [x] Sustituir las siete líneas de la tabla por esas funciones.
+  - [x] Sustituir `new Date()` por `today()` en `Dashboard.jsx:46`, `Diary.jsx:125`, `DataPage.jsx:34`, `dataStats.js:80`, `trainingHistory.js:45` y `groupHistory.js:11`. No tocar `DatePicker.jsx` ni `CoachExperienceSection.jsx` (ahí la fecha real es correcta).
+  - [x] Quitar el `8` fijo de `useAppState.js` (`useState(8)`) y de las llamadas `getWeekDateRange(…, 8)` en `DataSection.jsx:134` y `DiaryAveragesModal.jsx:42`.
 - **Comprobación:** la semana 12 muestra 30 nov – 6 dic en Inicio, Diario, Datos y Preparaciones, y todos los "Lunes" caen en lunes.
+  - [x] Además: otros `8` fijos (`PreparationPage`, `CoachHome`, `PhasesSummaryModal`, valores por defecto de `WeekTimeline`), las 12 semanas del plan copiaban `date: 21…27` de la semana modelo, y los textos de reserva `'oct'`/`OCT`. Se elimina `formatWorkoutDate` (no se usaba).
 
 ### 1.3 Plantillas con ritmos imposibles (S)
 - **Visto:** "Rodaje · 34 min · 11,5 km" (2:57/km), "Tirada larga · 32 min · 14,9 km" (2:09/km), "Cuestas · 52 min · 3,8 km".

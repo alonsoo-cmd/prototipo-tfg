@@ -1,3 +1,4 @@
+import { today } from '../../../domain/calendar.js';
 export const monthFormatter = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 const shortDateFormatter = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', timeZone: 'UTC' });
@@ -77,11 +78,10 @@ export function groupBy(items, getKey) {
 export function matchesPeriod(date, period, months) {
   if (period === 'all') return true;
   if (period !== 'last30') return date.startsWith(period);
-  const end = new Date();
-  end.setHours(23, 59, 59, 999);
+  const end = today();
   const start = new Date(end);
-  start.setDate(start.getDate() - 29);
-  const candidate = new Date(`${date}T00:00:00`);
+  start.setUTCDate(start.getUTCDate() - 29);
+  const candidate = new Date(`${date}T00:00:00Z`);
   return candidate >= start && candidate <= end && months.includes(date.slice(0, 7));
 }
 

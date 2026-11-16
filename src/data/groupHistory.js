@@ -1,4 +1,5 @@
 import { logKey } from '../domain/training.js';
+import { sessionDateKey, todayKey } from '../domain/calendar.js';
 
 /**
  * Historial del modo "grupo": se construye a partir del plan del entrenador
@@ -6,10 +7,8 @@ import { logKey } from '../domain/training.js';
  */
 export function createGroupHistory(coachWeeks = [], trainingLogs = {}) {
   return coachWeeks.flatMap((week) => week.days.map((day, index) => {
-    const dateObj = new Date(Date.UTC(2026, 7, 24 + (week.number - 1) * 7 + index));
-    const dateStr = dateObj.toISOString().slice(0, 10);
-    const todayKey = new Date().toLocaleDateString('en-CA');
-    const isPast = dateStr <= todayKey;
+    const dateStr = sessionDateKey(week.number, index);
+    const isPast = dateStr <= todayKey();
     const log = trainingLogs[logKey(week.number, day.day)];
     let completionStatus = log?.completionStatus;
     if (!completionStatus && isPast) {

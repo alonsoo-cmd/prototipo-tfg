@@ -6,6 +6,7 @@ import { DataSection } from './data/DataSection.jsx';
 import { ChartsSection } from './data/ChartsSection.jsx';
 import './DataPage.css';
 import InfoTip from '../../components/ui/InfoTip.jsx';
+import { today } from '../../domain/calendar.js';
 
 export default function DataPage({ trainingLogs = {}, setTrainingLogs, onSession, role, coachWeeks = [] }) {
   const [section, setSection] = useState('data');
@@ -31,8 +32,7 @@ export default function DataPage({ trainingLogs = {}, setTrainingLogs, onSession
   const denseTrend = useMemo(() => {
     let startDate, endDate;
     if (period === 'last30') {
-      endDate = new Date();
-      endDate.setUTCHours(0, 0, 0, 0);
+      endDate = today();
       startDate = new Date(endDate);
       startDate.setUTCDate(startDate.getUTCDate() - 29);
     } else if (period === 'all') {

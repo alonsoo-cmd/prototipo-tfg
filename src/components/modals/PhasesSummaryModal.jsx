@@ -17,7 +17,7 @@ export default function PhasesSummaryModal({ preparation, coachWeeks, week, onSe
     <div className="phase-workout-list">{phases.map((phase) => <details className="phase-workout-group" key={phase.name} open={phase.weeks.some((planWeek) => planWeek.number === week)}>
       <summary>{phase.name}<small>{phase.weeks.length} {phase.weeks.length === 1 ? 'semana' : 'semanas'}</small></summary>
       {phase.weeks.map((planWeek) => {
-        const status = getWeekStatus(planWeek.number, 8);
+        const status = getWeekStatus(planWeek.number);
         return <details className={`phase-week ${planWeek.number === week ? 'current' : ''}`} key={planWeek.number} open={planWeek.number === week}>
           <summary style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>Semana {planWeek.number}</span>
@@ -40,7 +40,7 @@ export default function PhasesSummaryModal({ preparation, coachWeeks, week, onSe
             </button>
           </summary>
           <div className="phase-week-workouts">{planWeek.days.filter((day) => day.type).map((day) => <div className="phase-workout-item" key={day.day}>
-            <div><b>{day.day} · {day.type}</b><small>{day.date} {day.month || 'oct'}</small></div>
+            <div><b>{day.day} · {day.type}</b><small>{day.date} {day.month}</small></div>
             <p>{day.desc || day.blocks || 'Sin descripción'}</p>
             <span>{day.mins || 0} min · {format(day.km)} km{day.shoes ? ` · 👟 ${day.shoes}` : ''}</span>
           </div>)}{!planWeek.days.some((day) => day.type) && <p className="phase-no-workouts">Todavía no hay entrenamientos planificados para esta semana.</p>}</div>

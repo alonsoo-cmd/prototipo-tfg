@@ -6,6 +6,7 @@ import { weekPhase } from '../../data/phases.js';
 import Toast from '../../components/ui/Toast.jsx';
 import './Dashboard.css';
 import { format } from '../../utils/format.js';
+import { today as demoToday } from '../../domain/calendar.js';
 
 const athleteShortcuts = [
   {
@@ -44,10 +45,10 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
   const shortcuts = role !== 'entrenador' ? athleteShortcuts : coachShortcuts;
   const currentWeek = weeks.find((week) => week.number === weekNumber) || weeks[weeks.length - 1];
   const weekSessions = currentWeek?.days || exampleSessions;
-  const today = new Date();
-  const todayName = new Intl.DateTimeFormat('es-ES', { weekday: 'long' }).format(today);
+  const today = demoToday();
+  const todayName = new Intl.DateTimeFormat('es-ES', { weekday: 'long', timeZone: 'UTC' }).format(today);
   const scheduledToday = weekSessions.find((session) => session.day.toLocaleLowerCase('es-ES') === todayName);
-  const todaySession = scheduledToday ? { ...scheduledToday, dateLabel: new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' }).format(today).toLocaleUpperCase('es-ES') } : weekSessions[0];
+  const todaySession = scheduledToday ? { ...scheduledToday, dateLabel: new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(today).toLocaleUpperCase('es-ES') } : weekSessions[0];
   const todayLogKey = `${currentWeek?.number || weekNumber}-${todaySession?.day}`;
   const todayLog = trainingLogs[todayLogKey];
   const [wellbeingDraft, setWellbeingDraft] = useState(() => ({ injuries: todayLog?.injuries || [] }));
@@ -231,7 +232,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
         <div className="dashboard-week-heading">
           <div>
             <div className="eyebrow">PREPARACIÓN ACTIVA</div>
-            <h2>Esta semana <span>· Semana {currentWeek?.number || 8}</span></h2>
+            <h2>Esta semana <span>· Semana {currentWeek?.number || weekNumber}</span></h2>
             <p>Media Maratón Madrid · {weekPhase(weeks, currentWeek?.number || weekNumber)}</p>
           </div>
         </div>

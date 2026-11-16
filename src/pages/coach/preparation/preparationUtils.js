@@ -1,18 +1,16 @@
 import { phaseForWeek } from '../../../data/phases.js';
 import { format } from '../../../utils/format.js';
+import { DAYS_OF_WEEK, sessionDayFields } from '../../../domain/calendar.js';
 
-const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+const daysOfWeek = DAYS_OF_WEEK;
 
 export function blankWeek(number) {
-  const firstDate = new Date(Date.UTC(2026, 9, 21 + (number - 8) * 7));
   return {
     number,
     phase: phaseForWeek(number),
     days: daysOfWeek.map((day, index) => {
-      const date = new Date(firstDate);
-      date.setUTCDate(firstDate.getUTCDate() + index);
       return {
-      day, date: date.getUTCDate(), month: new Intl.DateTimeFormat('es-ES', { month: 'short', timeZone: 'UTC' }).format(date).replace('.', ''), type: '', tone: 'rest', desc: '', mins: 0, km: 0,
+      day, ...sessionDayFields(number, index), type: '', tone: 'rest', desc: '', mins: 0, km: 0,
       tr: '0', state: 'Planificado', time: '—', blocks: '', wt: [38, 35, 41, 36, 42, 39, 40][index],
       zones: [0, 0, 0], warmup: '', cooldown: '', details: {},
       };
@@ -54,22 +52,14 @@ function dateRange(days) {
 }
 
 export function dayDate(day) {
-  return `${day.date} ${day.month || 'oct'}`;
-}
-
-function formatWorkoutDate(weekNumber, dayName) {
-  const dayIndex = daysOfWeek.indexOf(dayName);
-  const date = new Date(Date.UTC(2025, 8, 8 + (weekNumber - 1) * 7 + Math.max(dayIndex, 0)));
-  const dateLabel = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', timeZone: 'UTC' }).format(date);
-  const weekday = new Intl.DateTimeFormat('es-ES', { weekday: 'long', timeZone: 'UTC' }).format(date);
-  return `${dateLabel} - ${weekday}`;
+  return `${day.date} ${day.month || ''}`.trim();
 }
 
 export function formatRecentDateRange(workouts) {
   if (!workouts.length) return '';
   const oldest = workouts[workouts.length - 1];
   const newest = workouts[0];
-  return `${formatShortDate(oldest.date)} – ${formatShortDate(newest.date)} 2026`;
+  return `${formatShortDate(oldest.date)} – ${formatShortDate(newest.date)} ${newest.date.slice(0, 4)}`;
 }
 
 export function formatShortDate(dateStr) {

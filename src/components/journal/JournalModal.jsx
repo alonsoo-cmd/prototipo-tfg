@@ -160,7 +160,7 @@ export function JournalModal({ session, initialValues, onClose, onSave, hidePers
     <div className="modal-backdrop">
       <form ref={formRef} className="modal journal-modal" role="dialog" aria-modal="true" aria-labelledby="journal-title" noValidate onSubmit={submit} onKeyDown={trapFocus}>
         <button className="modal-close" type="button" onClick={requestClose} aria-label="Cerrar">×</button>
-        <div className="eyebrow">DIARIO DE ENTRENAMIENTO · {session.day.toUpperCase()} {session.dateLabel || `${session.date} OCT`}</div>
+        <div className="eyebrow">DIARIO DE ENTRENAMIENTO · {session.day.toUpperCase()} {session.dateLabel || `${session.date} ${(session.month || '').toUpperCase()}`.trim()}</div>
         <h2 id="journal-title">{session.type}</h2>
         <p className="muted">Registra cómo estás hoy y cómo ha ido el entrenamiento. Los campos con * son obligatorios.</p>
 

@@ -1,4 +1,5 @@
 import { weekPhase } from './phases.js';
+import { sessionDateKey, todayKey } from '../domain/calendar.js';
 
 const weekdays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const weeklyKilometers = [37, 41, 44, 48, 52, 47, 55, 50, 58, 54, 43, 32];
@@ -24,7 +25,7 @@ export function createTrainingHistory(trainingLogs = {}, weeks = []) {
     const phase = weekPhase(weeks, preparationWeek);
 
     return weekdays.map((day, dayIndex) => {
-      const date = dateFor(preparationWeek, dayIndex);
+      const date = sessionDateKey(preparationWeek, dayIndex);
       const plannedDistance = round(weeklyTotal * dayWeights[dayIndex]);
       const type = workoutTypes[dayIndex];
       const plannedMinutes = Math.round(plannedDistance * paceFactor(type));
@@ -42,8 +43,7 @@ export function createTrainingHistory(trainingLogs = {}, weeks = []) {
       const intensity = type === 'Umbral' || type === 'Series' || type === 'Competición';
       const zoneShares = intensity ? [0.2, 0.15, 0.5, 0.15] : [0.68, 0.22, 0.08, 0.02];
       const saved = Boolean(demoLog);
-      const todayKey = new Date().toLocaleDateString('en-CA');
-      const isPast = date <= todayKey;
+      const isPast = date <= todayKey();
 
       let completionStatus;
       if (demoLog?.completionStatus) {
@@ -116,10 +116,6 @@ export function createTrainingHistory(trainingLogs = {}, weeks = []) {
   });
 }
 
-function dateFor(week, dayIndex) {
-  const date = new Date(Date.UTC(2026, 7, 24 + (week - 1) * 7 + dayIndex));
-  return date.toISOString().slice(0, 10);
-}
 
 function valueOrDemo(value, fallback) {
   return value === '' || value === undefined ? fallback : value;

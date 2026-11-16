@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
+import { CURRENT_WEEK, weekRange } from '../../domain/calendar.js';
 import './WeekTimeline.css';
 
-export function getWeekStatus(weekNumber, currentWeek = 8) {
+export function getWeekStatus(weekNumber, currentWeek = CURRENT_WEEK) {
   if (weekNumber < currentWeek) return 'past';
   if (weekNumber === currentWeek) return 'current';
   return 'future';
@@ -20,26 +21,16 @@ export function getWeekStatusLabel(status) {
   }
 }
 
-export function getWeekDateRange(weekNumber, currentWeek = 8) {
-  const monday = new Date(Date.UTC(2026, 9, 21 + (weekNumber - currentWeek) * 7));
-  const sunday = new Date(Date.UTC(2026, 9, 27 + (weekNumber - currentWeek) * 7));
-
-  const startDay = monday.getUTCDate();
-  const endDay = sunday.getUTCDate();
-  const startMonth = new Intl.DateTimeFormat('es-ES', { month: 'short', timeZone: 'UTC' }).format(monday).replace('.', '');
-  const endMonth = new Intl.DateTimeFormat('es-ES', { month: 'short', timeZone: 'UTC' }).format(sunday).replace('.', '');
-
-  if (startMonth === endMonth) {
-    return `${startDay} — ${endDay} ${startMonth}`;
-  }
-  return `${startDay} ${startMonth} — ${endDay} ${endMonth}`;
+/** Rango de fechas de la semana: «2 — 8 nov». */
+export function getWeekDateRange(weekNumber) {
+  return weekRange(weekNumber);
 }
 
 export default function WeekTimeline({
   weeks = [],
   selectedWeek,
   onSelectWeek,
-  currentWeek = 8,
+  currentWeek = CURRENT_WEEK,
   showReturnButton = true,
   title = 'Histórico de la preparación',
   subtitle = 'Navegar por semanas',
@@ -92,7 +83,7 @@ export default function WeekTimeline({
           const weekNum = item.number;
           const status = getWeekStatus(weekNum, currentWeek);
           const isSelected = weekNum === selectedWeek;
-          const dateRange = getWeekDateRange(weekNum, currentWeek);
+          const dateRange = getWeekDateRange(weekNum);
 
           return (
             <button
