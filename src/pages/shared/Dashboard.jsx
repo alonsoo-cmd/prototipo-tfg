@@ -7,7 +7,7 @@ import { weekPhase } from '../../data/phases.js';
 import Toast from '../../components/ui/Toast.jsx';
 import './Dashboard.css';
 import { format } from '../../utils/format.js';
-import { today as demoToday } from '../../domain/calendar.js';
+import { sessionDayFields, today as demoToday } from '../../domain/calendar.js';
 import { currentUser } from '../../data/initialState.js';
 
 const athleteShortcuts = [
@@ -248,7 +248,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
           <div className="dashboard-week-days">
             {weekSessions.map((session) => (
               <button className={`dashboard-day ${session.tone}`} key={session.day} onClick={() => onSession(session, currentWeek?.number || weekNumber)}>
-                <span className="dashboard-day-date"><b>{session.day}</b><small>{session.date} oct</small></span>
+                <span className="dashboard-day-date"><b>{session.day}</b><small>{dayLabel(currentWeek?.number || weekNumber, session.day)}</small></span>
                 <span className="dashboard-day-type">{session.type}<span aria-hidden="true">⌄</span></span>
                 <span className="dashboard-day-session">{session.desc.replaceAll('\n', ' · ')}</span>
                 <span className="dashboard-day-metrics"><span>{session.mins ? `${session.mins} min` : '—'}</span><span>{session.km ? `${format(session.km)} km` : '—'}</span></span>
@@ -290,4 +290,10 @@ function WeeklySummary({ weekNumber, weeks, trainingLogs }) {
       </table>
     </aside>
   );
+}
+
+/** «4 nov»: fecha real del día dentro de la semana de la preparación. */
+function dayLabel(weekNumber, day) {
+  const { date, month } = sessionDayFields(weekNumber, day);
+  return `${date} ${month}`;
 }

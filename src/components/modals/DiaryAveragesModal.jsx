@@ -31,11 +31,13 @@ export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, 
 
   const selectedMonth = availableMonths[selectedMonthIndex] || '';
 
+  // Solo días ya registrados: los futuros (sin informar) no cuentan para las medias.
   const records = useMemo(() => {
+    const reported = history.filter((r) => r.completionStatus !== 'unreported');
     if (mode === 'weekly') {
-      return history.filter((r) => r.preparationWeek === selectedWeek);
+      return reported.filter((r) => r.preparationWeek === selectedWeek);
     }
-    return history.filter((r) => r.date.startsWith(selectedMonth));
+    return reported.filter((r) => r.date.startsWith(selectedMonth));
   }, [mode, selectedWeek, selectedMonth, history]);
 
   const averages = useMemo(() => computeAverages(records), [records]);
