@@ -1,5 +1,6 @@
 import { sessions as exampleSessions } from '../../data/sessions.js';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { createTrainingHistory, weekIntensitySummary } from '../../data/trainingHistory.js';
 import { JournalModal, missingWellbeingFields } from '../../components/journal/JournalModal.jsx';
 import { injuryRegions, wellbeingScales } from '../../domain/wellbeing.js';
 import { weekPhase } from '../../data/phases.js';
@@ -255,7 +256,7 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
               </button>
             ))}
           </div>
-          <WeeklySummary weekNumber={currentWeek?.number || weekNumber} />
+          <WeeklySummary weekNumber={currentWeek?.number || weekNumber} weeks={weeks} trainingLogs={trainingLogs} />
         </div>
       </section>
       <Toast message={toast} onDone={() => setToast('')} />
@@ -263,16 +264,19 @@ export default function Dashboard({ role, weekNumber, weeks, onNavigate, onSessi
   );
 }
 
-function WeeklySummary({ weekNumber }) {
+function WeeklySummary({ weekNumber, weeks, trainingLogs }) {
+  const history = useMemo(() => createTrainingHistory(trainingLogs, weeks), [trainingLogs, weeks]);
+  const summary = weekIntensitySummary(history, weekNumber);
+  const empty = summary.days === 0;
   const rows = [
-    ['Kms', '35', '4', '8', '46'],
-    ['Minutos', '182', '16', '34', '232'],
-    ['% mins', '78', '7', '15', '100'],
-  ];
+    ['Kms', summary.kilometers.map((value) => format(value))],
+    ['Minutos', summary.minutes.map((value) => format(value, 0))],
+    ['% mins', summary.percent.map((value) => format(value, 0))],
+  ].map(([label, values]) => [label, ...(empty ? values.map(() => '—') : values)]);
 
   return (
     <aside className="dashboard-summary" aria-label={`Resumen semanal, semana ${weekNumber}`}>
-      <div className="dashboard-summary-title">Semana {weekNumber}</div>
+      <div className="dashboard-summary-title">Semana {weekNumber} <small>· {empty ? 'sin registros' : `${summary.days} ${summary.days === 1 ? 'día registrado' : 'días registrados'}`}</small></div>
       <table>
         <thead><tr><th></th><th>B</th><th>M</th><th>A</th><th>Tot</th></tr></thead>
         <tbody>

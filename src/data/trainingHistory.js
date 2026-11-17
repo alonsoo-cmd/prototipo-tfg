@@ -186,3 +186,34 @@ function formatSpeed(minutes, distance) {
   if (!d || !m) return '—';
   return String(Math.round((d / (m / 60)) * 10) / 10);
 }
+
+/**
+ * Resumen de una semana por intensidad, a partir del historial: Baja (Z1 + Z2), Media (Z3) y Alta (Z4).
+ * Solo cuenta los días ya registrados (los futuros quedan fuera). Los km de cada sesión se reparten
+ * en proporción a sus minutos por zona. Devuelve [baja, media, alta, total] para km, minutos y %.
+ */
+export function weekIntensitySummary(history, week) {
+  const records = history.filter((record) => record.preparationWeek === week && record.completionStatus !== 'unreported');
+  const kilometers = [0, 0, 0];
+  const minutes = [0, 0, 0];
+  records.forEach((record) => {
+    const [z1 = 0, z2 = 0, z3 = 0] = record.zones || [];
+    const low = Math.min(z1 + z2, record.minutes);
+    const mid = Math.min(z3, record.minutes - low);
+    const bands = [low, mid, record.minutes - low - mid];
+    bands.forEach((value, index) => {
+      minutes[index] += value;
+      if (record.minutes) kilometers[index] += record.distance * value / record.minutes;
+    });
+  });
+  const totalMinutes = minutes.reduce((sum, value) => sum + value, 0);
+  // La última banda se calcula como resto para que los porcentajes sumen 100.
+  const [lowPercent, midPercent] = minutes.map((value) => (totalMinutes ? Math.round(value / totalMinutes * 100) : 0));
+  const percent = [lowPercent, midPercent, totalMinutes ? 100 - lowPercent - midPercent : 0];
+  return {
+    days: records.length,
+    kilometers: [...kilometers, kilometers.reduce((sum, value) => sum + value, 0)],
+    minutes: [...minutes, totalMinutes],
+    percent: [...percent, totalMinutes ? 100 : 0],
+  };
+}

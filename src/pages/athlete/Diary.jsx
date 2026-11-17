@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { createTrainingHistory, weekIntensitySummary } from '../../data/trainingHistory.js';
 import { sessions } from '../../data/sessions.js';
 import WorkoutStatus from '../../components/ui/WorkoutStatus.jsx';
 import WeekTimeline, { getWeekDateRange } from '../../components/ui/WeekTimeline.jsx';
@@ -177,7 +178,7 @@ export default function Diary({
             })}
           </div>
         </div>
-        <WeeklyLoad week={week} />
+        <WeeklyLoad week={week} coachWeeks={coachWeeks} trainingLogs={trainingLogs} />
       </section>
 
       {journalDay && (
@@ -213,11 +214,14 @@ function Stat({ label, value, unit }) {
   );
 }
 
-function WeeklyLoad({ week }) {
+function WeeklyLoad({ week, coachWeeks, trainingLogs }) {
+  const history = useMemo(() => createTrainingHistory(trainingLogs, coachWeeks), [trainingLogs, coachWeeks]);
+  const summary = weekIntensitySummary(history, week);
+  const empty = summary.days === 0;
   const rows = [
-    ['Kilómetros', '35', '4', '8', '46'],
-    ['Minutos', '182', '16', '34', '232'],
-  ];
+    ['Kilómetros', summary.kilometers.map((value) => format(value))],
+    ['Minutos', summary.minutes.map((value) => format(value, 0))],
+  ].map(([label, values]) => [label, ...(empty ? values.map(() => '—') : values)]);
 
   return (
     <aside className="weekly-summary">
@@ -229,7 +233,7 @@ function WeeklyLoad({ week }) {
           {values.map((value, index) => <span className={index === values.length - 1 ? 'total' : ''} key={index}>{value}</span>)}
         </div>
       ))}
-      <div className="summary-foot"><span>Distribución registrada</span><span className="legend"><i className="low" /><i className="mid" /><i className="high" /></span></div>
+      <div className="summary-foot"><span>{empty ? 'Sin registros esta semana' : `Distribución registrada · ${summary.days} ${summary.days === 1 ? 'día' : 'días'}`}</span><span className="legend"><i className="low" /><i className="mid" /><i className="high" /></span></div>
     </aside>
   );
 }
