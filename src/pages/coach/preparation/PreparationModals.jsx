@@ -8,14 +8,12 @@ export function NewPreparationModal({ athlete, onClose, onCreate }) {
   const [eventDate, setEventDate] = useState('');
   const [noSpecificGoal, setNoSpecificGoal] = useState(false);
   const [preparationName, setPreparationName] = useState('');
-  return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-    <form className="modal wide-modal new-preparation-modal" onSubmit={(event) => {
+  return <ModalShell as="form" wide className="new-preparation-modal" labelledBy="new-preparation-title" onClose={onClose} onSubmit={(event) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
       onCreate({ athlete, preparationName: data.get('preparationName'), duration: data.get('duration'), objectiveName: data.get('objectiveName'), distance: data.get('distance'), eventDate, noSpecificGoal: data.has('noSpecificGoal') });
     }}>
-      <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button>
-      <div className="eyebrow">NUEVA PREPARACIÓN</div><h2>{athlete.name}</h2>
+      <div className="eyebrow">NUEVA PREPARACIÓN</div><h2 id="new-preparation-title">{athlete.name}</h2>
       <p className="muted">Este atleta está disponible: no tiene entrenador ni otra preparación activa.</p>
       <div className="workout-editor-grid">
         <label className="field-label">Nombre de preparación<input name="preparationName" required={!noSpecificGoal} disabled={noSpecificGoal} value={noSpecificGoal ? 'Entrenamiento para estar en forma' : preparationName} onChange={(event) => setPreparationName(event.target.value)} placeholder="Ej. Plan de otoño" /></label>
@@ -29,12 +27,14 @@ export function NewPreparationModal({ athlete, onClose, onCreate }) {
       </fieldset>
       {noSpecificGoal && <p className="no-specific-goal-note">La preparación se creará para estar en forma y no tendrá objetivos ni pruebas asociadas.</p>}
       <div className="inline-actions"><button className="button secondary" type="button" onClick={onClose}>Cancelar</button><button className="button primary" type="submit">Iniciar preparación</button></div>
-    </form>
-  </div>;
+  </ModalShell>;
 }
 
 export function OverviewModal({ title, onClose, children }) {
-  return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}><section className="modal wide-modal overview-modal"><button className="modal-close" onClick={onClose} aria-label="Cerrar">×</button><h2>{title}</h2><div className="overview-list">{children}</div></section></div>;
+  return <ModalShell wide className="overview-modal" labelledBy="overview-title" onClose={onClose}>
+    <h2 id="overview-title">{title}</h2>
+    <div className="overview-list">{children}</div>
+  </ModalShell>;
 }
 
 /**

@@ -12,7 +12,7 @@ export default function PhasesSummaryModal({ preparation, coachWeeks, week, onSe
 
   return <>
     <div className="eyebrow">PREPARACIÓN ACTIVA · {preparation?.duration || '12 semanas'}</div>
-    <h2>Semanas y fases</h2>
+    <h2 id="app-modal-title">Semanas y fases</h2>
     <p className="muted">Objetivos: {(preparation?.objectives || []).map((objective) => `${objective.name} (${objective.distance})`).join(' · ') || 'Media Maratón Madrid'}.</p>
     <div className="phase-workout-list">{phases.map((phase) => <details className="phase-workout-group" key={phase.name} open={phase.weeks.some((planWeek) => planWeek.number === week)}>
       <summary>{phase.name}<small>{phase.weeks.length} {phase.weeks.length === 1 ? 'semana' : 'semanas'}</small></summary>

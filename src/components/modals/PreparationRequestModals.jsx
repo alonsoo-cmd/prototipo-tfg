@@ -9,7 +9,7 @@ const targetDistances = ['400 m', '800 m', '1.500 m', '3.000 m', '5 km', '10 km'
 export function PreparationRequestForm({ coachName, requestDate, setRequestDate, onSubmit }) {
   return <>
     <div className="eyebrow">SOLICITUD DE PREPARACIÓN{coachName ? ` · ${coachName.toUpperCase()}` : ''}</div>
-    <h2>Cuéntanos tu objetivo</h2>
+    <h2 id="app-modal-title">Cuéntanos tu objetivo</h2>
     <p className="muted">La solicitud se enviará a {coachName || 'el entrenador'} para su revisión. Solo puedes tener un entrenador: mientras esté pendiente no podrás pedir otra.</p>
     <label className="field-label">Fecha objetivo<DatePicker value={requestDate} onChange={setRequestDate} ariaLabel="Elegir fecha objetivo" /></label>
     <label className="field-label">Distancia objetivo<select defaultValue="10 km">
@@ -25,7 +25,7 @@ export function RequestSentNotice({ coachName, onBack }) {
   return <div className="center-state">
     <div className="success-icon">✓</div>
     <div className="eyebrow">SOLICITUD ENVIADA</div>
-    <h2>Solicitud registrada</h2>
+    <h2 id="app-modal-title">Solicitud registrada</h2>
     <p>{coachName || 'El entrenador'} recibirá los datos de tu objetivo y fechas. Te avisaremos cuando responda.</p>
     <button className="button primary" onClick={onBack}>Volver a Inicio</button>
   </div>;
@@ -35,7 +35,7 @@ export function RequestSentNotice({ coachName, onBack }) {
 export function RequestReview({ onReject, onAccept }) {
   return <>
     <div className="eyebrow">SOLICITUD RECIBIDA · {pendingRequest.receivedAgo.toUpperCase()}</div>
-    <h2>{pendingRequest.name}</h2>
+    <h2 id="app-modal-title">{pendingRequest.name}</h2>
     <div className="detail-metrics">
       <Metric label="Distancia" value={pendingRequest.distance} />
       <Metric label="Fecha objetivo" value={formatLongDate(pendingRequest.eventDate)} />

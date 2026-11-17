@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { gymExercises, isCyclingWorkout, workoutTypes } from '../../data/coachAthletes.js';
 import { format } from '../../utils/format.js';
 import InfoTip from '../ui/InfoTip.jsx';
+import ModalShell from '../modals/ModalShell.jsx';
 
 const effortZones = ['Suave · hasta LT1', 'Umbral · LT1–LT2', 'Fuerte · sobre LT2'];
 
@@ -46,8 +47,8 @@ export function WorkoutEditor({ day, mode, onClose, onSave }) {
     onSave({ ...values, desc: description, blocks: description, details, tone: type === 'Descanso' ? 'rest' : 'blue' });
   };
 
-  return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}><form className="modal wide-modal workout-editor-modal" onSubmit={submit}>
-    <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button><div className="eyebrow">{isReadOnly ? 'ENTRENAMIENTO · DETALLE' : mode.startsWith('template') ? 'ENTRENAMIENTOS PREFABRICADOS' : 'PLANIFICACIÓN TEÓRICA'}{!mode.startsWith('template') && ` · ${day.day.toUpperCase()}`}</div><h2>{day.type || 'Añadir entrenamiento'}{!mode.startsWith('template') && ` · ${day.day}`}</h2>
+  return <ModalShell as="form" wide className="workout-editor-modal" labelledBy="workout-editor-title" onClose={onClose} onSubmit={submit}>
+    <div className="eyebrow">{isReadOnly ? 'ENTRENAMIENTO · DETALLE' : mode.startsWith('template') ? 'ENTRENAMIENTOS PREFABRICADOS' : 'PLANIFICACIÓN TEÓRICA'}{!mode.startsWith('template') && ` · ${day.day.toUpperCase()}`}</div><h2 id="workout-editor-title">{day.type || 'Añadir entrenamiento'}{!mode.startsWith('template') && ` · ${day.day}`}</h2>
     {isReadOnly && mode.startsWith('template') && <div className="workout-practical-metrics"><b>{values.mins || 0} min</b><b>{format(values.km)} km</b></div>}
     {isReadOnly && !mode.startsWith('template') && <div className="workout-practical-metrics"><b>WT {values.wt ?? '—'}/50</b><b>FC media {values.averageHr ?? '—'} ppm</b><b>FC reposo {values.restingHr ?? '—'} ppm</b><b>HRV {values.hrv ?? '—'} ms</b></div>}
     <div className="workout-editor-grid">
@@ -119,5 +120,5 @@ export function WorkoutEditor({ day, mode, onClose, onSave }) {
     <fieldset className="workout-fieldset"><legend>Distribución por zonas <InfoTip term="umbrales" /></legend><div className="workout-editor-grid">{effortZones.map((zone, index) => <label className="field-label" key={zone}>{zone} · min<input disabled={isReadOnly} type="number" min="0" value={values.zones[index] || 0} onChange={(event) => update('zones', values.zones.map((minutes, i) => i === index ? Number(event.target.value) : minutes))} /></label>)}</div></fieldset>
     {error && <p className="form-error" role="alert">{error}</p>}
     <div className="inline-actions">{isReadOnly && <button className="button secondary" type="button" onClick={() => setIsReadOnly(false)}>Editar entrenamiento</button>}<button className="button secondary" type="button" onClick={onClose}>{isReadOnly ? 'Cerrar' : 'Cancelar'}</button>{!isReadOnly && <button className="button primary" type="submit">Guardar entrenamiento</button>}</div>
-  </form></div>;
+  </ModalShell>;
 }

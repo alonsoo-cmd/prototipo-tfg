@@ -5,6 +5,7 @@ import { wellbeingFields } from '../../domain/wellbeing.js';
 import './DiaryAveragesModal.css';
 import InfoTip, { TermLabel } from '../ui/InfoTip.jsx';
 import HrPercent from '../ui/HrPercent.jsx';
+import ModalShell from './ModalShell.jsx';
 
 const monthFormatter = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
@@ -47,11 +48,9 @@ export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, 
   const maxWeek = coachWeeks.length;
 
   return (
-    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form className="modal diary-averages-modal" onSubmit={(e) => e.preventDefault()}>
-        <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar">×</button>
+    <ModalShell className="diary-averages-modal" labelledBy="diary-averages-title" onClose={onClose}>
         <div className="eyebrow">MEDIAS DEL DIARIO</div>
-        <h2>Valores medios</h2>
+        <h2 id="diary-averages-title">Valores medios</h2>
         <p className="muted">Medias de todas las variables registradas en el diario.</p>
 
         {/* ── Mode toggle ── */}
@@ -147,8 +146,7 @@ export default function DiaryAveragesModal({ onClose, trainingLogs, coachWeeks, 
         <div className="inline-actions">
           <button className="button primary" type="button" onClick={onClose}>Cerrar</button>
         </div>
-      </form>
-    </div>
+    </ModalShell>
   );
 }
 

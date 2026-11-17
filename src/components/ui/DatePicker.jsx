@@ -22,17 +22,20 @@ export default function DatePicker({ value = '', onChange, name, allowClear = fa
     const closeOnOutside = (event) => {
       if (!rootRef.current?.contains(event.target) && !popoverRef.current?.contains(event.target)) setOpen(false);
     };
+    // En captura y sin propagar: Escape cierra solo el calendario, no el modal que lo contiene.
     const closeOnEscape = (event) => {
-      if (event.key === 'Escape') setOpen(false);
+      if (event.key !== 'Escape') return;
+      event.stopPropagation();
+      setOpen(false);
     };
     const closeOnViewportChange = () => setOpen(false);
     document.addEventListener('mousedown', closeOnOutside);
-    document.addEventListener('keydown', closeOnEscape);
+    document.addEventListener('keydown', closeOnEscape, true);
     window.addEventListener('resize', closeOnViewportChange);
     window.addEventListener('scroll', closeOnViewportChange, true);
     return () => {
       document.removeEventListener('mousedown', closeOnOutside);
-      document.removeEventListener('keydown', closeOnEscape);
+      document.removeEventListener('keydown', closeOnEscape, true);
       window.removeEventListener('resize', closeOnViewportChange);
       window.removeEventListener('scroll', closeOnViewportChange, true);
     };

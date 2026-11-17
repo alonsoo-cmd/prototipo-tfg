@@ -162,7 +162,7 @@
 - [x] Decisión: el TRIMP desaparece de toda la app. Donde se muestra una sesión aparece el **% de la FC máxima** (FC media ÷ FC máxima del perfil), solo informativo. Los totales semanales y la gráfica de carga lo pierden sin sustituto, porque un porcentaje no se suma.
 - [x] Color por zonas de FC (Z1 50-60 % … Z5 >90 %): gradiente continuo de verde (bajo) a rojo (alto). `src/domain/heartRate.js` y `src/components/ui/HrPercent.jsx`.
 - [x] Modal del diario: tarjeta "Intensidad respecto a tu FC máxima" con valor, zona y barra de color. También en las tarjetas del Diario, sus estadísticas, las medias, el detalle de sesión, Datos (columna y resumen semanal), "Últimos 7 días" y Preparaciones. Cada atleta del entrenador tiene su propia FC máxima en `coachAthletes.js`.
-- [ ] Pendiente: los resúmenes semanales de Inicio (`WeeklySummary`) y del Diario (`WeeklyLoad`) tienen las cifras escritas a mano (35 km, 182 min…), iguales en todas las semanas. Hay que calcularlas o quitarlas.
+- [x] ~~Pendiente: los resúmenes semanales de Inicio (`WeeklySummary`) y del Diario (`WeeklyLoad`) tienen las cifras escritas a mano~~ (17 nov): se calculan con `weekIntensitySummary` (`src/data/trainingHistory.js`) a partir del mismo historial que Datos. Baja = Z1 + Z2, Media = Z3, Alta = Z4; solo cuentan los días ya registrados.
 
 ---
 
@@ -177,15 +177,15 @@
 | `src/components/modals/DiaryAveragesModal.jsx` | 49 |
 | `src/pages/coach/preparation/PreparationModals.jsx` | 11 y 37 |
 
-- [ ] Envolverlos en `ModalShell`. `JournalModal.jsx` ya lo hace bien por su cuenta: se puede dejar o migrar.
+- [x] Envolverlos en `ModalShell`. `JournalModal.jsx` ya lo hace bien por su cuenta: se puede dejar o migrar.
 
 ### 2.2 `ModalShell` no gestiona el foco (M)
 - **Visto:** con "Revisar solicitud" abierto, el foco se queda en el botón de detrás y la página de fondo sigue desplazándose.
 - **Archivo:** `src/components/modals/ModalShell.jsx`.
-- [ ] Llevar el foco al modal al abrir y devolverlo al cerrar (la lógica ya existe en `JournalModal.jsx:88`).
-- [ ] Atrapar el tabulador dentro del modal.
-- [ ] Bloquear el scroll del `body` mientras esté abierto.
-- [ ] Pasar `labelledBy` desde `AppModals.jsx` (la propiedad existe y no se usa).
+- [x] Llevar el foco al modal al abrir y devolverlo al cerrar (la lógica ya existe en `JournalModal.jsx:88`).
+- [x] Atrapar el tabulador dentro del modal.
+- [x] Bloquear el scroll del `body` mientras esté abierto.
+- [x] Pasar `labelledBy` desde `AppModals.jsx` (la propiedad existe y no se usa).
 - **Comprobación:** abrir un modal con teclado, tabular sin salir de él, Escape y el foco vuelve al botón.
 
 ### 2.3 Barra superior en móvil (S)

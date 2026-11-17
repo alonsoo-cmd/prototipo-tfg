@@ -245,3 +245,6 @@ body { color: var(--ink); background: #f3f5f2; }
 .hr-percent { display: inline-block; padding: 2px 7px; border-radius: 999px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .hr-percent.empty { padding: 0; color: var(--muted-ink); font-weight: 400; }
 .hr-percent small { font-weight: 600; }
+
+/* La caja del modal recibe el foco al abrirse (2.2): sin contorno, el foco visible es para los controles. */
+.modal[tabindex="-1"]:focus { outline: none; }

@@ -6,7 +6,7 @@ import HrPercent from '../ui/HrPercent.jsx';
 export default function SessionDetailModal({ session, averageHr = null, fcMax = 200, canRegister = true, hasLog = false, onRegister, onClose }) {
   return <>
     <div className="eyebrow">{session.day} · {session.dateLabel || `${session.date} ${(session.month || '').toUpperCase()}`.trim()}</div>
-    <h2>{session.type}</h2>
+    <h2 id="app-modal-title">{session.type}</h2>
     <div className="modal-status">
       <span className={'dot-status ' + session.tone} />
       {session.state}<span className="separator">·</span>{session.time}
